@@ -3,7 +3,8 @@ Moodle Newsgroup Plugin
 
 This plugin is for reading newsgroups.
 
-After installing add connection informations to plugin settings in your moodle
+After installation:
+add connection informations to plugin settings in your moodle
 admin ui. Whenever possible use ip adresses instead of dns-name for performance
 reasons.
 
