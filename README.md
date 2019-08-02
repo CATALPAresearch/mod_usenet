@@ -13,10 +13,10 @@ name.
 required moodle 3.6.2
 
 TODO
+* [ ]  implement send button for new threads
+* [ ]  possible export functions to own library file
 
 
--implement send button for new threads
--possible export functions to own library file
 
 ## License ##
 
