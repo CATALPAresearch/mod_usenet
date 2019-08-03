@@ -51,6 +51,6 @@ echo "<div id=messagehead messageid=".htmlspecialchars($header->message_id).">";
 echo "<a href=" .new moodle_url('/user/profile.php?id='.$user->id)  .">";
 echo "<img src=" .new moodle_url('/user/pix.php/'.$user->id.'/f1.jpg') ."width=35 height=35></img>";
 echo $user->firstname." ".$user->lastname." </a>";
-echo "<a class=btn btn-primary id=answerbutton onclick='javascript: sendButton();'> Antworten</a>";
+echo "<a class='btn btn-primary' id=answerbutton onclick='javascript: sendButton();'> Antworten</a>";
 echo "<div id=subject style=visibility: hidden>".htmlspecialchars($header->subject)."</div></div><BR>";
 echo "<div id=messagebody>".$message."</div>";
