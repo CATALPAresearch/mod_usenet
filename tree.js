@@ -48,15 +48,15 @@ function callmessage(d) {
 }
                     function toggleChildren(d) {
 
-                        if (d.children) {
+                        if (d.children && d.id != '1') {
                             d._children = d.children;
                             d.children = null;
-                        } else if (d._children) {
+                        } else if (d._children && d.id != '1') {
                             d.children = d._children;
                             d._children = null;
                         }
                     }
-               
+
 
                     var nodeEls = ul.selectAll("li.node").data(nodes, function (d) {
 
@@ -116,7 +116,7 @@ function callmessage(d) {
 		    flatten(nodeEls);
                     nodeEls.each(function(d){
 
-                    
+
                      // if (d.children && d.depth > 0) {
                      //   d._children = d.children;
 		    //
@@ -138,12 +138,12 @@ function callmessage(d) {
 
             });
 	function flatten (flatdata){
-	
+
 	flatdata.sort(function(a, b) {
 		//console.log(new Date(b.date));
  if (a.date > b.date) return -1;
   if (a.date < b.date) return 1;
-return 0;   		
+return 0;
 
 
 	});
