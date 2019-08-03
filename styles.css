@@ -17,10 +17,10 @@
     }
     div#tree {
       top:10;
-      overflow: scroll;
+      overflow: auto;
       position: relative;
       float:left;
-      width: 50%;
+      width: 700px;
       height: 300px;
       align-items:stretch;
 
@@ -50,26 +50,26 @@ height:100%;
   #messagebody{
     position: static;
     overflow:auto;
-    top: 30px;
-    height: 200px;
+    top: 40px;
+    height: 230px;
 
     width:100%;   
-    margin-right: 30px;
+    margin-right: 10px;
     resize: none;
     /* display: flex; */
     /* align-items:stretch; */
   }
   div#treeinfo {
     position: sticky;
-    overflow: scroll;
+    overflow: auto;
     /* float: right; */
     /* position: -webkit-sticky; */
      top: 10px;
      bottom: auto;
-     height: 250px;
-     margin-left: 30%;
+     height: 300px;
+     /*margin-left: 30%;*/
      margin-right: 30px;
-     width: auto;
+     min-width: 700px;
    /* padding: 5px 0; */
    /* z-index: -1; */
 border: 2px solid black;
