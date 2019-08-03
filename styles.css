@@ -21,9 +21,12 @@
       position: relative;
       float:left;
       width: 50%;
-      height: 150%;
+      height: 300px;
       align-items:stretch;
 
+  }
+  .itemsort{
+	list-style: none;
   }
   div#contenttree{
     height: 100%;
@@ -35,7 +38,7 @@
     height: auto;
     position:relative;
     overflow: hidden;
-    height: 30px;
+    height: 40px;
     opacity: 1;
     /* display: flex; */
   }

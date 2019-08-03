@@ -47,6 +47,7 @@ function callmessage(d) {
               };
 }
                     function toggleChildren(d) {
+			
 
                         if (d.children && d.id != '1') {
                             d._children = d.children;
@@ -56,7 +57,7 @@ function callmessage(d) {
                             d._children = null;
                         }
                     }
-
+               
 
                     var nodeEls = ul.selectAll("li.node").data(nodes, function (d) {
 
@@ -116,7 +117,7 @@ function callmessage(d) {
 		    flatten(nodeEls);
                     nodeEls.each(function(d){
 
-
+                    
                      // if (d.children && d.depth > 0) {
                      //   d._children = d.children;
 		    //
@@ -137,23 +138,32 @@ function callmessage(d) {
                 }
 
             });
-	function flatten (flatdata){
+function flatten (flatdata){
 
-	flatdata.sort(function(a, b) {
-		//console.log(new Date(b.date));
- if (a.date > b.date) return -1;
-  if (a.date < b.date) return 1;
-return 0;
-
-
-	});
 	$('#treeinfo').empty();
+	$('#treeinfo').append("<ul class=listsort>");
+        var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
 	flatdata.each(function(d){
-	var messageDate = new Date(d.date);
-	if(typeof(d.sender) != 'undefined' && !isNaN(messageDate.getDate())){
-	$('#treeinfo').append(messageDate.getDate() +"/" +(messageDate.getMonth()+1) +"/"+messageDate.getFullYear()+" " +d.sender+"<BR>");
-	console.log(d.date + d.sender);
-}
+	var messageDate = new Date(d.date).getTime();
+        var localDate = new Date(d.date);
+	if(typeof(d.sender) != 'undefined' && !isNaN(messageDate)){
+	
+	$('#treeinfo ul').append("<li class=itemsort data-event-date="+messageDate+"> "+ d.sender +" schrieb am "+localDate.toLocaleString("de-DE", options) + "</li>");
+        }
 	});
+	$('#treeinfo ul').append("</ul>");
+        var items = $(".itemsort");
+        var container = $(".listsort");
+
+        items.sort(function(a,b){
+        a = parseFloat($(a).attr("data-event-date"));
+        b = parseFloat($(b).attr("data-event-date"));
+        return a<b ? -1 : a>b ? 1 : 0;
+    }).each(function(){
+        container.prepend(this);
+    });
+        
+
 }
 }
