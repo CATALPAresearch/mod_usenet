@@ -14,6 +14,8 @@ required moodle 3.6.2
 
 TODO
 * [ ]  implement send button for new threads
+* [ ]  add tooltips for user and news informations
+* [ ]  change send summary function
 * [ ]  possible export functions to own library file
 
 
