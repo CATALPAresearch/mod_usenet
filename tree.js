@@ -2,6 +2,10 @@ function showtree (h,f){
 
             var id = 0;
             d3.json('phpconn5.php?id='+f, function(err,data){
+data.children.sort(function(a, b) {
+    return b.date > a.date;
+  });
+
                 var tree = d3.layout.treelist()
                     .childIndent(10)
                     .nodeHeight(30);
@@ -128,7 +132,10 @@ function callmessage(d) {
                 }
                 render(data, data);
             });
-
+function custom_sort(a, b) {
+    alert(new Date(a.date).getTime());
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+}
 function flatten (flatdata){
 
 	$('#treeinfo').empty();
