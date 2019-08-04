@@ -58,7 +58,7 @@ class mod_newsmod_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         //$mform->addHelpButton('name', 'newsmodname', 'mod_newsmod');
-        $mform->addElement('text', 'newsgroup', get_string('newsgroup', 'testnntp'), array('size'=>'64'));
+        $mform->addElement('text', 'newsgroup', get_string('newsgroup', 'mod_newsmod'), array('size'=>'64'));
                 $mform->setType('newsgroup', PARAM_TEXT);
                 $mform->addRule('newsgroup', null, 'required', null, 'client');
         // Adding the standard "intro" and "introformat" fields.

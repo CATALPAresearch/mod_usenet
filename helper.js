@@ -28,8 +28,15 @@ $.post("posttest.php?id="+param+"&msgnr=" +$('#messagehead').attr('messageid')+"
 function createButton(){
     //alert("test");
     $('#treeinfo').empty();
-    //$("#contentree").append("<textarea id=messagebody cols=50 rows=40/>");
-    //$("#answerbutton").text("Senden");
+    $("#treeinfo").append("<label for=subject>Betreff:</label>");
+    $("#treeinfo").append("<input id=subject size=50/>");
+    $("#treeinfo").append("<a class='btn btn-primary' id=answerbutton onclick='javascript: sendButton();'>Senden</a><BR>");
+    $("#treeinfo").append("<label for=messagebody>Text:</label>");
+    $("#treeinfo").append("<textarea id=messagebody cols=10 rows=40/>");
+}
+
+function sendButton(){
+	alert("send");
 
 }
 
