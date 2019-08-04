@@ -78,7 +78,7 @@ foreach ($threads as $key => $val) {
 	$tempheader->sender[0]->host= 'nicht vorhanden';
 	$tempheader->date= '0';
 	}
-    $jsontree = $jsontree . '"name":"'.$tempheader->tempheader.'",';
+    $jsontree = $jsontree . '"name":"'.str_replace("\\", '' , str_replace("'",'',str_replace('"','',$tempheader->tempheader))).'",';
     $jsontree = $jsontree . '"messageid":"'.$val.'",';
     $jsontree = $jsontree . '"sender":"'.$tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host.'",';
     $jsontree = $jsontree . '"date":"'.$tempheader->date.'"';
