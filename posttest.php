@@ -6,8 +6,9 @@ require_once("../../config.php");
 
 $id = required_param('id', PARAM_INT);
 $msgnr = required_param('msgnr',PARAM_RAW);
-$sender = required_param('sender',PARAM_TEXT);
-  $form = data_submitted();
+//$sender = optional_param('sender',PARAM_TEXT);
+//$subject  = optional_param('subject', PARAM_TEXT);
+$form = data_submitted();
 
 if (!$cm = get_coursemodule_from_id('newsmod', $id)) {
     print_error("Course Module ID was incorrect");
@@ -40,6 +41,9 @@ compose_mail();
 
 function compose_mail(){
 	global $form, $msgnr,$localconfig,$journal,$USER;
+	if(!$msgnr){
+	 $msgnr=$form->subject;
+	}
         $username = "AUTHINFO USER ". $localconfig->newsgroupusername ."\n";
         $headers['from'] = $USER->email;
         $headers['subject'] = $form->subject;
@@ -89,11 +93,11 @@ function compose_mail(){
 
 
 
-if (!$user = $DB->get_record('user', ['email' => $sender])) {
+//if (!$user = $DB->get_record('user', ['email' => $sender])) {
     //echo "User Information not found";
-    $user = new \stdClass();
-    $user->id = "1";
-    $user->firstname = $sender;
-    $user->lastname = "";
-}
+//    $user = new \stdClass();
+//    $user->id = "1";
+//    $user->firstname = $sender;
+//    $user->lastname = "";
+//}
 
