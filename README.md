@@ -11,6 +11,7 @@ After adding an instance of this plugin to your course enter correct newsgroup
 name.
 
 required moodle 3.6.2
+resolution >1440x900 is optimal for now
 
 TODO
 * [X]  implement send button for new threads
