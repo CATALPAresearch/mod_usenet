@@ -112,50 +112,38 @@ function callmessage(d) {
                     nodeEls.exit().remove();
 
                     if(!data.start){
-
+//		    alert("data");
 		    var flatdata = data;
 		    flatten(nodeEls);
                     nodeEls.each(function(d){
-
-                    
                      // if (d.children && d.depth > 0) {
                      //   d._children = d.children;
 		    //
                     //    d.children = null;
                     //  }
-                    }
-                    );
+                    });
                     data.start=1;
                     render(data,data);
                   };
-
-
                 }
-
                 render(data, data);
-                function activitylog(){
-                  //d3.selectAll("#treeinfo").append
-                }
-
             });
+
 function flatten (flatdata){
 
 	$('#treeinfo').empty();
 	$('#treeinfo').append("<ul class=listsort>");
         var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-
 	flatdata.each(function(d){
 	var messageDate = new Date(d.date).getTime();
         var localDate = new Date(d.date);
 	if(typeof(d.sender) != 'undefined' && !isNaN(messageDate)){
-	
 	$('#treeinfo ul').append("<li class=itemsort data-event-date="+messageDate+"> "+ d.sender +" schrieb am "+localDate.toLocaleString("de-DE", options) + "</li>");
         }
 	});
 	$('#treeinfo ul').append("</ul>");
         var items = $(".itemsort");
         var container = $(".listsort");
-
         items.sort(function(a,b){
         a = parseFloat($(a).attr("data-event-date"));
         b = parseFloat($(b).attr("data-event-date"));
@@ -163,7 +151,5 @@ function flatten (flatdata){
     }).each(function(){
         container.prepend(this);
     });
-        
-
 }
 }
