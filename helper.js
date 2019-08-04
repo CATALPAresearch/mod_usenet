@@ -1,6 +1,5 @@
-function sendButton(){
+function answerButton(){
   var z =$("#answerbutton").text();
-
   if (z.indexOf("Antworten")>=0){
     var x = $("#messagebody").text();
     $("#messagebody").replaceWith("<textarea id=messagebody cols=50 rows=40/>");
@@ -8,14 +7,10 @@ function sendButton(){
 
 var u="";
 for(var i=0;i<f.length;i++){
-    //f[i]=">>"+f[i];
     u = u +">"+ f[i]+"\n";
 }
-
-
     $("#messagebody").val(u);
     $("#answerbutton").text("Senden");
-    //console.log(f);
   }else if (z.indexOf("Senden")>=0){
     var subject = $('#subject').text();
     var text = $('#messagebody').val();
@@ -30,3 +25,11 @@ $.post("posttest.php?id="+param+"&msgnr=" +$('#messagehead').attr('messageid')+"
   }
 
 }
+function createButton(){
+    //alert("test");
+    $('#treeinfo').empty();
+    //$("#contentree").append("<textarea id=messagebody cols=50 rows=40/>");
+    //$("#answerbutton").text("Senden");
+
+}
+

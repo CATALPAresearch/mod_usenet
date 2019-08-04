@@ -80,7 +80,7 @@ $PAGE->requires->js_init_call('showtree',array('course'=>$cm->id));
 //echo '<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">';
 echo $OUTPUT->header();
 
-echo "<a class='btn btn-primary' id=answerbutton onclick='javascript: createButton();'>Neues Thema</a>";
+echo "<a class='btn btn-primary' id=createbutton onclick='javascript: createButton();'>Neues Thema</a>";
 echo "<div id=contenttree><div id=tree></div><div id=treeinfo><a href=edit.php?id=".$cm->id."&message=2>answer</a></li></div></div>";
 //echo "<a href=edit.php?id=".$cm->id."&message=".$val.">answer</a></li>";
 echo $OUTPUT->footer();
