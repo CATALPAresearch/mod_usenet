@@ -5,14 +5,15 @@
 
         $localconfig = get_config('newsmod');
         $nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
-	$email = imap_search($nntp, 'SINCE "01 JUL 2019"',SE_UID);
+	$email = imap_search($nntp, 'SINCE "'.Date("d M Y", strtotime("-24 hours", time())).'"' ,SE_UID);
+	print_r( Date('j M Y'));
 	$tmp =@imap_fetch_overview($nntp, implode(',', $email),FT_UID);
 	return($tmp);
 	}
 
-	function sendemail($content){
+	function sendemail($email, $content){
 	$email_user = new stdClass;
-	$email_user->email="rpatzer@gmx.de";
+	$email_user->email=$email;
 	$email_user->firstname=" ";
 	$email_user->lastname= " ";
 	$email_user->maildisplay = false;

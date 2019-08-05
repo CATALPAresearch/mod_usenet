@@ -29,6 +29,7 @@ class send_summary extends \core\task\scheduled_task {
 	$summary = $DB->get_records('user');
 	$fp = fopen('./crontest.txt', 'w');
 	$cachesummary = array();
+
 	foreach ($summary as $record){
 		$enrolled = $DB->get_records_sql("
 		SELECT c.id, nm.newsgroup, u.email, u.firstname
@@ -50,17 +51,11 @@ class send_summary extends \core\task\scheduled_task {
 			}
 			foreach($cachesummary[$newsgr->newsgroup] as $message){
 			$summarytext = $summarytext ."\r\n".$message->subject;
-//			print_r($message->subject);
 			}
 		}
 		echo "\r\n";
-			fwrite($fp, json_encode($cachesummary));
-		print_r("USER ".$record->firstname."\r\n");
-		print_r($summarytext);
-		print_r("nächster\r\n");
-		sendemail($summarytext);
+		sendemail($record->email, $summarytext);
 }
-	echo "hallo";
 		fclose($fp);
       }
 }
