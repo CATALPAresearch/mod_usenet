@@ -35,19 +35,10 @@ data.children.sort(function(a, b) {
 
 function callmessage(d) {
                 if (d.messageid !=undefined && d.messageid != '0'){
-                var oReq = new XMLHttpRequest();
-                $( "#treeinfo" ).load( "messageid.php?id="+f+"&msgnr=" + d.messageid +"&sender="+ d.sender)
-
-//                oReq.addEventListener("loadend", reqListener);
-//                oReq.open("GET", "messageid.php?id="+ f +"&msgnr=" + d.messageid + "&sender=" + d.sender);
-//		oReq.responseType = "document";
-//                oReq.send();
-//$( "#treeinfo" )
+                //var oReq = new XMLHttpRequest();
+                $( "#treeinfo" ).load( "messageid.php?id="+f+"&msgnr=" + d.messageid +"&sender="+ d.sender,function(responseTxt, statusTxt, xhr){if (statusTxt == "error"){location.reload();};})
               } else{
 		    flatten(nodeEls);
-
-		//flatten(flatdata);
-                //$( "#treeinfo" ).load( "messageid.php?id=66&msgnr=" + d.messageid )
               };
 }
                     function toggleChildren(d) {
