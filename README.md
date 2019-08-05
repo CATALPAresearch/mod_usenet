@@ -13,6 +13,7 @@ name.
 required moodle 3.6.2
 
 resolution >1440x900 is optimal for now
+time to send summary to e-mail can be changed under task options in moodle ui
 
 TODO
 * [X]  implement send button for new threads
