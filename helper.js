@@ -14,9 +14,7 @@ for(var i=0;i<f.length;i++){
   }else if (z.indexOf("Senden")>=0){
     var subject = $('#subject').text();
     var text = $('#messagebody').val();
-if (subject.search("Re: ")!= '-1'){
-     subject = "Re: " + subject;
-    }
+    subject = "Re: " + subject;
 let searchParams = new URLSearchParams(window.location.search);
 let param = searchParams.get('id');
 $.post("posttest.php?id="+param+"&msgnr=" +$('#messagehead').attr('messageid'), { userInput : text, subject : subject }, function(data){ alert(data);});
@@ -31,7 +29,7 @@ function createButton(){
     $("#treeinfo").append("<label for=subject>Betreff:</label>");
     $("#treeinfo").append("<input id=subjectnew size=50/>");
     $("#treeinfo").append("<a class='btn btn-primary' id=answerbutton onclick='javascript: sendButton();'>Senden</a><BR>");
-    $("#treeinfo").append("<label for=messagebody>Text:</label>");
+    $("#treeinfo").append("<label for=messagebody>Text:</label><br/>");
     $("#treeinfo").append("<textarea id=messagebody cols=10 rows=40/>");
 }
 
@@ -41,9 +39,9 @@ function sendButton(){
     let searchParams = new URLSearchParams(window.location.search);
     let param = searchParams.get('id');
     var text = $('#messagebody').val();
-    $.post("posttest.php?id="+param+"&msgnr=" +$('#messagehead').attr('messageid'), { userInput : text, subject : subject }, function(data,status){ switch(status){
+    $.post("posttest.php?id="+param+"&msgnr=new", { userInput : text, subject : subject }, function(data,status){ switch(status){
     case "success":
-	alert("Nachricht versandt");
+	alert("Nachricht versandt "+ data);
     location.reload(false);
 	break;
     case "error":

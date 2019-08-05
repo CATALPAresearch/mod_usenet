@@ -41,15 +41,17 @@ compose_mail();
 
 function compose_mail(){
 	global $form, $msgnr,$localconfig,$journal,$USER;
-	if(!$msgnr){
-	 $msgnr=$form->subject;
-	}
         $username = "AUTHINFO USER ". $localconfig->newsgroupusername ."\n";
         $headers['from'] = $USER->email;
         $headers['subject'] = $form->subject;
         $headers['custom_headers'][] = 'Newsgroups: ' . $journal->newsgroup;
-	$headers['custom_headers'][] = 'References: ' . $msgnr;
-        $body[0]['type'] = TYPETEXT;
+
+	if($msgnr!="new"){
+	echo "wo kommt das hin" . isset($msgnr);
+	 $headers['custom_headers'][] = 'References: ' . $msgnr;
+	}
+	$body[0]['type'] = TYPETEXT;
+        $body[0]['charset'] = 'UTF-8';
         $body[0]['subtype'] = 'plain';
         $body[0]['contents.data'] = $form->userInput;
         $post = imap_mail_compose($headers, $body);
