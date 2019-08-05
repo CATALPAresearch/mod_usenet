@@ -36,7 +36,9 @@ data.children.sort(function(a, b) {
 function callmessage(d) {
                 if (d.messageid !=undefined && d.messageid != '0'){
                 //var oReq = new XMLHttpRequest();
-                $( "#treeinfo" ).load( "messageid.php?id="+f+"&msgnr=" + d.messageid +"&sender="+ d.sender,function(responseTxt, statusTxt, xhr){if (statusTxt == "error"){location.reload();};})
+                $( "#treeinfo" ).load( "messageid.php?id="+f+"&msgnr=" + d.messageid +"&sender="+ d.sender,function(responseTxt, statusTxt, xhr){if (statusTxt == "error"){
+		location.reload();
+		};})
               } else{
 		    flatten(nodeEls);
               };

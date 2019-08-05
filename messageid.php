@@ -24,7 +24,6 @@ header('Temporary-Header: True', true, 401);
 }
 require_login($course, false, $cm);
 // require_capability('mod/newsmod:addentries', $context);
-echo '<meta http-equiv="refresh" content="1">';
 
 if (! $journal = $DB->get_record("newsmod", array("id" => $cm->instance))) {
     print_error("Course module is incorrect");
