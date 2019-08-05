@@ -40,7 +40,7 @@ class send_summary extends \core\task\scheduled_task {
 		JOIN {user} u ON u.id = ra.userid
 		JOIN {role} r ON r.id = ra.roleid
 		where u.id = $record->id");
-		$summarytext = "Guten Tag, diese E-Mail enthält die tägliche Zusammenfassung neuer Newsgroupbeiträge";
+		$summarytext = "<b>Guten Tag, diese E-Mail enthält die tägliche Zusammenfassung neuer Newsgroupbeiträge</b>";
 		foreach ($enrolled as $newsgr){
 			if(!isset($cachesummary[$newsgr->newsgroup])){
 			$cachesummary[$newsgr->newsgroup]=summary($newsgr);
@@ -50,9 +50,10 @@ class send_summary extends \core\task\scheduled_task {
 			$summarytext = $summarytext . $newsgr->newsgroup."\r\n";
 			}
 			foreach($cachesummary[$newsgr->newsgroup] as $message){
-			$summarytext = $summarytext ."\r\n".$message->subject;
+			$summarytext = $summarytext ."\r\n<BR>".$message->subject;
 			}
 		}
+		$summarytext = $summarytext . "</html>";
 		echo "\r\n";
 		sendemail($record->email, $summarytext);
 }

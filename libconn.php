@@ -20,8 +20,7 @@
 	$email_user->mailformat = 1;
 	$email_user->id=-99;
 	$subject= "Zusammenfassung des Forums";
-//	$content= "blablubb";
-	$a=email_to_user($email_user, $email_user, $subject, $content);
+	$a=email_to_user($email_user, $email_user, $subject, html_to_text($content),$content);
 
 	}
 ?>
