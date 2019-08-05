@@ -18,7 +18,7 @@ TODO
 * [X]  implement send button for new threads
 * [ ]  design improvements
 * [ ]  add tooltips for user and news informations
-* [ ]  change send summary function
+* [X]  change send summary function
 * [ ]  possible export functions to own library file
 
 
