@@ -14,7 +14,7 @@ $journal = $DB->get_record("newsmod", array("id" => $cm->instance));
 
 
 $context = context_module::instance($cm->id);
-//require_login($course, false, $cm);
+require_login($course, false, $cm);
 //require_capability('mod/newsmod:addentries', $context);
 
 if (! $journal = $DB->get_record("newsmod", array("id" => $cm->instance))) {
@@ -22,7 +22,7 @@ if (! $journal = $DB->get_record("newsmod", array("id" => $cm->instance))) {
 }
 $localconfig = get_config('newsmod');
 require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
-$jsontree = generateJsonFromNews($journal);
+$jsontree = generateJsonFromNews();
 header('Content-Type: application/json');
 //echo "<body>";
 echo $jsontree;
