@@ -15,12 +15,14 @@ required moodle 3.6.2, php-imap
 resolution >1440x900 is optimal for now
 time to send summary to e-mail can be changed under task options in moodle ui
 
+
 TODO
 * [X]  implement send button for new threads
 * [ ]  design improvements
 * [ ]  add tooltips for user and news informations
 * [X]  change send summary function
-* [ ]  possible export functions to own library file
+* [/]  caching implemented(precaching once a day additionaly to summary run)
+* [/]  possible export functions to own library file
 
 
 
