@@ -21,8 +21,8 @@ TODO
 * [ ]  design improvements
 * [ ]  add tooltips for user and news informations
 * [X]  change send summary function
-* [/]  caching implemented(precaching once a day additionaly to summary run)
-* [/]  possible export functions to own library file
+* [X]  caching implemented runs after first summary run
+* [X]  possible export functions to own library file
 
 
 
