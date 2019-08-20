@@ -22,7 +22,7 @@ TODO
 * [ ]  add tooltips for user and news informations
 * [X]  change send summary function
 * [X]  caching implemented runs after first summary run
-* [X]  possible export functions to own library file
+* [X]  partially exported functions to own library file
 
 
 
