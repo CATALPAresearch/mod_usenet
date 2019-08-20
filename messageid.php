@@ -37,8 +37,8 @@ $PAGE->set_heading($course->fullname);
 $data = new stdClass();
 $localconfig = get_config('newsmod');
 $nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
-$header = imap_header($nntp, $msgnr);
-$message = imap_fetchbody ($nntp, $msgnr, '1');
+$header = imap_header($nntp, imap_msgno($nntp,$msgnr));
+$message = imap_fetchbody ($nntp, $msgnr, '1',FT_UID);
 $message = nl2br($message);
 
 if (!$user = $DB->get_record('user', ['email' => $sender])) {
