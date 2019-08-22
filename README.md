@@ -1,4 +1,4 @@
-# NewsgroupReader #
+# newsmod #
 
 This plugin is for reading newsgroups.
 
@@ -11,6 +11,12 @@ After adding an instance of this plugin to your course enter correct newsgroup
 name.
 
 required moodle 3.6.2, php-imap
+
+Newsgroups tested with
+misc.test
+feu.cafe
+feu.informatik.kurs.1678
+talk.politics.misc
 
 resolution >1440x900 is optimal for now
 time to send summary to e-mail can be changed under task options in moodle ui
