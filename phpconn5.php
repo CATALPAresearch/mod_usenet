@@ -29,9 +29,9 @@ echo $jsontree;
 //print_r(imap_headerinfo($nntp,1));
 //print_r( $threads);
 //echo "</body>";
- $fp = fopen('results.json', 'w');
- fwrite($fp, $jsontree);
+// $fp = fopen('results.json', 'w');
+// fwrite($fp, $jsontree);
 //
- fclose($fp);
+ //fclose($fp);
 
 //echo "<script type='text/javascript' src='jquery-3.4.1.min.js'></script>";

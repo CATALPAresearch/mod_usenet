@@ -1,10 +1,22 @@
 function showtree (h,f){
 
+
+//$('#tree').append("<div class=loading><i class='fa fa-cog fa-spin fa-5x'></i>loading</div>")
             var id = 0;
+
+
             d3.json('phpconn5.php?id='+f, function(err,data){
-data.children.sort(function(a, b) {
-    return b.date > a.date;
-  });
+              if(err){
+                $('#tree').append('<p>Fehler in der Datenstruktur</p>');
+              }
+              $('#tree').empty();
+              if(!data){
+                $('#tree').append('<p>Keine Daten vorhanden</p>');
+              return;
+              }
+              data.children.sort(function(a, b) {
+                return b.date > a.date;
+              });
 
                 var tree = d3.layout.treelist()
                     .childIndent(10)
@@ -44,7 +56,7 @@ function callmessage(d) {
               };
 }
                     function toggleChildren(d) {
-			
+
 
                         if (d.children && d.id != '1') {
                             d._children = d.children;
@@ -54,7 +66,7 @@ function callmessage(d) {
                             d._children = null;
                         }
                     }
-               
+
 
                     var nodeEls = ul.selectAll("li.node").data(nodes, function (d) {
 
@@ -91,6 +103,8 @@ function callmessage(d) {
                             : "fa-envelope";
                         return "fa " + icon;
                     });
+		    entered.append("i").attr("class", "picture")
+                        .html(function (d) { return "<img src=https://mmo-inside.de/moodle/user/pix.php/2/f1.jpg width=20 height=20>"; });
                     //add text
                     entered.append("span").attr("class", "filename")
                         .html(function (d) { return d.name; });
