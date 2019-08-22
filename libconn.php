@@ -46,6 +46,17 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 	$a=email_to_user($email_user, $email_user, $subject, html_to_text($content),$content);
 
 	}
+	function getUserIdByEmail($sender){
+		global $DB,$CFG;
+		if (!$user = $DB->get_record('user', ['email' => $sender])) {
+		    //echo "User Information not found";
+		    $user = new \stdClass();
+		    $user->id = "1";
+		    $user->firstname = $sender;
+		    $user->lastname = "";
+		}
+		return $user->id;
+	}
 	function generateJsonFromNews($journal){
 		global $CFG;
 		$localconfig = get_config('newsmod');
@@ -100,10 +111,11 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 			$tempheader->sender[0]->host= 'nicht vorhanden';
 			$tempheader->date= '0';
 			}
-				//$jsontree = $jsontree . '"name":"'. $tempheader->subject .'",';
+			//$jsontree = $jsontree . '"name":"'. $tempheader->subject .'",';
 				$jsontree = $jsontree . '"name":"'.addcslashes(str_replace('\\','', $tempheader->subject),"\"").'",';
 				$jsontree = $jsontree . '"messageid":"'.$val.'",';
 				$jsontree = $jsontree . '"sender":"'.$tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host.'",';
+				$jsontree = $jsontree . '"user_id":"'.getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host).'",';
 				$jsontree = $jsontree . '"date":"'.$tempheader->date.'"';
 				if($threads[$tree[0] . ".next"]!=0){
 					$jsontree = $jsontree . ',"children": [{'  ;

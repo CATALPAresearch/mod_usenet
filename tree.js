@@ -104,7 +104,7 @@ function callmessage(d) {
                         return "fa " + icon;
                     });
 		    entered.append("i").attr("class", "picture")
-                        .html(function (d) { return "<img src=https://mmo-inside.de/moodle/user/pix.php/2/f1.jpg width=20 height=20>"; });
+                        .html(function (d) { return "<img src=https://mmo-inside.de/moodle/user/pix.php/"+d.user_id +"/f1.jpg width=20 height=20>"; });
                     //add text
                     entered.append("span").attr("class", "filename")
                         .html(function (d) { return d.name; });
