@@ -62,25 +62,18 @@ $PAGE->set_context($modulecontext);
 //$PAGE->requires->js('/mod/newsmod/jquery-1.10.2.js');
 
 
-$PAGE->requires->js('/mod/newsmod/d3.v3.min.js','/mod/newsmod/treelist.js');
-$PAGE->requires->js('/mod/newsmod/treelist.js');
-$PAGE->requires->js('/mod/newsmod/tree.js');
-$PAGE->requires->js('/mod/newsmod/helper.js');
-
-$myarray = array('apple', 'orange', 'pear');
+//$PAGE->requires->js('/mod/newsmod/d3.v3.min.js','/mod/newsmod/treelist.js');
+//$PAGE->requires->js('/mod/newsmod/treelist.js');
+//$PAGE->requires->js('/mod/newsmod/tree.js');
+//$PAGE->requires->js('/mod/newsmod/helper.js');
+echo "<script language=javascript type=text/javascript src=d3.v3.min.js></script>";
+echo "<script language=javascript type=text/javascript src=treelist.js></script>";
+echo "<script language=javascript type=text/javascript src=tree.js></script>";
+echo "<script language=javascript type=text/javascript src=helper.js></script>";
+//$myarray = array('apple', 'orange', 'pear');
 $PAGE->requires->js_init_call('showtree',array('course'=>$cm->id));
- // $jsmodule = array(
- // 	'name'     => 'mod_newsmod',
- // 	'fullpath' => '/mod/newsmod/tree.js'
- //
- // );
- // $journaladress = format_string($journal->newsgroup, true, array('context' => $context));
- //$instance = get_context_instance(CONTEXT_COURSE, $course);
-// print_r($instance);
-//echo '<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">';
 echo $OUTPUT->header();
 
 echo "<a class='btn btn-primary' id=createbutton onclick='javascript: createButton();'>Neues Thema</a>";
-echo "<div id=contenttree><div id=tree></div><div id=treeinfo><a href=edit.php?id=".$cm->id."&message=2>answer</a></li></div></div>";
-//echo "<a href=edit.php?id=".$cm->id."&message=".$val.">answer</a></li>";
+echo "<div id=contenttree><div id=tree></div><div id=treeinfo></div></div>";
 echo $OUTPUT->footer();
