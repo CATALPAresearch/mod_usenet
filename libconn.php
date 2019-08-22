@@ -6,7 +6,7 @@ defined('MOODLE_INTERNAL')|| die;
         $localconfig = get_config('newsmod');
         $nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword)
 	or die("kann nicht verbinden: " . imap_last_error());
-	$MC = imap_check($nntp);
+$MC = imap_check($nntp);
 $result = imap_fetch_overview($nntp,"1:{$MC->Nmsgs}",0);
 file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
 //$string_data = file_get_contents("filecontents.txt");
@@ -25,6 +25,15 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 	return($tmp);
 	}
 
+	function buildCache($journal){
+		global $CFG;
+		$localconfig = get_config('newsmod');
+		$nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+		$MC = imap_check($nntp);
+		$result = imap_fetch_overview($nntp,"1:{$MC->Nmsgs}",0);
+		file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
+	}
+
 	function sendemail($email, $content){
 	$email_user = new stdClass;
 	$email_user->email=$email;
@@ -40,8 +49,9 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 	function generateJsonFromNews($journal){
 		global $CFG;
 		$localconfig = get_config('newsmod');
+		$nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword)
+		or die("kann nicht verbinden: " . imap_last_error());
 		$cacheddata = loadCachedData($journal);
-		$nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
 		//$header = imap_headers($nntp);
 		$mc = imap_check($nntp);
 		$threads = imap_thread($nntp,SE_UID);
@@ -61,16 +71,26 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 				//echo $last;
 				 if ($last == 'branch'){$jsontree = $jsontree . "},{";}
 				$tempheader="";
+
+				if($cacheddata){
 				$key = array_search($val, array_column($cacheddata, 'uid'));
+			}else{
+				$key ="";
+			}
+
 				if ($key!= ""){
 					$tempheader=$cacheddata[$key];
 					$tempheader->sender[0]= new \stdClass();
 			  	$tempheader->sender=imap_rfc822_parse_adrlist($cacheddata[$key]->from,'');
-					$tempheader->subject=addslashes(imap_utf8($tempheader->subject));
+					//$tempheader->subject=stripslashes(imap_utf8($tempheader->subject));
+					$tempheader->subject=addcslashes(imap_utf8($tempheader->subject),"\"");
 					//print_r($tempheader->subject);
 				//$tempheader->subject ='Nachrichtenknoten gelöscht';
 				}else{
 				$tempheader=headersubject($nntp, $val);
+				if(@$tempheader->subject){
+				$tempheader->subject=imap_utf8($tempheader->subject);
+			}
 				}
 				if (!is_object($tempheader)){
 			$tempheader= new \stdClass();
@@ -81,7 +101,7 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 			$tempheader->date= '0';
 			}
 				//$jsontree = $jsontree . '"name":"'. $tempheader->subject .'",';
-				$jsontree = $jsontree . '"name":"'.str_replace("\\", '' , str_replace("'",'',str_replace('"','',$tempheader->subject))).'",';
+				$jsontree = $jsontree . '"name":"'.addcslashes(str_replace('\\','', $tempheader->subject),"\"").'",';
 				$jsontree = $jsontree . '"messageid":"'.$val.'",';
 				$jsontree = $jsontree . '"sender":"'.$tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host.'",';
 				$jsontree = $jsontree . '"date":"'.$tempheader->date.'"';
@@ -108,13 +128,18 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 		if ($val==0){return;}
 
 		$header = imap_headerinfo($nntp,imap_msgno($nntp,$val));
-		$tempheaderdecoded =imap_mime_header_decode($header->subject);
-		$tempheader="";
-		foreach ($tempheaderdecoded as $key=>$val){
-		 $tempheader = $tempheader . $val->text;
+		//$tempheader = stripslashes($header->subject);
+		//print_r("test");
+		//addcslashes(imap_utf8($header->subject),'\"');
 
-		 }
-		 $header->tempheader = addslashes($tempheader);
+		//$tempheaderdecoded =imap_mime_header_decode($header->subject);
+
+		//$tempheader="";
+		//foreach ($tempheaderdecoded as $key=>$val){
+		// $tempheader = $tempheader . $val->text;
+		 //}
+
+		 //$header->tempheader = "";
 		//print_r($header->tempheader);
 
 		return $header;
@@ -123,9 +148,16 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 	function loadCachedData ($journal){
 		global $CFG;
 		//file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
-		$string_data = file_get_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt");
-		$result = unserialize($string_data);
-		return $result;
+		//try {
+			if(!$string_data = @file_get_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt")){
+				buildCache($journal);
+
+			}else{
+				$result = unserialize($string_data);
+				return $result;
+
+			}
+			return;
 	}
 
 ?>
