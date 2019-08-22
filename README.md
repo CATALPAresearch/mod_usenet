@@ -13,10 +13,11 @@ name.
 required moodle 3.6.2, php-imap
 
 Newsgroups tested with
-misc.test
-feu.cafe
-feu.informatik.kurs.1678
-talk.politics.misc
+1.  misc.test
+2.  feu.cafe
+3.  feu.informatik.kurs.1678
+4.  talk.politics.misc
+
 
 resolution >1440x900 is optimal for now
 time to send summary to e-mail can be changed under task options in moodle ui
