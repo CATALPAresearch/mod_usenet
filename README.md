@@ -16,7 +16,6 @@ Newsgroups tested with
 1.  misc.test
 2.  feu.cafe
 3.  feu.informatik.kurs.1678
-4.  talk.politics.misc
 
 
 resolution >1440x900 is optimal for now
