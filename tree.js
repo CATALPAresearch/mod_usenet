@@ -9,11 +9,18 @@ function showtree (h,f){
               if(err){
                 $('#tree').append('<p>Fehler in der Datenstruktur</p>');
               }
-              $('#tree').empty();
               if(!data){
-                $('#tree').append('<p>Keine Daten vorhanden</p>');
+                $( "#tree" ).load( "phpconn5.php?id="+f,function(responseTxt, statusTxt, xhr){if (statusTxt == "OK"){
+		                $('#tree').append('<p>'+responseTxt+'</p>');
+	              $('#tree').empty();
+
+		};})
+
+                //$('#tree').append('<p>Keine Daten vorhanden</p>');
               return;
               }
+	              $('#tree').empty();
+
               data.children.sort(function(a, b) {
                 return b.date > a.date;
               });
@@ -95,14 +102,24 @@ function callmessage(d) {
                     entered.append("i").attr("class", function (d) {
                         var icon = d.children ? "fa-arrow-down"
                             : d._children ? "fa-arrow-right" : "";
-                        return "fa " + icon;
+                        return "fas fa " + icon;
                     }).on("click",function (d){toggleChildren(d);});
                     //add icons for folder for file
                     entered.append("i").attr("class", function (d) {
-                        var icon = d.children || d._children ? "glyphicon-folder-close"
+                        var icon = d.children || d._children ? "fa-envelope-open"
                             : "fa-envelope";
-                        return "fa " + icon;
-                    });
+                        return "far  " + icon;
+                    })
+		    .style("background", function(d){
+		     
+		     var messageDate = Date.now();
+		     //alert(new Date(d.date).getTime() +" " +messageDate);
+		     var color = new Date(d.date).getTime() > (messageDate - (1*24*60*60*1000)) ? "yellow" : "white";
+
+	             //alert(messageDate - (1*24*60*60*1000));
+		     //alert(messageDate);
+		     return color;
+		    });
 		    entered.append("i").attr("class", "picture")
                         .html(function (d) { return "<img src=https://mmo-inside.de/moodle/user/pix.php/"+d.user_id +"/f1.jpg width=20 height=20>"; });
                     //add text
@@ -110,10 +127,10 @@ function callmessage(d) {
                         .html(function (d) { return d.name; });
                     //update caret direction
                     nodeEls.select("i").attr("class", function (d) {
-                        var icon = d.children ? " fa-arrow-down"
+                        var icon = d.children ? "fa-arrow-down"
                             : d._children ? "fa-arrow-right" : "";
                         //collapseLevel(data);
-                        return "fa " + icon;
+                        return "fas " + icon;
                     });
                     //update position with transition
                     nodeEls.transition().duration(duration)

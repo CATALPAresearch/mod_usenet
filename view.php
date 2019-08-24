@@ -70,12 +70,14 @@ echo "<script language=javascript type=text/javascript src=d3.v3.min.js></script
 echo "<script language=javascript type=text/javascript src=treelist.js></script>";
 echo "<script language=javascript type=text/javascript src=tree.js></script>";
 echo "<script language=javascript type=text/javascript src=helper.js></script>";
+//echo "<script language=javascript type=text/javascript src=js/all.js></script>";
 echo "<script language=javascript type=text/javascript src=https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js></script>";
+echo "<link href=css/all.css rel=stylesheet>";
 
 $PAGE->requires->js_init_call('showtree',array('course'=>$cm->id));
 //$myarray = array('apple', 'orange', 'pear');
 echo $OUTPUT->header();
 
 echo "<a class='btn btn-primary' id=createbutton onclick='javascript: createButton();'>Neues Thema</a>";
-echo "<div id=contenttree><div id=tree><div class=loading><i class='fa fa-cog fa-spin fa-5x'></i>loading</div></div><div id=treeinfo></div></div>";
+echo "<div id=contenttree><div id=tree><div class=loading><i class='fas fa-cog fa-spin fa-5x'></i>loading</div></div><div id=treeinfo></div></div>";
 echo $OUTPUT->footer();

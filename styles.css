@@ -1,3 +1,25 @@
+@media only screen and (max-width: 1201px) {
+    div#tree{
+	width: 100%;
+	margin-bottom:30px;
+
+    }	
+    div#contenttree {
+		width: 100%;
+		margin-right:0px;
+    }
+}
+@media only screen and (min-width: 1200px) {
+    div#tree{
+        width: 700px;
+
+    }
+    div#contenttree {
+	width: 100%;
+	maring-right:30px;
+    }
+}
+
 .fa-tachometer:before {
   content: "\f0e4";
 }
@@ -20,7 +42,6 @@
       overflow: auto;
       position: relative;
       float:left;
-      width: 700px;
       height: 300px;
       align-items:stretch;
 
@@ -33,6 +54,8 @@
     position:relative;
     /* display: flex; */
     align-items:stretch;
+
+
   }
   div#messagehead{
     height: auto;
@@ -53,7 +76,7 @@ height:100%;
     top: 40px;
     height: 230px;
 
-    width:95%;   
+    width:100%;   
     margin-right: 10px;
     resize: none;
     /* display: flex; */
@@ -68,11 +91,10 @@ height:100%;
      bottom: auto;
      height: 300px;
      /*margin-left: 30%;*/
-     margin-right: 30px;
-     min-width: 700px;
+     min-width: 300px;
    /* padding: 5px 0; */
    /* z-index: -1; */
-border: 2px solid black;
+border: 2px solid #00acdf;
   /* clear: both;
   content: "";
   display: table; */
