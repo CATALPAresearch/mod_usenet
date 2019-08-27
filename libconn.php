@@ -1,12 +1,11 @@
 <?php
 defined('MOODLE_INTERNAL')|| die;
-
 	function summary($journal){
 	global $CFG;
         $localconfig = get_config('newsmod');
         $nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword)
 	or die("kann nicht verbinden: " . imap_last_error());
-$MC = imap_check($nntp);
+	$MC = imap_check($nntp);
 $result = imap_fetch_overview($nntp,"1:{$MC->Nmsgs}",0);
 file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
 //$string_data = file_get_contents("filecontents.txt");
@@ -20,7 +19,6 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 //}
 
 	$email = imap_search($nntp, 'SINCE "'.Date("d M Y", strtotime("-24 hours", time())).'"' ,SE_UID);
-	print_r( Date('j M Y'));
 	$tmp =@imap_fetch_overview($nntp, implode(',', $email),FT_UID);
 	return($tmp);
 	}
@@ -35,15 +33,25 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 	}
 
 	function sendemail($email, $content){
-	$email_user = new stdClass;
-	$email_user->email=$email;
-	$email_user->firstname=" ";
-	$email_user->lastname= " ";
-	$email_user->maildisplay = false;
-	$email_user->mailformat = 1;
-	$email_user->id=-99;
-	$subject= "Zusammenfassung des Forums";
-	$a=email_to_user($email_user, $email_user, $subject, html_to_text($content),$content);
+	global $USER;
+	$message = new \core\message\message();
+        $message->component = 'mod_newsmod'; // Name of your local plugin.
+        $message->name = 'posts'; // Name of message provider.
+        $message->userfrom = $USER;
+        $message->userto = $email;
+	$message->subject= "Zusammenfassung der Newsgroups";
+        $message->fullmessage = 'message body';
+        $message->fullmessageformat = FORMAT_PLAIN;
+        $message->fullmessagehtml = $content;
+        $message->smallmessage = '';
+        $message->notification = '1';
+        $message->contexturl = 'noreply';
+        $message->contexturlname = '';
+        $message->replyto = '';
+        //$content = array('*' => array('header' => ' test ', 'footer' => ' test ')); // Extra content for specific processor
+        $message->set_additional_content('email', $content);
+	$messageid = message_send($message);
+	//$a=email_to_user($email_user, $email_user, $subject, html_to_text($content),$content);
 
 	}
 	function getUserIdByEmail($sender){
