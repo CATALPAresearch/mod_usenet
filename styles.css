@@ -2,21 +2,31 @@
     div#tree{
 	width: 100%;
 	margin-bottom:30px;
-
+	height: 300px;
+	float:left;	
     }	
     div#contenttree {
-		width: 100%;
+		width: inherit;		
 		margin-right:0px;
+		height: 400px;
+    }
+    div#treeinfo{
+    height: 300px;
+    width:100%;
     }
 }
 @media only screen and (min-width: 1200px) {
     div#tree{
-        width: 700px;
-
+        width: 600px;
+        height: inherit;
+    }
+    div#treeinfo{
+    height: inherit;
+    width: inherit;
     }
     div#contenttree {
-	width: 100%;
-	maring-right:30px;
+	margin-right:30px;
+	height: inherit;
     }
 }
 
@@ -26,6 +36,9 @@
 
     .selected{
         color: orange;
+    }
+    .seltrue{
+    	color: orange;
     }
     .node {
         position: absolute;
@@ -38,13 +51,10 @@
     border:1px solid black;
     }
     div#tree {
-      top:10;
       overflow: auto;
       position: relative;
       float:left;
-      height: 300px;
       align-items:stretch;
-
   }
   .itemsort{
 	list-style: none;
@@ -54,27 +64,25 @@
     position:relative;
     /* display: flex; */
     align-items:stretch;
-
-
   }
   div#messagehead{
     height: auto;
-    position:relative;
+    position:sticky;
     overflow: hidden;
     height: 40px;
     opacity: 1;
     /* display: flex; */
   }
-#region-main{
-display: flex;
-flex-direction: column;
-height:100%;
-}
+  #region-main{
+  display: flex;
+  flex-direction: column;
+  height:100%;
+  }
   #messagebody{
     position: static;
     overflow:auto;
     top: 40px;
-    height: 230px;
+    height: 100%;
 
     width:100%;   
     margin-right: 10px;
@@ -85,19 +93,9 @@ height:100%;
   div#treeinfo {
     position: sticky;
     overflow: auto;
-    /* float: right; */
-    /* position: -webkit-sticky; */
-     top: 10px;
-     bottom: auto;
-     height: 300px;
-     /*margin-left: 30%;*/
-     min-width: 300px;
-   /* padding: 5px 0; */
-   /* z-index: -1; */
-border: 2px solid #00acdf;
-  /* clear: both;
-  content: "";
-  display: table; */
+    bottom: auto;
+    border: 2px solid #00acdf;
+
 }
 
     .node span {

@@ -1,5 +1,5 @@
-function showtree (h,f){
-
+function showtree (h,f,g){
+//console.log(g);
 
 //$('#tree').append("<div class=loading><i class='fa fa-cog fa-spin fa-5x'></i>loading</div>")
             var id = 0;
@@ -55,10 +55,16 @@ function showtree (h,f){
 function callmessage(d) {
                 if (d.messageid !=undefined && d.messageid != '0'){
                 //var oReq = new XMLHttpRequest();
-                $( "#treeinfo" ).load( "messageid.php?id="+f+"&msgnr=" + d.messageid +"&sender="+ d.sender,function(responseTxt, statusTxt, xhr){if (statusTxt == "error"){
+                $( "#treeinfo" ).load( "messageid.php?id="+f+"&msgnr=" + d.messageid+"&sender="+d.sender,function(responseTxt, statusTxt, xhr){if (statusTxt == "error"){
+		alert(d.messageid);
 		location.reload();
 		};})
+                            //d3.selectAll(".selected").classed("selected", false);
+			    
+                            d3.select(this.node).classed("selected", true);
+
               } else{
+		
 		    flatten(nodeEls);
               };
 }
@@ -76,30 +82,42 @@ function callmessage(d) {
 
 
                     var nodeEls = ul.selectAll("li.node").data(nodes, function (d) {
-
                         d.id = d.id || ++id;
-
                         return d.id;
                     });
 
                     //entered nodes
-                    var entered = nodeEls.enter().append("li").classed("node", true)
+                    var entered = nodeEls.enter().append("li").classed("node test", true)
                         .style("top", parent.y +"px")
                         .style("opacity", 0)
                         .style("height", tree.nodeHeight() + "px")
                         .on("click", function (d) {
-                          callmessage(d);
+                            d3.selectAll(".seltrue").classed("seltrue", false);
+                            d3.select(this).classed("seltrue", true);
+			    callmessage(d);
                             render(data, d);
                         })
                         .on("mouseover", function (d) {
+			    list = d3.select("#li");
+			    setInfoParent(this);
+			    console.log(this);
                             d3.select(this).classed("selected", true);
                         })
                         .on("mouseout", function (d) {
                             d3.selectAll(".selected").classed("selected", false);
                         });
+		    function setInfoParent(d){
+ 			d.mainBranch="Yes";
+			//d3.select().classed("selected", true);
+  			if(d.parent){
+    			setInfoParent(d.parent);//call recursively itself till no parent.
+  			}
+//			alert(testnumer++);
 
+  			//console.log(d);
+			}
                     //add arrows if it is a folder
-                    entered.append("i").attr("class", function (d) {
+                  entered.append("i").attr("class", function (d) {
                         var icon = d.children ? "fa-arrow-down"
                             : d._children ? "fa-arrow-right" : "";
                         return "fas fa " + icon;
@@ -113,11 +131,7 @@ function callmessage(d) {
 		    .style("background", function(d){
 		     
 		     var messageDate = Date.now();
-		     //alert(new Date(d.date).getTime() +" " +messageDate);
 		     var color = new Date(d.date).getTime() > (messageDate - (1*24*60*60*1000)) ? "yellow" : "white";
-
-	             //alert(messageDate - (1*24*60*60*1000));
-		     //alert(messageDate);
 		     return color;
 		    });
 		    entered.append("i").attr("class", "picture")
@@ -142,7 +156,15 @@ function callmessage(d) {
                     if(!data.start){
 //		    alert("data");
 		    var flatdata = data;
+		    if(!g){
 		    flatten(nodeEls);
+		    }else {
+                $( "#treeinfo" ).load( "messageid.php?id="+f+"&msgnr=" + g,
+		function(responseTxt, statusTxt, xhr){if (statusTxt == "error"){
+
+		location.reload();
+		};})
+		 }
                     nodeEls.each(function(d){
                      // if (d.children && d.depth > 0) {
                      //   d._children = d.children;
