@@ -55,7 +55,7 @@ class send_summary extends \core\task\scheduled_task {
 		}
 		$summarytext = $summarytext . "</html>";
 		echo "\r\n";
-		sendemail($record->email, $summarytext);
+		sendemail($record->id, $summarytext);
 }
 		fclose($fp);
       }

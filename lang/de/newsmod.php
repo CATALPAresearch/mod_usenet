@@ -37,3 +37,4 @@ $string['username'] = 'Loginname Newsserver';
 $string['userpassword'] = 'Loginpassword Newsserver';
 $string['newsgroup'] = 'Adresse des Newsserver';
 $string['email_send'] = 'Newsgroup Scheduled Summary';
+$string['messageprovider:submission'] = 'Benachrichtigen über Neue Beiträge';
