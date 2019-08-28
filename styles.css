@@ -1,10 +1,11 @@
-@media only screen and (max-width: 1201px) {
+ @media only screen and (max-width: 1201px) {
     div#tree{
 	width: 100%;
 	margin-bottom:30px;
 	height: 300px;
 	float:left;	
     }	
+
     div#contenttree {
 		width: inherit;		
 		margin-right:0px;
@@ -15,16 +16,19 @@
     width:100%;
     }
 }
-@media only screen and (min-width: 1200px) {
+    @media only screen and (min-width: 1200px) {
     div#tree{
-        width: 600px;
+        width: 450px;
         height: inherit;
     }
     div#treeinfo{
     height: inherit;
     width: inherit;
+    min-width: 450px;
+
     }
     div#contenttree {
+
 	margin-right:30px;
 	height: inherit;
     }
@@ -33,6 +37,7 @@
 .fa-tachometer:before {
   content: "\f0e4";
 }
+
 
     .selected{
         color: orange;
@@ -73,8 +78,8 @@
     opacity: 1;
     /* display: flex; */
   }
-  #region-main{
-  display: flex;
+ #region-main{
+  /*display: flex;*/
   flex-direction: column;
   height:100%;
   }
@@ -94,7 +99,7 @@
     position: sticky;
     overflow: auto;
     bottom: auto;
-    border: 2px solid #00acdf;
+    border: 1px solid #00acdf;
 
 }
 
@@ -105,5 +110,7 @@
     .node .caret {
         /* font-size: 10px; */
     }
+
 .m-t-2.m-b-1 {display: none;}
 .nav.navbar-nav.d-md-none {display: none;}
+

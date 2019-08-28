@@ -27,7 +27,7 @@ require_once(__DIR__.'/lib.php');
 
 // Course_module ID, or
 $id = optional_param('id', 0, PARAM_INT);
-
+$msgnr = optional_param('msgnr', 0, PARAM_INT);
 // ... module instance id.
 $n  = optional_param('n', 0, PARAM_INT);
 
@@ -66,18 +66,40 @@ $PAGE->set_context($modulecontext);
 //$PAGE->requires->js('/mod/newsmod/treelist.js');
 //$PAGE->requires->js('/mod/newsmod/tree.js');
 //$PAGE->requires->js('/mod/newsmod/helper.js');
-echo "<script language=javascript type=text/javascript src=d3.v3.min.js></script>";
-echo "<script language=javascript type=text/javascript src=treelist.js></script>";
-echo "<script language=javascript type=text/javascript src=tree.js></script>";
-echo "<script language=javascript type=text/javascript src=helper.js></script>";
-//echo "<script language=javascript type=text/javascript src=js/all.js></script>";
 echo "<script language=javascript type=text/javascript src=https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js></script>";
+
+echo '<script language="javascript" type="text/javascript" src="d3.v3.min.js"></script>';
+echo '<script language="javascript" type="text/javascript" src="treelist.js"></script>';
+echo '<script language="javascript" type="text/javascript" src="tree.js"></script>';
+echo '<script language="javascript" type="text/javascript" src="helper.js"></script>';
 echo "<link href=css/all.css rel=stylesheet>";
 
-$PAGE->requires->js_init_call('showtree',array('course'=>$cm->id));
+$PAGE->requires->js_init_call('showtree',array('course'=>$cm->id, 'msgnr'=>$msgnr));
 //$myarray = array('apple', 'orange', 'pear');
 echo $OUTPUT->header();
 
-echo "<a class='btn btn-primary' id=createbutton onclick='javascript: createButton();'>Neues Thema</a>";
+echo' 
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <form class="form-inline float-sm-right" action="" method="post">
+        	<button class="btn btn-default" type="button" id="createbutton" onclick="javascript: createButton();">Neues Thema</button>
+                <input type="text" class="form-control" placeholder="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+';
+//<div class='btn-toolbar mb-3' role='toolbar' aria-label='Controlbar for Plugins'>";
+//echo "<div class='btn-group' role='group' aria-label='First Group'>";
+
+
 echo "<div id=contenttree><div id=tree><div class=loading><i class='fas fa-cog fa-spin fa-5x'></i>loading</div></div><div id=treeinfo></div></div>";
 echo $OUTPUT->footer();
+

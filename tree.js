@@ -1,6 +1,8 @@
 function showtree (h,f,g){
 //console.log(g);
-
+$("form").on('submit',function(e){
+    search(e);
+});
 //$('#tree').append("<div class=loading><i class='fa fa-cog fa-spin fa-5x'></i>loading</div>")
             var id = 0;
 
@@ -94,13 +96,14 @@ function callmessage(d) {
                         .on("click", function (d) {
                             d3.selectAll(".seltrue").classed("seltrue", false);
                             d3.select(this).classed("seltrue", true);
+			    console.log(d3.select(this).select(".font-weight-bold").classed("font-weight-bold", false));
 			    callmessage(d);
                             render(data, d);
                         })
                         .on("mouseover", function (d) {
 			    list = d3.select("#li");
 			    setInfoParent(this);
-			    console.log(this);
+			    //console.log(this);
                             d3.select(this).classed("selected", true);
                         })
                         .on("mouseout", function (d) {
@@ -120,7 +123,7 @@ function callmessage(d) {
                   entered.append("i").attr("class", function (d) {
                         var icon = d.children ? "fa-arrow-down"
                             : d._children ? "fa-arrow-right" : "";
-                        return "fas fa " + icon;
+                        return "fas fa-xs " + icon;
                     }).on("click",function (d){toggleChildren(d);});
                     //add icons for folder for file
                     entered.append("i").attr("class", function (d) {
@@ -129,22 +132,30 @@ function callmessage(d) {
                         return "far  " + icon;
                     })
 		    .style("background", function(d){
-		     
+
 		     var messageDate = Date.now();
 		     var color = new Date(d.date).getTime() > (messageDate - (1*24*60*60*1000)) ? "yellow" : "white";
 		     return color;
 		    });
+		    
+		    entered.append("i").attr("class", "picture")
+                        .html(function (d) { return "<img src=https://mmo-inside.de/moodle/user/pix.php/"+d.user_id +"/f1.jpg width=20 height=20>"; });
 		    entered.append("i").attr("class", "picture")
                         .html(function (d) { return "<img src=https://mmo-inside.de/moodle/user/pix.php/"+d.user_id +"/f1.jpg width=20 height=20>"; });
                     //add text
-                    entered.append("span").attr("class", "filename")
-                        .html(function (d) { return d.name; });
+
+                    entered.append("span").attr("class", "filename font-weight-bold")
+        		.attr("font-weight", "900")
+			.text(function (d) { //return d.name;
+		    if (d.name.length <= "50") return d.name;
+    		    return d.name.substr(0, "50").concat("...");
+		     });
                     //update caret direction
                     nodeEls.select("i").attr("class", function (d) {
                         var icon = d.children ? "fa-arrow-down"
                             : d._children ? "fa-arrow-right" : "";
                         //collapseLevel(data);
-                        return "fas " + icon;
+                        return "fas fa-xs " + icon;
                     });
                     //update position with transition
                     nodeEls.transition().duration(duration)

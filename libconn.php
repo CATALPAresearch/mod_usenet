@@ -180,4 +180,9 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 			return;
 	}
 
+	function msgSearch($nntp,$param){
+	$some   = imap_search($nntp, 'TEXT "'. $param . '"', SE_UID);
+	return $some;
+	}
+
 ?>
