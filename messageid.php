@@ -6,7 +6,7 @@ require_once("../../config.php");
 
 $id = required_param('id', PARAM_INT);
 $msgnr = required_param('msgnr',PARAM_INT);
-$sender = required_param('sender',PARAM_TEXT);
+$sender = optional_param('sender',0,PARAM_TEXT);
 if (!$cm = get_coursemodule_from_id('newsmod', $id)) {
     print_error("Course Module ID was incorrect");
 }
@@ -48,7 +48,8 @@ if (!$user = $DB->get_record('user', ['email' => $sender])) {
     $user->firstname = $sender;
     $user->lastname = "";
 }
-
+require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
+print_r(markMessageRead($msgnr));
 echo "<div id=messagehead messageid=".htmlspecialchars($header->message_id).">";
 echo "<a href=" .new moodle_url('/user/profile.php?id='.$user->id)  .">";
 echo "<img src=" .new moodle_url('/user/pix.php/'.$user->id.'/f1.jpg') ."width=35 height=35></img>";

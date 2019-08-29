@@ -119,10 +119,13 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 			$tempheader->sender[0]->host= 'nicht vorhanden';
 			$tempheader->date= '0';
 			}
+		        $readstatus = loadMessageStatus($val);
 			//$jsontree = $jsontree . '"name":"'. $tempheader->subject .'",';
 				$jsontree = $jsontree . '"name":"'.addcslashes(str_replace('\\','', $tempheader->subject),"\"").'",';
 				$jsontree = $jsontree . '"messageid":"'.$val.'",';
 				$jsontree = $jsontree . '"sender":"'.$tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host.'",';
+				$jsontree = $jsontree . '"messagestatus":"'. $readstatus->messageid .'",';
+				$jsontree = $jsontree . '"markedstatus":"'. $readstatus->marked .'",';
 				$jsontree = $jsontree . '"user_id":"'.getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host).'",';
 				$jsontree = $jsontree . '"date":"'.$tempheader->date.'"';
 				if($threads[$tree[0] . ".next"]!=0){
@@ -163,6 +166,35 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 		//print_r($header->tempheader);
 
 		return $header;
+	}
+
+	function markMessageRead($msgnr){
+	global $DB,$USER,$id;
+	if($messageid = $DB->record_exists('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))){
+	
+	}else{
+	$moduleinstanl = new stdClass();
+	//$moduleinstanl->id = "3";
+	$moduleinstanl->userid     = $USER->id;
+	$moduleinstanl->messageid  = $msgnr;
+	$moduleinstanl->courseid   = $id;
+	$moduleinstanl->readstatus = true;
+	$moduleinstanl->marked     = false;
+	$DB->insert_record('messagestatus', $moduleinstanl);
+}
+
+	}
+	function loadMessageStatus($msgnr){
+	global $DB,$USER;
+	if($messageid = $DB->record_exists('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))){
+		$moduleinstan = $DB->get_record('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr), '*', IGNORE_MISSING);
+	}else{
+	$moduleinstan = new stdClass();	
+	$moduleinstan->readstatus = false;
+	$moduleinstan->marked = false;
+	}
+	
+	return  $moduleinstan;
 	}
 
 	function loadCachedData ($journal){

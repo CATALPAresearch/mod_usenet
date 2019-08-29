@@ -1,5 +1,4 @@
 function showtree (h,f,g){
-//console.log(g);
 $("form").on('submit',function(e){
     search(e);
 });
@@ -17,7 +16,6 @@ $("form").on('submit',function(e){
 	              $('#tree').empty();
 
 		};})
-
                 //$('#tree').append('<p>Keine Daten vorhanden</p>');
               return;
               }
@@ -62,11 +60,9 @@ function callmessage(d) {
 		location.reload();
 		};})
                             //d3.selectAll(".selected").classed("selected", false);
-			    
                             d3.select(this.node).classed("selected", true);
 
               } else{
-		
 		    flatten(nodeEls);
               };
 }
@@ -138,13 +134,34 @@ function callmessage(d) {
 		     return color;
 		    });
 		    
-		    entered.append("i").attr("class", "picture")
-                        .html(function (d) { return "<img src=https://mmo-inside.de/moodle/user/pix.php/"+d.user_id +"/f1.jpg width=20 height=20>"; });
+		    entered.append("i").attr("class", function(d){
+			var fontread = "";
+			if (d.markedstatus == true ) { fontread ="fas fa-star starmarked";
+			}else{
+			 fontread = "far fa-star";
+			}
+			console.log(d.markedstatus);
+			return fontread;}).on("click",function (d){
+			console.log(d3.select(this));
+                        stars = d3.select(this);
+			stars.classed("far", !stars.classed("far"));
+			stars.classed("fas", !stars.classed("fas"));
+			stars.classed("starmarked", !stars.classed("starmarked"));
+			var blbbla =$.get( "search.php?id="+f+"&msgnr="+d.messageid +"&marked="+d.markedstatus, function() {alert( "success" );});
+                        //$( "#treeinfo" ).load( "messageid.php?id="+f+"&msgnr=" + d.messageid+"&sender="+d.sender,function(responseTxt, statusTxt, xhr){if (statusTxt == "error"){
+			//d3.select(this).classed("fas starmarked", d3.select(this).classed("fas starmarked"));
+			});
+
+                        //.html(function (d) { return "<img src=https://mmo-inside.de/moodle/user/pix.php/"+d.user_id +"/f1.jpg width=20 height=20>"; });
+		    
 		    entered.append("i").attr("class", "picture")
                         .html(function (d) { return "<img src=https://mmo-inside.de/moodle/user/pix.php/"+d.user_id +"/f1.jpg width=20 height=20>"; });
                     //add text
 
-                    entered.append("span").attr("class", "filename font-weight-bold")
+                    entered.append("span").attr("class", function(d) {
+			if (d.messagestatus == false ) { var fontread ="font-weight-bold";}
+			return "filename " + fontread;
+			})
         		.attr("font-weight", "900")
 			.text(function (d) { //return d.name;
 		    if (d.name.length <= "50") return d.name;

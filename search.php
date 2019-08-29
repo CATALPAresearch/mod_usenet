@@ -6,6 +6,8 @@ require_once("../../config.php");
 
 $id = required_param('id', PARAM_INT);
 $searchparam = optional_param('searchparam',0,PARAM_TEXT);
+$msgnr = optional_param('msgnr', 0, PARAM_INT);
+$markedstatus = optional_param('marked', 0, PARAM_INT);
 $sender = optional_param('sender',0,PARAM_TEXT);
 if (!$cm = get_coursemodule_from_id('newsmod', $id)) {
     print_error("Course Module ID was incorrect");
@@ -49,15 +51,45 @@ if (!$user = $DB->get_record('user', ['email' => $sender])) {
     $user->lastname = "";
 }
 require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
-$searchresult = msgSearch($nntp, $searchparam);
-foreach($searchresult as $msg){
+if(!$searchresult = msgSearch($nntp, $searchparam)){
+  echo "Keine Nachrichten gefunden";
+}
+if($messageid = $DB->record_exists('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))){
+//$testmodule=$DB->get_record('messagestatus', array('id' => '2'), '*', MUST_EXIST);
+$moduleinstan=$DB->get_record('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr), '*', IGNORE_MISSING);
+switch($moduleinstan->marked){
+	case 0:
+	$moduleinstan->marked = true;
+	break;
+	case 1:
+	$moduleinstan->marked = false;
+	break;
+}
+$errortest=$DB->update_record('messagestatus', $moduleinstan, $bulk=true);
+//$moduleinstan->readstatus = true;
+print_r($errortest. "\r\n<BR>");
+//if
+//print_r($moduleinstan);
+//print_r($testmodule);
+}else{
+//$moduleinstanl = new stdClass();
+//$moduleinstanl->id = "3";
+//$moduleinstanl->userid     = $USER->id;
+//$moduleinstanl->messageid  = $msgnr;
+//$moduleinstanl->courseid   = $id;
+//$moduleinstanl->readstatus = false;
+//$moduleinstanl->marked     = true;
+//$DB->insert_record('messagestatus', $moduleinstanl);
+}
 
-print_r($msg ."\r\n");
+foreach($searchresult as $msg){
+//print_r($moduleinstance);
+//print_r($msg ."\r\n");
 
 }
 echo "<div id=messagehead messageid=".htmlspecialchars($header->message_id).">";
 echo "<a href=" .new moodle_url('/user/profile.php?id='.$user->id)  .">";
-
+//print_r($markedstatus);
 //echo $searchparam;
 echo "<img src=" .new moodle_url('/user/pix.php/'.$user->id.'/f1.jpg') ."width=35 height=35></img>";
 echo $user->firstname." ".$user->lastname." </a>";

@@ -38,7 +38,9 @@
   content: "\f0e4";
 }
 
-
+    .starmarked{
+	color: gold;
+    }
     .selected{
         color: orange;
     }
