@@ -35,6 +35,6 @@ $string['modulename_help'] = '<p>Die Aktivität \'Journal\' ermöglicht es, von 
 $string['pluginadministration'] = 'Newsgroup module administration';
 $string['username'] = 'Loginname Newsserver';
 $string['userpassword'] = 'Loginpassword Newsserver';
-$string['newsgroup'] = 'Adresse des Newsserver';
+$string['newsgroup'] = 'Addresse der Newsgroup';
 $string['email_send'] = 'Newsgroup Scheduled Summary';
 $string['messageprovider:submission'] = 'Benachrichtigen über Neue Beiträge';
