@@ -67,10 +67,12 @@ $PAGE->set_context($modulecontext);
 //$PAGE->requires->js('/mod/newsmod/tree.js');
 //$PAGE->requires->js('/mod/newsmod/helper.js');
 echo "<script language=javascript type=text/javascript src=https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js></script>";
+echo "<script language=javascript type=text/javascript src=jquery-dateformat.js></script>";
+echo '<script language="javascript" type="text/javascript" src="jdenticon-2.2.0.js"></script>';
 
 echo '<script language="javascript" type="text/javascript" src="d3.v3.min.js"></script>';
 echo '<script language="javascript" type="text/javascript" src="treelist.js"></script>';
-echo '<script language="javascript" type="text/javascript" src="tree.js"></script>';
+echo '<script language="javascript" type="text/javascript" src="tree1.js"></script>';
 echo '<script language="javascript" type="text/javascript" src="helper.js"></script>';
 echo "<link href=css/all.css rel=stylesheet>";
 
@@ -79,7 +81,7 @@ $PAGE->requires->js_init_call('showtree',array('course'=>$cm->id, 'msgnr'=>$msgn
 echo $OUTPUT->header();
 
 echo' 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-12">
             <form class="form-inline float-sm-right" action="" method="post">
@@ -90,7 +92,18 @@ echo'
         </div>
     </div>
 </div>
-
+<div class="container-fluid pll ">
+     <div class="pll">
+	 <div class="col-12 pll" >
+		<div class="pll col-xl-6 col-sm-12" id="tree" style="overflow-y:scroll; height:500px; margin-bottom:30px" >
+			<div class=loading><i class="fas fa-cog fa-spin fa-5x"></i>loading
+			</div>
+                </div>
+		<div class="col-xl-6 col-sm-12 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
+		</div>
+	</div>
+    </div>
+</div>
 
 
 
@@ -100,6 +113,6 @@ echo'
 //echo "<div class='btn-group' role='group' aria-label='First Group'>";
 
 
-echo "<div id=contenttree><div id=tree><div class=loading><i class='fas fa-cog fa-spin fa-5x'></i>loading</div></div><div id=treeinfo></div></div>";
+//echo "<div id=contenttree><div id=tree1 class='col-6'></div><div id=treeinfo></div></div>";
 echo $OUTPUT->footer();
 

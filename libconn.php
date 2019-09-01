@@ -18,9 +18,14 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 //echo mb_detect_encoding($overview->subject)."\r\n";
 //}
 
-	$email = imap_search($nntp, 'SINCE "'.Date("d M Y", strtotime("-24 hours", time())).'"' ,SE_UID);
+	$email = imap_search($nntp, 'SINCE "'.Date("d M Y", strtotime("-40 hours", time())).'"' ,SE_UID);
 	$tmp =@imap_fetch_overview($nntp, implode(',', $email),FT_UID);
 	return($tmp);
+	}
+
+	function buildSearchSting(){
+
+
 	}
 
 	function buildCache($journal){

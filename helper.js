@@ -2,18 +2,16 @@ function search(e){
   e.preventDefault();
   let searchParams = new URLSearchParams(window.location.search);
   let param = searchParams.get('id');
-  //$.post("search.php?id="+param+"&msgnr=", { userInput : $(".form-control").val() }, function(data){ alert(data);});
   uri = encodeURI("search.php?id="+param+"&searchparam="+ $(".form-control").val());
-  $( "#treeinfo" ).load( uri ,function(responseTxt, statusTxt, xhr){if (statusTxt == "OK"){
+   $( "#treeinfo" ).load( uri ,function(responseTxt, statusTxt, xhr){if (statusTxt == "OK"){
                                 $('#treeinfo').append('<p>'+responseTxt+'</p>');
-                      $('#tree').empty();
-
-                };})
+	};})
 
 
 }
+
 function answerButton(){
-  var z =$("#answerbutton").text();
+   var z =$("#answerbutton").text();
   if (z.indexOf("Antworten")>=0){
     var x = $("#messagebody").text();
     $("#messagebody").replaceWith("<div class='form-group shadow-textarea'><textarea class='form-control' id=messagebody cols=90 rows=17/></div>");
@@ -32,7 +30,11 @@ for(var i=0;i<f.length;i++){
 let searchParams = new URLSearchParams(window.location.search);
 let param = searchParams.get('id');
 $.post("posttest.php?id="+param+"&msgnr=" +$('#messagehead').attr('messageid'), { userInput : text, subject : subject }, function(data){ alert(data);});
+
+
     alert("nachricht gesendet");
+
+
     location.reload(false);
   }
 
@@ -54,8 +56,9 @@ function sendButton(){
     var text = $('#messagebody').val();
     $.post("posttest.php?id="+param+"&msgnr=new", { userInput : text, subject : subject }, function(data,status){ switch(status){
     case "success":
-	alert("Nachricht versandt ");
-    location.reload(false);
+$('#treeinfo').empty();
+$('#treeinfo').append("<div class='alert alert-success' role='alert'><h4 class='alert-heading'>Nachricht Versand</h4><p></p><hr><p class='mb-0'><p class='font-weight-bold'></p></p></div>");
+
 	break;
     case "error":
 	alert(data);
@@ -64,4 +67,3 @@ function sendButton(){
 	break;
     };});
 }
-

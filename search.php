@@ -91,9 +91,7 @@ $DB->insert_record('messagestatus', $moduleinstanl);
 }
 echo "<div class='col-xl-12' style='overflow-y: auto;height: 500;'><div>Ihre Suche lieferte ". count($messages) ." Treffer</div><hr><ul>";
 
-//print_r($messages);
 foreach($messages as $msg){
-//print_r($msg);
 $tempheader->sender=imap_rfc822_parse_adrlist($msg->from,'');
 echo '<a class="searcher" href=' . new moodle_url("/mod/newsmod/messageid.php?id=".$id."&msgnr=" .$msg->uid) .'>';
 echo '<li class="node">';
@@ -105,26 +103,14 @@ echo '
 <div>
 	'.htmlspecialchars($msg->subject).'
 </div>
-
 <div>
 	'.$msg->from .'
 </div>
 <div class="timelist" timestamp="'.$msg->date.'">
-
 </div>
 </div>
-
-</div>
-<div>
-
 </div>';
 echo '</li></a>';
-
-//echo '<div id="messagehead messageid="'.htmlspecialchars($header->message_id).'/>';
-
-//echo '</li>';
-//print_r($messages);
-
 }
 echo '</ul>';
 
