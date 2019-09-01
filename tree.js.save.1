@@ -32,7 +32,7 @@ $("form").on('submit',function(e){
                     .nodeHeight(25);
 //                var svg = ul
 
-           var ul = d3.select("#tree").append("ul").classed("treelist col-sm-12 row container no-gutters", "true");
+           var ul = d3.select("#tree").append("ul").classed("treelist col-sm-12", "true");
 
                 function render(data, parent) {
                     var nodes = tree.nodes(data),
@@ -96,7 +96,7 @@ $("form").on('submit',function(e){
 
 
                     //entered nodes
-                    var entered = nodeEls.enter().append("li").classed("node ", true)
+                    var entered = nodeEls.enter().append("li").classed("node c", true)
                         .style("top", parent.y +"px")
                         .style("opacity", 0)
                         .on("click", function (d) {

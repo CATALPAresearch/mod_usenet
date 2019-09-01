@@ -42,7 +42,8 @@
                 //y increases every time a child is added to the list
                 var x = 0, y = 0;
                 visit(function (n, index, parent) {
-                    x = parent ? parent.x + childIndent : 0;
+//                    x = parent ? parent.x + childIndent : 0;
+                    x = parent ? parent.x : 0;
                     y = y + nodeHeight;
                     n.y = y;
                     n.x = x;

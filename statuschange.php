@@ -54,6 +54,7 @@ require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
 if(!$searchresult = msgSearch($nntp, $searchparam)){
   echo "Keine Nachrichten gefunden";
 }
+
 $messages = imap_fetch_overview($nntp, implode(',',array_slice($searchresult,0)), FT_UID);
 if($messageid = $DB->record_exists('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))){
 //$testmodule=$DB->get_record('messagestatus', array('id' => '2'), '*', MUST_EXIST);
@@ -82,56 +83,21 @@ $moduleinstanl->readstatus = false;
 $moduleinstanl->marked     = true;
 $DB->insert_record('messagestatus', $moduleinstanl);
 }
-echo "<div class='col-xl-12' style='overflow-y: auto;height: 500;'><div>Ihre Suche hatte folgendes Ergebnis</div><hr><ul>";
+echo "<div>Ihre Suche hatte folgendes Ergebnis</div><ul>";
 
-//print_r($messages);
+
 foreach($messages as $msg){
 //print_r($msg);
-$tempheader->sender=imap_rfc822_parse_adrlist($msg->from,'');
-echo '<a href=' . new moodle_url("/user/messageid.php?id=" .$msg->uid) .'>';
-echo '<li class="node">';
-echo '
-<div class="col-xl-12">
-<div class="col-xl-3">
-	<svg width="100" height="100" data-jdenticon-value="'.$tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host.'"></div>
-<div>
-<div>
-	'.htmlspecialchars($msg->subject).'
-</div>
-
-<div>
-	'.$msg->from .'
-</div>
-<div class="timelist" timestamp="'.$msg->date.'">
-
-</div>
-</div>
-
-</div>
-<div>
-
-</div>';
-echo '</li></a>';
+//echo "<a href=" .new moodle_url('/user/messageid.php?id='".$msg->uid)  .">";
+//echo '<li class="node">'.htmlspecialchars($msg->subject);
+//echo "</li></a>";
 
 //echo '<div id="messagehead messageid="'.htmlspecialchars($header->message_id).'/>';
 
 //echo '</li>';
-//print_r($messages);
 
 }
-echo '</ul>';
-
-echo '<script>
-window.jdenticon_config = {lightness: {color: [0.40, 0.80], grayscale: [0.30, 0.90]}, saturation: { color: 0.50, grayscale: 0.00}, backColor: "#86444400"};
-$("svg").jdenticon();
-$(".timelist").each(function(idx,elem){
-//console.log(elem);
-console.log(new Date($(elem).attr("timestamp")));
-$(elem).append(
-$.format.prettyDate(new Date($(elem).attr("timestamp")).getTime(),"dd MM yyyy"));
-});
-//$.format.date(new Date(val.date).getTime(), "dd/MM/yyyy");
-</script>';
+//echo '</ul>';
 //print_r($markedstatus);
 //echo $searchparam;
 //echo "<img src=" .new moodle_url('/user/pix.php/'.$user->id.'/f1.jpg') ."width=35 height=35></img>";
