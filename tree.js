@@ -62,7 +62,7 @@ $("form").on('submit',function(e){
                 function reqListener (d) {
                   $( "#treeinfo" ).text(this.responseText);
                 }
-
+	var moodleurl="";
 	function callmessage(d) {
                 if (d.messageid !=undefined && d.messageid != '0'){
                 //var oReq = new XMLHttpRequest();
