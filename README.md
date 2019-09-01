@@ -10,7 +10,12 @@ reasons.
 After adding an instance of this plugin to your course enter correct newsgroup
 name.
 
-required moodle 3.6.2, php-imap
+required moodle 3.29, php-imap
+
+NEWSGROUP SERVER
+
+feunews.fernuni-hagen.de
+
 
 Newsgroups tested with
 1.  misc.test
@@ -24,8 +29,7 @@ time to send summary to e-mail can be changed under task options in moodle ui
 
 TODO
 * [X]  implement send button for new threads
-* [ ]  design improvements
-* [ ]  add tooltips for user and news informations
+* [X]  design improvements
 * [X]  change send summary function
 * [X]  caching implemented runs after first summary run
 * [X]  partially exported functions to own library file
