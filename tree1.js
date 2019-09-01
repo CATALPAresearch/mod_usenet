@@ -145,7 +145,7 @@ function toggle(e){
 	}
 };
 }
-xmlhttp.open("GET", "http://mmo-inside.de/moodlealtversion/moodle/mod/newsmod/phpconn5.php?id="+f, true);
+xmlhttp.open("GET", "phpconn5.php?id="+f, true);
 xmlhttp.send(); 
 }
 
