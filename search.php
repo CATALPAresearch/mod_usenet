@@ -52,7 +52,14 @@ if (!$user = $DB->get_record('user', ['email' => $sender])) {
 }
 require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
 if(!$searchresult = msgSearch($nntp, $searchparam)){
-  echo "Keine Nachrichten gefunden";
+echo '
+<div class="alert alert-success" role="alert">
+  <h4 class="alert-heading">Kein Glück</h4>
+  <p>Ihr Suchanfrage lieferte leider kein Ergebnis zurück</p>
+  <hr>
+  <p class="mb-0">Ihr letzter Suchbegriff <p class="font-weight-bold">'.$searchparam.'</p></p>
+</div>';
+return;
 }
 $messages = imap_fetch_overview($nntp, implode(',',array_slice($searchresult,0)), FT_UID);
 if($messageid = $DB->record_exists('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))){
@@ -82,13 +89,13 @@ $moduleinstanl->readstatus = false;
 $moduleinstanl->marked     = true;
 $DB->insert_record('messagestatus', $moduleinstanl);
 }
-echo "<div class='col-xl-12' style='overflow-y: auto;height: 500;'><div>Ihre Suche hatte folgendes Ergebnis</div><hr><ul>";
+echo "<div class='col-xl-12' style='overflow-y: auto;height: 500;'><div>Ihre Suche lieferte ". count($messages) ." Treffer</div><hr><ul>";
 
 //print_r($messages);
 foreach($messages as $msg){
 //print_r($msg);
 $tempheader->sender=imap_rfc822_parse_adrlist($msg->from,'');
-echo '<a href=' . new moodle_url("/user/messageid.php?id=" .$msg->uid) .'>';
+echo '<a class="searcher" href=' . new moodle_url("/mod/newsmod/messageid.php?id=".$id."&msgnr=" .$msg->uid) .'>';
 echo '<li class="node">';
 echo '
 <div class="col-xl-12">
@@ -125,12 +132,14 @@ echo '<script>
 window.jdenticon_config = {lightness: {color: [0.40, 0.80], grayscale: [0.30, 0.90]}, saturation: { color: 0.50, grayscale: 0.00}, backColor: "#86444400"};
 $("svg").jdenticon();
 $(".timelist").each(function(idx,elem){
-//console.log(elem);
-console.log(new Date($(elem).attr("timestamp")));
 $(elem).append(
 $.format.prettyDate(new Date($(elem).attr("timestamp")).getTime(),"dd MM yyyy"));
 });
-//$.format.date(new Date(val.date).getTime(), "dd/MM/yyyy");
+$(".searcher").click(function(event){event.preventDefault(); $("#treeinfo").load($(this).attr("href"))});
+window.addEventListener("beforeunload", function (e) {
+  e.preventDefault();
+  e.returnValue = "";
+});
 </script>';
 //print_r($markedstatus);
 //echo $searchparam;

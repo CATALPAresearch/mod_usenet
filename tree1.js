@@ -134,7 +134,11 @@ $('.message').on("click", function(d){
 	$(this).parent().parent().parent().removeClass("font-weight-bold");
         $( "#treeinfo" ).load( "messageid.php?id="+f+"&msgnr=" +$(this).parent().parent().parent().attr('messageid'),function(responseTxt, statusTxt, xhr){
 	if (statusTxt == "error"){$('#treeinfo').append("$statusTxt")}
-	if (statusTxt == "success"){$("#messagehead").get(0).scrollIntoView();}
+	if (statusTxt == "success"){
+	if($('.loginerrors').length>0){
+		window.location.reload;
+	}
+	$("#messagehead").get(0).scrollIntoView();}
 	})
 
 })
