@@ -30,6 +30,6 @@ if ($ADMIN->fulltree) {
    // https://docs.moodle.org/dev/Admin_settings
    $settings->add(new admin_setting_configtext('newsmod/newsgroupserver', get_string('newsgroup', 'newsmod'), get_string('newsgroup', 'newsmod'), "feunews.fernuni-hagen.de"));
    $settings->add(new admin_setting_configtext('newsmod/newsgroupusername', get_string('username', 'newsmod'), get_string('username', 'newsmod'), "username q*******"));
-   $settings->add(new admin_setting_configpasswordunmask('newsmod/newsgrouppassword', get_string('userpassword', 'newsmod'), get_string('userpassword', 'newsmod'), "feu.test"));
+   $settings->add(new admin_setting_configpasswordunmask('newsmod/newsgrouppassword', get_string('userpassword', 'newsmod'), get_string('userpassword', 'newsmod'), ""));
 
 }
