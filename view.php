@@ -69,10 +69,7 @@ $PAGE->set_context($modulecontext);
 echo "<script language=javascript type=text/javascript src=https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js></script>";
 echo "<script language=javascript type=text/javascript src=jquery-dateformat.js></script>";
 echo '<script language="javascript" type="text/javascript" src="jdenticon-2.2.0.js"></script>';
-
-echo '<script language="javascript" type="text/javascript" src="d3.v3.min.js"></script>';
-echo '<script language="javascript" type="text/javascript" src="treelist.js"></script>';
-echo '<script language="javascript" type="text/javascript" src="tree1.js"></script>';
+echo '<script language="javascript" type="text/javascript" src="tree.js"></script>';
 echo '<script language="javascript" type="text/javascript" src="helper.js"></script>';
 echo "<link href=css/all.css rel=stylesheet>";
 
