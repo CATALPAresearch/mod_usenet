@@ -17,7 +17,8 @@ $('#tree').append('Anfrage verarbeiten<br/>');
   if (this.readyState == 4 && this.status == 200) {
     var myObj = JSON.parse(this.responseText);
 $('#tree').empty();
-$('#tree').append('<ul>');
+$('#tree').append('<ul class="treeinfo">');
+//$('#treeinfo').append('<ul class="activity">');
 
 
 $("#tree").on("click", "*" , function(event){
@@ -41,7 +42,10 @@ $("#tree").on("click", "*" , function(event){
 })
 
 moodleurl = myObj.moodleurl;
+
 buildTree(myObj, 1);
+//buildActivityLog(myObj);
+
 if(g){
         $( "#treeinfo" ).load( "messageid.php?id="+f+"&msgnr=" + g,function(responseTxt, statusTxt, xhr){
 	if (statusTxt == "error"){$('#treeinfo').append("$statusTxt")}
@@ -110,19 +114,63 @@ function buildTree(myObj, margin){
 		var timestamp = '<div  class="datetime col-sm-1 col-xl-3" style="margin-left:-'+margin+'">'+ calctime +'</div>';
 		var fontpictures ='<i style="margin-left:10" class="marked '+marked+' fa-star favorite" /><i class="toggle fas fa-xs fa-arrow-down '+childornot+'"/>';
 		var enddiv ='</div>';
-		$('ul').append(treeli + licontainer +jdenticonstring + fontpictures + enddiv +subject+ timestamp+enddiv+enddiv);
+		$('.treeinfo').append(treeli + licontainer +jdenticonstring + fontpictures + enddiv +subject+ timestamp+enddiv+enddiv);
 		buildTree(val, margin + 8);
 	});
+return;
 }
+
+function buildActivityLog(myObj){
+	jQuery.each(myObj.children, function (d, val){
+		if(val.picturestatus > '0'){
+		var jdenticonstring = '<div class="control col-sm-7 col-xl-3 "><img title="Name: '+ val.personal+'\r\nE-Mail-Adresse: '+ val.sender  +'" src="' + moodleurl +'/user/pix.php/'+val.user_id+'/f1.jpg" width="20" height="20"></img></div>';
+		}else{
+		var jdenticonstring = '<img style="visibility:hidden" src="' + moodleurl +'/user/pix.php/'+val.user_id+'/f1.jpg" width="0" height="20"></img>';
+		jdenticonstring = jdenticonstring + '<div class="control col-sm-7 col-xl-3" title="Name: '+ val.personal+'\r\nE-Mail-Adresse: '+ val.sender  +'">' + jdenticon.toSvg(val.sender, 19,{lightness: { color: [0.40, 0.80], grayscale: [0.30, 0.90]}, saturation: { color: 0.50, grayscale: 0.00}, backColor: "#86444400"})+ '</div>';
+		}
+		if(!val.children){
+		var childornot = "hidden";
+		}
+		var calctime = isNaN(val.date) ? new Date(val.date).getTime(): "";
+
+		var treeli = '<li column="" class="actli  node" timestamp="'+calctime+'"messageid="'+ val.messageid +'">';
+		var licontainer ='<div class="container-fluid"><div class="row"><div class="col-sm-2 col-xl-10 offset-xl-0">';
+		var sender = '<div class="">'+val.sender+'</div>';
+		var timestamp = '<div  class="timelist" timestamp="'+ calctime +'"></div>';
+		var subject = '<div  class="message">'+val.name+'</div>';
+		//$.format.prettyDate(
+		//var fontpictures ='<i style="margin-left:10" class="marked '+marked+' fa-star favorite" /><i class="toggle fas fa-xs fa-arrow-down '+childornot+'"/>';
+		var enddiv ='</div>';
+		$('.activity').append(treeli +licontainer+subject+sender+ timestamp +enddiv+enddiv);
+
+		buildActivityLog(val );
+		
+	});
+}
+
+$(".timelist").each(function(fff,elem ){
+$(elem).append(
+//	$.format.prettyDate(new Date(parseInt($(elem).attr("timestamp"))).getTime(),"dd MM yyyy")
+);
+
+});
+$('#treeinfo li').sort(function(a, b) {
+    return $(b).data('timestamp') - $(a).data('timestamp');
+  }).appendTo('#treeinfo');
+
+
 $('.marked').on("click", function(d){ console.log($(this).parent().parent().parent().parent().attr('messageid'));
 	$.get( "statuschange.php?id="+f+"&msgnr="+$(this).parent().parent().parent().parent().attr('messageid') +"&marked=true",function(data){console.log(data);});
 })
 $('.message').on("click", function(d){ 
 	$(this).parent().parent().parent().removeClass("font-weight-bold");
+	$('.seltrue').removeClass('seltrue');
+	$(this).parent().parent().parent().addClass("seltrue");
         $( "#treeinfo" ).load( "messageid.php?id="+f+"&msgnr=" +$(this).parent().parent().parent().attr('messageid'),function(responseTxt, statusTxt, xhr){
 	if (statusTxt == "error"){$('#treeinfo').append("$statusTxt")}
 	if (statusTxt == "success"){
 	if($('.loginerrors').length>0){
+		
 		window.location.reload;
 	}
 	$("#messagehead").get(0).scrollIntoView();}
