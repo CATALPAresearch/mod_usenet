@@ -64,7 +64,7 @@ $summarytext = '
 <body style="margin: 0; padding: 0;">';
 
 		$summarytext = $summarytext . "<b>Guten Tag, diese E-Mail enthält die tägliche Zusammenfassung neuer Newsgroupbeiträge</b>";
-
+$content= "";
 		foreach ($enrolled as $newsgr){
 		      $testhallo= $newsgr->newsgroup;
                       $enrolledd = $DB->get_records_sql("
@@ -72,9 +72,12 @@ $summarytext = '
                       JOIN {course_modules} cm ON cm.module = c.id
                       JOIN {newsmod} nm ON nm.id = cm.instance
                       WHERE c.name = 'newsmod'");
-$key = array_search($newsgr->newsgroup, array_column($enrolledd, 'newsgroup'));
-$keys = array_slice($enrolledd,$key,1);
+			$key = array_search($newsgr->newsgroup, array_column($enrolledd, 'newsgroup'));
+			$keys = array_slice($enrolledd,$key,1);
 
+		      if(count($enrolled)>0){
+			$content =1;
+			}
 			if(!isset($cachesummary[$newsgr->newsgroup])){
 			$cachesummary[$newsgr->newsgroup]=summary($newsgr);
 			}
@@ -105,8 +108,11 @@ $summarytext = $summarytext .'</table>';
 		}
 
 		$summarytext = $summarytext . "</html>";
-		echo "\r\n";
+if($content>0){
 		sendemail($record->id, $summarytext);
+		$content=0;
+}
+
 }
 		fclose($fp);
       }
