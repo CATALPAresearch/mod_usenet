@@ -83,8 +83,8 @@ echo'
         <div class="col-12">
             <form class="form-inline float-sm-right" action="" method="post">
         	<button class="btn btn-default" type="button" id="createbutton" onclick="javascript: createButton();">Neues Thema</button>
-                <input type="text" class="form-control" placeholder="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
+                <input type="text" class="form-control" placeholder="Suchen...">
+                <button class="btn btn-outline-success" type="submit">Suchen</button>
             </form>
         </div>
     </div>
