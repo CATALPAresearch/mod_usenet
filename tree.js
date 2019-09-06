@@ -12,7 +12,7 @@ $('#tree').append('Server Verbindung hergestellt<br/>');
 $('#tree').append('Anfrage erhalten<br/>');
    }
   if(this.readyState == 3){
-$('#tree').append('Anfrage verarbeiten<br/>');
+$('#tree').append('Anfrage verarbeiten<br/>' + this.response);
    }
   if (this.readyState == 4 && this.status == 200) {
     var myObj = JSON.parse(this.responseText);
