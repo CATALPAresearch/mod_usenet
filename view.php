@@ -73,14 +73,13 @@ echo '<script language="javascript" type="text/javascript" src="tree.js"></scrip
 echo '<script language="javascript" type="text/javascript" src="helper.js"></script>';
 echo "<link href=css/all.css rel=stylesheet>";
 
+//$myarray = array('apple', 'orange', 'pear');
+echo $OUTPUT->header();
 if(extension_loaded('imap')){
 $PAGE->requires->js_init_call('showtree',array('course'=>$cm->id, 'msgnr'=>$msgnr));
 }else{
-echo "PHP-IMAP Modul ist nicht installiert.";
-
+$warnung = "PHP-IMAP Modul ist nicht installiert.";
 }
-//$myarray = array('apple', 'orange', 'pear');
-echo $OUTPUT->header();
 
 echo' 
 <div class="container-fluid">
@@ -102,6 +101,7 @@ echo'
 		<div class="px-0 col-xl-6 col-sm-12" id="tree" style="overflow:scroll; height:500px; margin-bottom:30px" >
 			<div class=loading><i class="fas fa-cog fa-spin fa-5x"></i>loading
 			</div>
+		'.$warnung.'
                 </div>
 		<div class="px-0 col-xl-6 col-sm-12 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
 		</div>
