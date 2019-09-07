@@ -46,7 +46,7 @@ moodleurl = myObj.moodleurl;
 var jdenticonstring = '<div class="control col-sm-3 col-xl-4 px-0 ">' + jdenticon.toSvg('sortname', 19,{lightness: { color: [0.40, 0.80], grayscale: [0.30, 0.90]}, saturation: { color: 0.50, grayscale: 0.00}, backColor: "#86444400"})+'</div><img style="visibility:hidden" src="" width="0" height="20"></img>';
 var fontpictures ='<i style="margin-left:2" class="sortmarked fas fa-star" /><i class="sorttoggel fas fa-xs fa-arrow-down "/>';
 
-$('.treeinfo').append("<li class='px-0 node header'><div class='container-fluid px-0'><div class='row px-0'><div class='favorite px-0 col-sm-1 col-xl-1 offset-xl-0'>"+jdenticonstring+fontpictures+"</div><div class='col-xl-5 px-0 col-sm-4 sortsubject'>Betreff</div><div class='absender col-sm-3 col-xl-3'>Absender</div><div class='sortdatetime datetime px-0 col-sm-1 col-xl-2' >Datum</div></div></div></div></div></li>");
+$('.treeinfo').append("<li class=' node header'><div class='container-fluid px-0'><div class='row'><div class='favorite px-0 col-sm-1 col-xl-1 offset-xl-0 row'>"+jdenticonstring+fontpictures+"</div><div class='col-xl-5  col-sm-4 sortsubject'>Betreff</div><div class='absender col-sm-3 col-xl-3'>Absender</div><div class='sortdatetime datetime px-0 col-sm-1 col-xl-2' >Datum</div></div></div></div></div></li>");
 sequence=1;
 checkOrientation();
 buildTree(myObj, 1);
@@ -69,6 +69,9 @@ if(g){
 $( "form" ).submit(function( event ) {
 event.preventDefault();
 event.stopImmediatePropagation();
+if($('input').val().length < '1'){
+$('.node').not('.header').removeClass('hidden');
+};
 var xmlhttpsearch = new XMLHttpRequest();
 xmlhttpsearch.onreadystatechange = function(data) {
   if(this.readyState == 0){
@@ -80,12 +83,14 @@ xmlhttpsearch.onreadystatechange = function(data) {
   if(this.readyState == 3){
    }
   if (this.readyState == 4 && this.status == 200) {
+//if (isJsonString(this.responseText)){
 var search = JSON.parse(this.responseText);
 $('.node').not('.header').addClass('hidden');
 $(search).each(function(e,d){
 	 $('[messageid="'+d.uid+'"]').removeClass('hidden');
 	});
    }
+//}
 }
 xmlhttpsearch.open("GET", "search.php?id="+f+ "&searchparam="+ $(".form-control").val(), true);
 xmlhttpsearch.send();
@@ -128,12 +133,15 @@ function buildTree(myObj, margin){
 		var childornot = "hidden";
 		}
 		var treeli = '<li column="'+ margin+'" sequence="'+ sequence++ +'" marked="'+val.markedstatus +' " class="node px-0 '+ read +'" messageid="'+ val.messageid +'" data-date="'+ new Date(val.date)+'">';
-		var licontainer ='<div class="px-0 container-fluid"><div class="row px-0"><div class="px-0 col-sm-1 col-xl-1 offset-xl-0">';
+		var licontainer ='<div class="px-0 container-fluid"><div class="row px-0"><div class="px-0 col-sm-1 col-xl-1 offset-xl-0 row">';
 		var sender = '<div class="col-xl-3 px-0">'+val.sender+'</div>';
-		var subject = '<div  class="col-xl-5 px-0 col-sm-4 message" style="border-left-width: '+margin +'px;border-color: white;border-left-style: solid">'+val.name+'</div>';
-		var calctime = isNaN(val.date) ? $.format.date(new Date(val.date).getTime(), "dd/MM/yyyy"): "";
+		var subject = '<div  class="col-xl-5 col-sm-4 message" style="border-left-width: '+margin +'px;border-color: white;border-left-style: solid">'+val.name+'</div>';
+		var calctime = new Date(val.date);
+var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+
+calctime= new Date(val.date).toLocaleDateString('de-DE', options) ? new Date(val.date).toLocaleDateString('de-DE', options):"" ;
 		var absender = val.personal ? val.personal : val.sender;
-		var timestamp = '<div class=" message col-xl-3 col-sm-3">'+ absender +'</div><div  class="datetime px-0 col-sm-2 col-xl-2" data-date="'+ new Date(val.date)+'">'+ calctime +'</div>';
+		var timestamp = '<div class=" message col-xl-3 col-sm-3">'+ absender +'</div><div  class="datetime px-0 col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">'+ calctime +'</div>';
 		var fontpictures ='<i style="margin-left:2" class="marked '+marked+' fa-star favorite" /><i class="toggle fas fa-xs fa-arrow-down '+childornot+'"/>';
 		var enddiv ='</div>';
 		$('.treeinfo').append(treeli + licontainer +jdenticonstring + fontpictures + enddiv +subject+ timestamp+enddiv+enddiv);
@@ -170,6 +178,13 @@ $('.node').not('.header').on("mouseover", function(d){
 	$(this).toggleClass("selected");
 
 })
+
+$('input').on('input', function (e) {
+	if ($(this).val().length < '3'){
+	}
+
+});
+
 
 
 $('.header').on("mouseover", function(d){

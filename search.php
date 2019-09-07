@@ -51,89 +51,12 @@ if (!$user = $DB->get_record('user', ['email' => $sender])) {
     $user->lastname = "";
 }
 require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
-if(!$searchresult = msgSearch($nntp, $searchparam)){
-echo '
-<div class="alert alert-success" role="alert">
-  <h4 class="alert-heading">Kein Glück</h4>
-  <p>Ihr Suchanfrage lieferte leider kein Ergebnis zurück</p>
-  <hr>
-  <p class="mb-0">Ihr letzter Suchbegriff <p class="font-weight-bold">'.$searchparam.'</p></p>
-</div>';
-return;
-}
+$searchresult = msgSearch($nntp, $searchparam);
 $messages = imap_fetch_overview($nntp, implode(',',array_slice($searchresult,0)), FT_UID);
-//print_r(json_encode($messages));
+
+if($messages){
 header('Content-Type: application/json');
-//echo "<body>";
 echo json_encode($messages);
-
-//if($messageid = $DB->record_exists('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))){
-//$testmodule=$DB->get_record('messagestatus', array('id' => '2'), '*', MUST_EXIST);
-//$moduleinstan=$DB->get_record('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr), '*', IGNORE_MISSING);
-//switch($moduleinstan->marked){
-//	case 0:
-//	$moduleinstan->marked = true;
-//	break;
-//	case 1:
-//	$moduleinstan->marked = false;
-//	break;
-//}
-//$errortest=$DB->update_record('messagestatus', $moduleinstan, $bulk=true);
-//$moduleinstan->readstatus = true;
-//print_r($searchresult);
-//if
-//print_r($moduleinstan);
-//print_r($testmodule);
-//}else{
-//$moduleinstanl = new stdClass();
-//$moduleinstanl->id = "3";
-//$moduleinstanl->userid     = $USER->id;
-//$moduleinstanl->messageid  = $msgnr;
-//$moduleinstanl->courseid   = $id;
-//$moduleinstanl->readstatus = false;
-//$moduleinstanl->marked     = true;
-//$DB->insert_record('messagestatus', $moduleinstanl);
-//}
-//echo "<div class='col-xl-12' style='overflow-y: auto;height: 500;'><div>Ihre Suche lieferte ". count($messages) ." Treffer</div><hr><ul>";
-
-//foreach($messages as $msg){
-//$tempheader->sender=imap_rfc822_parse_adrlist($msg->from,'');
-//echo '<a class="searcher text-body" href=' . new moodle_url("/mod/newsmod/messageid.php?id=".$id."&msgnr=" .$msg->uid) .'>';
-//echo '<li class="node">';
-//echo '
-//<div class="col-xl-12">
-//<div class="col-xl-1">
-//	<svg width="25" height="25" data-jdenticon-value="'.$tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host.'"></div>
-//<div>
-//<div class="col-xl-11">
-//<div>
-//	'.htmlspecialchars($msg->subject).'
-//</div>
-//<div>
-//	'. $tempheader->sender[0]->personal .'
-//</div>
-//<div class="timelist" timestamp="'.$msg->date.'">
-//</div>
-//</div>
-//</div>';
-//echo '</li></a></div>';
-//}
-//echo '</ul>';
-//
-//echo '<script>
-//window.jdenticon_config = {lightness: {color: [0.40, 0.80], grayscale: [0.30, 0.90]}, saturation: { color: 0.50, grayscale: 0.00}, backColor: "#86444400"};
-//$("svg").jdenticon();
-//$(".timelist").each(function(idx,elem){
-//$(elem).append(
-//$.format.prettyDate(new Date($(elem).attr("timestamp")).getTime(),"dd MM yyyy"));
-//});
-//$(".searcher").click(function(event){event.preventDefault(); $("#treeinfo").load($(this).attr("href"))});
-//window.addEventListener("beforeunload", function (e) {
-//  e.preventDefault();
-//  e.returnValue = "";
-//});
-//</script>';
-//print_r($markedstatus);
-//echo $searchparam;
-//echo "<img src=" .new moodle_url('/user/pix.php/'.$user->id.'/f1.jpg') ."width=35 height=35></img>";
-//echo $user->firstname." ".$user->lastname." </a>";
+}else{
+header('HTTP/1.1 204 No Content', true, 204);
+}

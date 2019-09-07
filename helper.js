@@ -41,7 +41,7 @@ for(var i=0;i<f.length;i++){
     subject = "Re: " + subject;
 let searchParams = new URLSearchParams(window.location.search);
 let param = searchParams.get('id');
-$.post("posttest.php?id="+param+"&msgnr=" +$('#messagehead').attr('messageid'), { userInput : text, subject : subject }, function(data){ alert(data);});
+$.post("posttest.php?id="+param+"&msgnr=" +$('#messagehead').attr('messageid'), { userInput : text, subject : subject }, function(data){ });
 
 
     alert("nachricht gesendet");

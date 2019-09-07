@@ -59,16 +59,16 @@ $PAGE->set_url('/mod/newsmod/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
-//$PAGE->requires->js('/mod/newsmod/jquery-1.10.2.js');
+//$PAGE->requires->js('https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js');
 
 
 //$PAGE->requires->js('/mod/newsmod/d3.v3.min.js','/mod/newsmod/treelist.js');
-//$PAGE->requires->js('/mod/newsmod/treelist.js');
-//$PAGE->requires->js('/mod/newsmod/tree.js');
-//$PAGE->requires->js('/mod/newsmod/helper.js');
-echo "<script language=javascript type=text/javascript src=https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js></script>";
-echo "<script language=javascript type=text/javascript src=jquery-dateformat.js></script>";
+//$PAGE->requires->js('/mod/newsmod/jdenticon-2.2.0.js');
+$PAGE->requires->js('/mod/newsmod/tree.js');
+//$PAGE->requires->js('/mod/newsmod/prettydate.js');
+echo '<script language="javascript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>';
 echo '<script language="javascript" type="text/javascript" src="jdenticon-2.2.0.js"></script>';
+echo '<script language="javascript" type="text/javascript" src="prettydate.js"></script>';
 echo '<script language="javascript" type="text/javascript" src="tree.js"></script>';
 echo '<script language="javascript" type="text/javascript" src="helper.js"></script>';
 echo "<link href=css/all.css rel=stylesheet>";
@@ -85,7 +85,7 @@ echo'
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <form class="form-inline float-sm-right" action="" method="post">
+            <form class="form-inline float-sm-left" action="" method="post">
         	<button class="btn btn-default" type="button" id="createbutton" onclick="javascript: createButton();">Neues Thema</button>
                 <input type="text" class="form-control" placeholder="Suchen...">
                 <button class="btn btn-outline-success" type="submit">Suchen</button>
@@ -97,10 +97,9 @@ echo'
 </div>
 <div class="container-fluid px-0 ">
      <div class="px-0">
-	 <div class="col-12 px-0" >
+	 <div class="col-12 px-0 row" >
 		<div class="px-0 col-xl-6 col-sm-12" id="tree" style="overflow:scroll; height:500px; margin-bottom:30px" >
-			<div class=loading><i class="fas fa-cog fa-spin fa-5x"></i>loading
-			</div>
+			<div class=loading><i class="fas fa-cog fa-spin fa-5x"></i>loading</div>
 		'.$warnung.'
                 </div>
 		<div class="px-0 col-xl-6 col-sm-12 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">

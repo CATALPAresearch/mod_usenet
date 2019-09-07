@@ -79,7 +79,7 @@ echo ' </a></div></div>';
 } else {
 echo '</div>';
 }
-echo "<div class='container'><div class='col-xl-5 col-sm-2 px-0'><button class=' btn btn-primary' id=answerbutton onclick='javascript: answerButton();'> Antworten</button></div>";
+echo "<div class='container row'><div class='col-xl-5 col-sm-2 px-0'><button class=' btn btn-primary' id=answerbutton onclick='javascript: answerButton();'> Antworten</button></div>";
 echo "<div class='btn-group' role='group' aria-label='Basic example'><button class='btn btn-primary' type='button' id='previusbutton'>Vorheriger</button>";
 echo "<button class='btn btn-primary' type='button' id='nextbutton'>Nächster</button></div></div>";
 

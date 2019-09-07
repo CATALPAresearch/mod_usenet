@@ -20,7 +20,6 @@ if (!$course = $DB->get_record("course", array("id" => $cm->course))) {
 }
 $journal = $DB->get_record("newsmod", array("id" => $cm->instance));
 $localconfig = get_config('newsmod');
-
 $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
 
@@ -42,12 +41,13 @@ compose_mail();
 function compose_mail(){
 	global $form, $msgnr,$localconfig,$journal,$USER;
         $username = "AUTHINFO USER ". $localconfig->newsgroupusername ."\n";
-        $headers['from'] = $USER->email;
+	$eemail = explode("@",$USER->email);
+	$from = imap_rfc822_write_address ( $eemail[0] , $eemail[1],$USER->firstname ." ".$USER->lastname );
+        $headers['from'] = $from;
         $headers['subject'] = $form->subject;
         $headers['custom_headers'][] = 'Newsgroups: ' . $journal->newsgroup;
-
 	if($msgnr!="new"){
-	echo "wo kommt das hin" . isset($msgnr);
+//	echo "wo kommt das hin" . isset($msgnr);
 	 $headers['custom_headers'][] = 'References: ' . $msgnr;
 	}
 	$body[0]['type'] = TYPETEXT;
@@ -55,7 +55,7 @@ function compose_mail(){
         $body[0]['subtype'] = 'plain';
         $body[0]['contents.data'] = $form->userInput;
         $post = imap_mail_compose($headers, $body);
-        $server = 'news.fernuni-hagen.de';
+        $server = $localconfig->newsgroupserver;
         $port = 119;
         $sh = fsockopen($server, $port) or die ("Can't connect to $server.");
         //echo $sh;
