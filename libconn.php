@@ -122,7 +122,7 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 			$tempheader->sender[0] = new \stdClass();
 			$tempheader->sender[0]->mailbox= 'nicht vorhanden';
 			$tempheader->sender[0]->host= 'nicht vorhanden';
-			$tempheader->date= '0';
+			$tempheader->date= 'Mon, 1 Jan 2019 11:28:23';
 			}
 		        $statusread = @loadMessageStatus($val);
 			$userinfo = @getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host);

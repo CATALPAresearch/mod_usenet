@@ -64,11 +64,11 @@ echo '<div class="container row-no-padding" style="padding-right:0px">
 {lightness: {color: [0.40, 0.80], grayscale: [0.30, 0.90]}, saturation: { color: 0.50, grayscale: 0.00}, backColor: "#86444400"});
 	   </script>
 		<div id="messagehead" class="col-sm-8 col-xl-6" messageid='.htmlspecialchars($header->message_id).'>';
-echo '<div class="col-xl"><div><h4><span class="label label-default">Name</span></div><div id="name" >'.$user->firstname." ".$user->lastname.'</h4></div>';
+echo '<div class="col-xl"><div></div><div id="name" >'.$user->firstname." ".$user->lastname.'</div>';
 
 		 //new moodle_url("/user/profile.php?id="'.$user->id).'></a>';
 //echo '<div class="col-xl"><div><h4><span class="label label-default">Name</span></h4></div><div id=name >'.$user->firstname." ".$user->lastname.'</div></div>';
-echo '<div><div><h4><span class="label label-default">Betreff</span></h4></div><div id=subject >'.htmlspecialchars($header->subject).'</div></div></div>';
+echo '<div><div></div><div class="font-weight-bold" id=subject >'.htmlspecialchars($header->subject).'</div></div></div>';
 echo '</div>';
 
 if ($user->picture > 0){
@@ -79,7 +79,9 @@ echo ' </a></div></div>';
 } else {
 echo '</div>';
 }
-echo "<div class='container'><div><a class='btn btn-primary' id=answerbutton onclick='javascript: answerButton();'> Antworten</a></div></div>";
+echo "<div class='container'><div class='col-xl-5 col-sm-2 px-0'><button class=' btn btn-primary' id=answerbutton onclick='javascript: answerButton();'> Antworten</button></div>";
+echo "<div class='btn-group' role='group' aria-label='Basic example'><button class='btn btn-primary' type='button' id='previusbutton'>Vorheriger</button>";
+echo "<button class='btn btn-primary' type='button' id='nextbutton'>Nächster</button></div></div>";
 
 echo '<div class="container row-no-padding" style="padding-right:0px">';
 

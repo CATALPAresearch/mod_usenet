@@ -10,6 +10,18 @@ function search(e){
 
 }
 
+function navigateNext(e){
+
+if ($('.seltrue').attr("column")<$('.seltrue').next().attr("column")){
+$('.seltrue').next().find('.message').click();
+}
+}
+function navigatePrevius(){
+if ($('.seltrue').attr("column")>$('.seltrue').next().attr("column")){
+
+$('.seltrue').prev().find('.message').click();
+}
+}
 function answerButton(){
    var z =$("#answerbutton").text();
   if (z.indexOf("Antworten")>=0){
