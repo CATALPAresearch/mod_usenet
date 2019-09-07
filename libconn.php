@@ -179,7 +179,7 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 
 	function markMessageRead($msgnr){
 	global $DB,$USER,$id;
-	if($messageid = $DB->record_exists('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))){
+	if($messageid = $DB->record_exists('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))){
 	
 	}else{
 	$moduleinstanl = new stdClass();
@@ -189,15 +189,15 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 	$moduleinstanl->courseid   = $id;
 	$moduleinstanl->readstatus = true;
 	$moduleinstanl->marked     = false;
-	$DB->insert_record('messagestatus', $moduleinstanl);
+	$DB->insert_record('newsmod__messagestatus', $moduleinstanl);
 }
 
 	}
 	function loadMessageStatus($msgnr){
 	global $DB,$USER;
-	if($messageid = $DB->record_exists('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))){
+	if($messageid = $DB->record_exists('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))){
 		$moduleinstan = new stdClass();
-		$moduleinstan = $DB->get_record('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr), '*', IGNORE_MISSING);
+		$moduleinstan = $DB->get_record('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr), '*', IGNORE_MISSING);
 		if(!$moduleinstan->readstatus){
 		$moduleinstan->readstatus=false;}
 		if(!$moduleinstan->marked){$moduleinsta->marked=false;}
