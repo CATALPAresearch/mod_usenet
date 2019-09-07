@@ -56,9 +56,9 @@ if(!$searchresult = msgSearch($nntp, $searchparam)){
 }
 
 $messages = imap_fetch_overview($nntp, implode(',',array_slice($searchresult,0)), FT_UID);
-if($messageid = $DB->record_exists('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))){
+if($messageid = $DB->record_exists('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))){
 //$testmodule=$DB->get_record('messagestatus', array('id' => '2'), '*', MUST_EXIST);
-$moduleinstan=$DB->get_record('messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr), '*', IGNORE_MISSING);
+$moduleinstan=$DB->get_record('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr), '*', IGNORE_MISSING);
 switch($moduleinstan->marked){
 	case 0:
 	$moduleinstan->marked = true;
@@ -67,7 +67,7 @@ switch($moduleinstan->marked){
 	$moduleinstan->marked = false;
 	break;
 }
-$errortest=$DB->update_record('messagestatus', $moduleinstan, $bulk=true);
+$errortest=$DB->update_record('newsmod__messagestatus', $moduleinstan, $bulk=true);
 //$moduleinstan->readstatus = true;
 //print_r($searchresult);
 //if
@@ -81,7 +81,7 @@ $moduleinstanl->messageid  = $msgnr;
 $moduleinstanl->courseid   = $id;
 $moduleinstanl->readstatus = false;
 $moduleinstanl->marked     = true;
-$DB->insert_record('messagestatus', $moduleinstanl);
+$DB->insert_record('newsmod__messagestatus', $moduleinstanl);
 }
 echo "<div>Ihre Suche hatte folgendes Ergebnis</div><ul>";
 
