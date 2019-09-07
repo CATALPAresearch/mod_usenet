@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/newsmod/db" VERSION="20190829" COMMENT="XMLDB file for Moodle mod/newsmod"
+<XMLDB PATH="mod/newsmod/db" VERSION="20190907" COMMENT="XMLDB file for Moodle mod/newsmod"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -23,7 +23,7 @@
         <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="messagestatus" COMMENT="Default comment for the table, please edit me">
+    <TABLE NAME="newsmod__messagestatus" COMMENT="Default comment for the table, please edit me">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="userid"/>
