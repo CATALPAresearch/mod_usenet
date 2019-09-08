@@ -10,16 +10,42 @@ function search(e){
 
 }
 
-function navigateNext(e){
-
+function navigateNext(){
+//e.stopImmediatePropagation();
 if ($('.seltrue').attr("column")<$('.seltrue').next().attr("column")){
-$('.seltrue').next().find('.message').click();
-}
-}
-function navigatePrevius(){
-if ($('.seltrue').attr("column")>$('.seltrue').next().attr("column")){
+var g = $('.seltrue').next().attr('messageid');
+let searchParams = new URLSearchParams(window.location.search);
+let param = searchParams.get('id');
 
-$('.seltrue').prev().find('.message').click();
+var x = $('.seltrue');
+$(x).toggleClass('seltrue');
+$(x).next().toggleClass('seltrue');
+$( "#treeinfo" ).load( "messageid.php?id="+param+"&msgnr=" + g,function(responseTxt, statusTxt, xhr){
+if ($('.seltrue').attr("column")>$('.seltrue').next().attr("column")){
+$('#nextbutton').toggleClass('disabled');
+}
+
+        })
+var x = $('.seltrue').attr('messageid');
+}
+}
+
+function navigatePrevius(){
+if($('#previusbutton').hasClass('disabled')){return;}
+if ($('.seltrue').attr("column")>$('.seltrue').prev().attr("column")){
+var g = $('.seltrue').prev().attr('messageid');
+let searchParams = new URLSearchParams(window.location.search);
+let param = searchParams.get('id');
+
+var x = $('.seltrue');
+$(x).toggleClass('seltrue');
+$(x).prev().toggleClass('seltrue');
+
+$( "#treeinfo" ).load( "messageid.php?id="+param+"&msgnr=" + g,function(responseTxt, statusTxt, xhr){
+if ($('.seltrue').attr("column")<$('.seltrue').prev().attr("column")){
+$('#previusbutton').toggleClass('disabled');
+}
+        })
 }
 }
 function answerButton(){

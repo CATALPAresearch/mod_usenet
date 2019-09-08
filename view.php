@@ -68,6 +68,9 @@ $PAGE->requires->js('/mod/newsmod/tree.js');
 //$PAGE->requires->js('/mod/newsmod/prettydate.js');
 echo '<script language="javascript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>';
 echo '<script language="javascript" type="text/javascript" src="jdenticon-2.2.0.js"></script>';
+echo '<script language="javascript" type="text/javascript" src="pnglib.js"></script>';
+echo '<script language="javascript" type="text/javascript" src="identicon.js"></script>';
+
 echo '<script language="javascript" type="text/javascript" src="prettydate.js"></script>';
 echo '<script language="javascript" type="text/javascript" src="tree.js"></script>';
 echo '<script language="javascript" type="text/javascript" src="helper.js"></script>';
@@ -90,19 +93,21 @@ echo'
                 <input type="text" class="form-control" placeholder="Suchen...">
                 <button class="btn btn-outline-success" type="submit">Suchen</button>
             </form>
-		<div class="text-danger" id="orr">Bitte drehen Sie Ihr Gerät!</div>
+	    <div class="text-danger" id="orr">Bitte drehen Sie Ihr Gerät!</div>
 
         </div>
     </div>
 </div>
 <div class="container-fluid px-0 ">
      <div class="px-0">
-	 <div class="col-12 px-0 row" >
-		<div class="px-0 col-xl-6 col-sm-12" id="tree" style="overflow:scroll; height:500px; margin-bottom:30px" >
+<hr>
+
+	 <div class="col-12 row" >
+		<div class="col-xl-6 col-sm-10" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
 			<div class=loading><i class="fas fa-cog fa-spin fa-5x"></i>loading</div>
 		'.$warnung.'
                 </div>
-		<div class="px-0 col-xl-6 col-sm-12 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
+		<div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
 		</div>
 	</div>
     </div>

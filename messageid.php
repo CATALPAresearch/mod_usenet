@@ -54,16 +54,27 @@ if (!$user = $DB->get_record('user', ['email' => $header->fromaddress ])) {
 require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
 //require_once($CFG->dirroot . '/mod/newsmod/src/image-master/src/Intervention/Image/autoload.php');
 markMessageRead($msgnr);
-echo '<div class="container row-no-padding" style="padding-right:0px">
-	<div class="container row-no-padding" style="padding-right:0px">
+echo '<div class="container row-no-padding" style="padding-right:0px"><hr>
+	<div class="container row-no-padding row" style="padding-right:0px">
  	    <div class="svg col-sm-2 col-xl-2" style="padding-left:0px" id="identiconPlaceholder">
 	    </div>
 	   <script>
 		var placeholder = document.getElementById("identiconPlaceholder");
-		placeholder.innerHTML = jdenticon.toSvg("'.$header->from[0]->mailbox."@".$header->from[0]->host .'", 100,
-{lightness: {color: [0.40, 0.80], grayscale: [0.30, 0.90]}, saturation: { color: 0.50, grayscale: 0.00}, backColor: "#86444400"});
+var options = {
+                      background: [255, 255, 255, 255],         // rgba white
+                      margin: 0.05,                              // 20% margin
+                      size: 20,                                // 420px square
+                      format: \'svg\'                             // use SVG instead of PNG
+                    };
+
+
+		var itendi = new Identicon(btoa("'.$header->from[0]->mailbox."@".$header->from[0]->host .'"),options).toString();
+		var outerh = "<img width=100 height=100 src=\"data:image/svg+xml;base64,"+itendi+"";
+		$(\'#identiconPlaceholder\').append(outerh+"\"></img>");
+
+
 	   </script>
-		<div id="messagehead" class="col-sm-8 col-xl-6" messageid='.htmlspecialchars($header->message_id).'>';
+        	<div id="messagehead" class="col-sm-8 col-xl-6" messageid='.htmlspecialchars($header->message_id).'>';
 echo '<div class="col-xl"><div></div><div id="name" >'.$user->firstname." ".$user->lastname.'</div>';
 
 		 //new moodle_url("/user/profile.php?id="'.$user->id).'></a>';
@@ -80,8 +91,8 @@ echo ' </a></div></div>';
 echo '</div>';
 }
 echo "<div class='container row'><div class='col-xl-5 col-sm-2 px-0'><button class=' btn btn-primary' id=answerbutton onclick='javascript: answerButton();'> Antworten</button></div>";
-echo "<div class='btn-group' role='group' aria-label='Basic example'><button class='btn btn-primary' type='button' id='previusbutton'>Vorheriger</button>";
-echo "<button class='btn btn-primary' type='button' id='nextbutton'>Nächster</button></div></div>";
+echo "<div class='btn-group' role='group' aria-label='Basic example'><button class='btn btn-primary' type='button' id='previusbutton' onclick='javascript: navigatePrevius();'>Vorherige Nachricht</button>";
+echo "<button class='btn btn-primary' type='button' id='nextbutton'  onclick='javascript: navigateNext();'>Nächste Nachricht</button></div></div>";
 
 echo '<div class="container row-no-padding" style="padding-right:0px">';
 

@@ -43,10 +43,16 @@ var results = data['children'];
 
 
 moodleurl = myObj.moodleurl;
-var jdenticonstring = '<div class="control col-sm-3 col-xl-4 px-0 ">' + jdenticon.toSvg('sortname', 19,{lightness: { color: [0.40, 0.80], grayscale: [0.30, 0.90]}, saturation: { color: 0.50, grayscale: 0.00}, backColor: "#86444400"})+'</div><img style="visibility:hidden" src="" width="0" height="20"></img>';
-var fontpictures ='<i style="margin-left:2" class="sortmarked fas fa-star" /><i class="sorttoggel fas fa-xs fa-arrow-down "/>';
+		var options = {
+		      background: [255, 255, 255, 255],         // rgba white
+		      margin: 0.05,                              // 20% margin
+		      size: 20,                                // 420px square
+		      format: 'svg'                             // use SVG instead of PNG
+		    };
+		var jdenticonstring = '<div class="control col-sm-3 col-xl-4  "><img width=19 height=20 src="data:image/svg+xml;base64,' + new Identicon(btoa("identification"), options) + '"></img></div>';
+		var fontpictures ='<i style="margin-left:4" class="sortmarked fas fa-star" /><i class="sorttoggel fas fa-xs fa-arrow-down "/>';
 
-$('.treeinfo').append("<li class=' node header'><div class='container-fluid px-0'><div class='row'><div class='favorite px-0 col-sm-1 col-xl-1 offset-xl-0 row'>"+jdenticonstring+fontpictures+"</div><div class='col-xl-5  col-sm-4 sortsubject'>Betreff</div><div class='absender col-sm-3 col-xl-3'>Absender</div><div class='sortdatetime datetime px-0 col-sm-1 col-xl-2' >Datum</div></div></div></div></div></li>");
+$('.treeinfo').append("<li class=' node header'><div class='container-fluid px-0'><div class='row'><div class='favorite px-0 col-sm-2 col-xl-2 offset-xl-0 row'>"+jdenticonstring+fontpictures+"</div><div class='col-xl-5  col-sm-4 sortsubject'>Betreff</div><div class='absender col-sm-3 col-xl-3'>Absender</div><div class='sortdatetime datetime col-sm-2 col-xl-2 text-nowrap' >Datum</div></div></div></div></div></li>");
 sequence=1;
 checkOrientation();
 buildTree(myObj, 1);
@@ -124,25 +130,33 @@ function buildTree(myObj, margin){
 		var marked = val.markedstatus != '0' ? "fas starmarked " : "far ";
 		var read = val.messagestatus == '0' ? "font-weight-bold " : "";
 		if(val.picturestatus > '0'){
-		var jdenticonstring = '<div class="control col-sm-3 col-xl-1 px-0 "><img title="Name: '+ val.personal+'\r\nE-Mail-Adresse: '+ val.sender  +'" src="' + moodleurl +'/user/pix.php/'+val.user_id+'/f1.jpg" width="20" height="20"></img></div>';
+		var jdenticonstring = '<div class="control col-sm-3 col-xl-2 px-0 "><img title="Name: '+ val.personal+'\r\nE-Mail-Adresse: '+ val.sender  +'" src="' + moodleurl +'/user/pix.php/'+val.user_id+'/f1.jpg" width="20" height="20"></img></div>';
 		}else{
-		var jdenticonstring = '<img style="visibility:hidden" src="' + moodleurl +'/user/pix.php/'+val.user_id+'/f1.jpg" width="0" height="20"></img>';
-		jdenticonstring = jdenticonstring + '<div class="px-0 control col-sm-3 col-xl-4" title="Name: '+ val.personal+'\r\nE-Mail-Adresse: '+ val.sender  +'">' + jdenticon.toSvg(val.sender, 19,{lightness: { color: [0.40, 0.80], grayscale: [0.30, 0.90]}, saturation: { color: 0.50, grayscale: 0.00}, backColor: "#86444400"})+ '</div>';
+		var options = {
+		      background: [255, 255, 255, 255],         // rgba white
+		      margin: 0.05,                              // 20% margin
+		      size: 20,                                // 420px square
+		      format: 'svg'                             // use SVG instead of PNG
+		    };
+		
+		var data = new Identicon(btoa(val.sender).length>15? btoa(val.sender):btoa("keine e-mail angegeben"),options).toString();
+		var jdenticonstring = '';//'<img style="visibility:hidden" src="' + moodleurl +'/user/pix.php/'+val.user_id+'/f1.jpg" width="0" height="20"></img>';
+		jdenticonstring = jdenticonstring + '<div class=" control col-sm-3 col-xl-4" title="Name: '+ val.personal+'\r\nE-Mail-Adresse: '+ val.sender  +'"><img width=19 height=20 src="data:image/svg+xml;base64,' + data + '"></div>';
+		// + jdenticon.toSvg(val.sender, 19,{lightness: { color: [0.40, 0.80], grayscale: [0.30, 0.90]}, saturation: { color: 0.50, grayscale: 0.00}, backColor: "#86444400"})+ '</div>';
 		}
 		if(!val.children){
 		var childornot = "hidden";
 		}
 		var treeli = '<li column="'+ margin+'" sequence="'+ sequence++ +'" marked="'+val.markedstatus +' " class="node px-0 '+ read +'" messageid="'+ val.messageid +'" data-date="'+ new Date(val.date)+'">';
-		var licontainer ='<div class="px-0 container-fluid"><div class="row px-0"><div class="px-0 col-sm-1 col-xl-1 offset-xl-0 row">';
+		var licontainer ='<div class="px-0 container-fluid"><div class="row px-0"><div class="px-0 col-sm-2 col-xl-2 offset-xl-0 row">';
 		var sender = '<div class="col-xl-3 px-0">'+val.sender+'</div>';
-		var subject = '<div  class="col-xl-5 col-sm-4 message" style="border-left-width: '+margin +'px;border-color: white;border-left-style: solid">'+val.name+'</div>';
+		var subject = '<div  class="col-xl-5  col-sm-4 message" style="text-indent: '+margin +'px">'+val.name+'</div>';
 		var calctime = new Date(val.date);
-var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-
-calctime= new Date(val.date).toLocaleDateString('de-DE', options) ? new Date(val.date).toLocaleDateString('de-DE', options):"" ;
+		var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+		calctime= new Date(val.date).toLocaleDateString('de-DE', options) ? new Date(val.date).toLocaleDateString('de-DE', options):"" ;
 		var absender = val.personal ? val.personal : val.sender;
-		var timestamp = '<div class=" message col-xl-3 col-sm-3">'+ absender +'</div><div  class="datetime px-0 col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">'+ calctime +'</div>';
-		var fontpictures ='<i style="margin-left:2" class="marked '+marked+' fa-star favorite" /><i class="toggle fas fa-xs fa-arrow-down '+childornot+'"/>';
+		var timestamp = '<div class=" message col-xl-3 col-sm-3">'+ absender +'</div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">'+ calctime +'</div>';
+		var fontpictures ='<i class="marked '+marked+' fa-star favorite" style="margin-left:4" /><i class="toggle fas fa-xs fa-arrow-down '+childornot+'"/>';
 		var enddiv ='</div>';
 		$('.treeinfo').append(treeli + licontainer +jdenticonstring + fontpictures + enddiv +subject+ timestamp+enddiv+enddiv);
 		buildTree(val, margin + 25);
@@ -232,6 +246,7 @@ $('.marked').on("click", function(d){
 	$.get( "statuschange.php?id="+f+"&msgnr="+$(this).parent().parent().parent().parent().attr('messageid') +"&marked=true",function(data){});
 })
 
+
 $('.message').on("click", function(d){ 
 	$(this).parent().parent().parent().removeClass("font-weight-bold");
 	$('.seltrue').removeClass('seltrue');
@@ -242,12 +257,15 @@ $('.message').on("click", function(d){
 	if($('.loginerrors').length>0){	
 		window.location.reload;
 	}
-	$('#nextbutton').bind('click', function(){navigateNext(this)});
 
-	$('#previusbutton').bind('click', function(){navigatePrevius(this)});
+
+
+
 	$("#treeinfo").get(0).scrollIntoView();}
 	})
 })}
+
+
 
 function sortbyDate(){
 $(".node").not('.header').sort(function(a,b){ 
