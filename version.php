@@ -26,6 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_newsmod';
 $plugin->release = '0.2.0';
-$plugin->version = 2019060566;
+$plugin->version = 2019060567;
 $plugin->requires = 2016120300;
 $plugin->maturity = MATURITY_ALPHA;

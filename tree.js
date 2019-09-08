@@ -150,12 +150,12 @@ function buildTree(myObj, margin){
 		var treeli = '<li column="'+ margin+'" sequence="'+ sequence++ +'" marked="'+val.markedstatus +' " class="node px-0 '+ read +'" messageid="'+ val.messageid +'" data-date="'+ new Date(val.date)+'">';
 		var licontainer ='<div class="px-0 container-fluid"><div class="row px-0"><div class="px-0 col-sm-2 col-xl-2 offset-xl-0 row">';
 		var sender = '<div class="col-xl-3 px-0">'+val.sender+'</div>';
-		var subject = '<div  class="col-xl-5  col-sm-4 message" style="text-indent: '+margin +'px">'+val.name+'</div>';
+		var subject = '<div  class="col-xl-5 subject col-sm-4 message" style="text-indent: '+margin +'px">'+val.name+'</div>';
 		var calctime = new Date(val.date);
 		var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
 		calctime= new Date(val.date).toLocaleDateString('de-DE', options) ? new Date(val.date).toLocaleDateString('de-DE', options):"" ;
 		var absender = val.personal ? val.personal : val.sender;
-		var timestamp = '<div class=" message col-xl-3 col-sm-3">'+ absender +'</div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">'+ calctime +'</div>';
+		var timestamp = '<div class=" message sender col-xl-3 col-sm-3">'+ absender +'</div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">'+ calctime +'</div>';
 		var fontpictures ='<i class="marked '+marked+' fa-star favorite" style="margin-left:4" /><i class="toggle fas fa-xs fa-arrow-down '+childornot+'"/>';
 		var enddiv ='</div>';
 		$('.treeinfo').append(treeli + licontainer +jdenticonstring + fontpictures + enddiv +subject+ timestamp+enddiv+enddiv);
@@ -321,16 +321,16 @@ $(".node").not('.header').sort(function(a, b) {
 
 function sortbyName(){
 $(".node").not('.header').sort(function(a, b) { 
-   var compA = $(a).text().toUpperCase();
-   var compB = $(b).text().toUpperCase();
+   var compA = $(a).find('.subject').text().toUpperCase();
+   var compB = $(b).find('.subject').text().toUpperCase();
    return (compA < compB) ? -1 : (compA > compB) ? 1 : 0;
 }).each(function() { $(".treeinfo").append(this); });
 
 }
 function sortbyAbsender(){
 $(".node").not('.header').sort(function(a, b) { 
-   var compA = $(a).text().toUpperCase();
-   var compB = $(b).text().toUpperCase();
+   var compA = $(a).find('.sender').text().toUpperCase();
+   var compB = $(b).find('.sender').text().toUpperCase();
    return (compA < compB) ? -1 : (compA > compB) ? 1 : 0;
 }).each(function() { $(".treeinfo").append(this); });
 
