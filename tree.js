@@ -251,6 +251,7 @@ $('.message').on("click", function(d){
 	$(this).parent().parent().parent().removeClass("font-weight-bold");
 	$('.seltrue').removeClass('seltrue');
 	$(this).parent().parent().parent().addClass("seltrue");
+	if($(this).parent().parent().parent().attr('messageid')>0){
         $( "#treeinfo" ).load( "messageid.php?id="+f+"&msgnr=" +$(this).parent().parent().parent().attr('messageid'),function(responseTxt, statusTxt, xhr){
 	if (statusTxt == "error"){$('#treeinfo').append("$statusTxt")}
 	if (statusTxt == "success"){
@@ -263,6 +264,7 @@ $('.message').on("click", function(d){
 
 	$("#treeinfo").get(0).scrollIntoView();}
 	})
+}
 })}
 
 
