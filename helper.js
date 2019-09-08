@@ -14,12 +14,14 @@ function navigateNext(){
 //e.stopImmediatePropagation();
 if ($('.seltrue').attr("column")<$('.seltrue').next().attr("column")){
 var g = $('.seltrue').next().attr('messageid');
+
 let searchParams = new URLSearchParams(window.location.search);
 let param = searchParams.get('id');
 
 var x = $('.seltrue');
 $(x).toggleClass('seltrue');
 $(x).next().toggleClass('seltrue');
+
 $( "#treeinfo" ).load( "messageid.php?id="+param+"&msgnr=" + g,function(responseTxt, statusTxt, xhr){
 if ($('.seltrue').attr("column")>$('.seltrue').next().attr("column")){
 $('#nextbutton').toggleClass('disabled');
@@ -36,6 +38,7 @@ if ($('.seltrue').attr("column")>$('.seltrue').prev().attr("column")){
 var g = $('.seltrue').prev().attr('messageid');
 let searchParams = new URLSearchParams(window.location.search);
 let param = searchParams.get('id');
+if(parseInt(g) > 0){
 
 var x = $('.seltrue');
 $(x).toggleClass('seltrue');
@@ -46,6 +49,11 @@ if ($('.seltrue').attr("column")<$('.seltrue').prev().attr("column")){
 $('#previusbutton').toggleClass('disabled');
 }
         })
+}else {
+$('#previusbutton').toggleClass('disabled');
+
+}
+
 }
 }
 function answerButton(){
