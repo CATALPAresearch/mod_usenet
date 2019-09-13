@@ -64,15 +64,12 @@ $PAGE->set_context($modulecontext);
 
 //$PAGE->requires->js('/mod/newsmod/d3.v3.min.js','/mod/newsmod/treelist.js');
 //$PAGE->requires->js('/mod/newsmod/jdenticon-2.2.0.js');
-$PAGE->requires->js('/mod/newsmod/tree.js');
-//$PAGE->requires->js('/mod/newsmod/prettydate.js');
+//$this->page->requires->jquery();
 echo '<script language="javascript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>';
-echo '<script language="javascript" type="text/javascript" src="jdenticon-2.2.0.js"></script>';
+$PAGE->requires->js('/mod/newsmod/tree.js');
 echo '<script language="javascript" type="text/javascript" src="pnglib.js"></script>';
 echo '<script language="javascript" type="text/javascript" src="identicon.js"></script>';
-
-echo '<script language="javascript" type="text/javascript" src="prettydate.js"></script>';
-echo '<script language="javascript" type="text/javascript" src="tree.js"></script>';
+//echo '<script language="javascript" type="text/javascript" src="tree.js"></script>';
 echo '<script language="javascript" type="text/javascript" src="helper.js"></script>';
 echo "<link href=css/all.css rel=stylesheet>";
 
@@ -90,6 +87,7 @@ echo'
         <div class="col-12">
             <form class="form-inline float-sm-left" action="" method="post">
         	<button class="btn btn-default" type="button" id="createbutton" onclick="javascript: createButton();">Neues Thema</button>
+        	<button class="btn btn-default fa fa-sync" type="button" id="reloadbutton"></button>
                 <input type="text" class="form-control" placeholder="Suchen...">
                 <button class="btn btn-outline-success" type="submit">Suchen</button>
             </form>

@@ -28,6 +28,11 @@ text-overflow: clip ellipsis;
 overflow: hidden;
 white-space: nowrap;
 }
+.elipse{
+text-overflow: clip ellipsis;
+overflow: hidden;
+white-space: nowrap;
+}
     .messagebody{
 	overflow: hidden;
     }

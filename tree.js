@@ -138,7 +138,7 @@ function buildTree(myObj, margin){
 		      size: 20,                                // 420px square
 		      format: 'svg'                             // use SVG instead of PNG
 		    };
-		
+
 		var data = new Identicon(btoa(val.sender).length>15? btoa(val.sender):btoa("keine e-mail angegeben"),options).toString();
 		var jdenticonstring = '';//'<img style="visibility:hidden" src="' + moodleurl +'/user/pix.php/'+val.user_id+'/f1.jpg" width="0" height="20"></img>';
 		jdenticonstring = jdenticonstring + '<div class=" control col-sm-3 col-xl-4" title="Name: '+ val.personal+'\r\nE-Mail-Adresse: '+ val.sender  +'"><img width=19 height=20 src="data:image/svg+xml;base64,' + data + '"></div>';
@@ -155,7 +155,7 @@ function buildTree(myObj, margin){
 		var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
 		calctime= new Date(val.date).toLocaleDateString('de-DE', options) ? new Date(val.date).toLocaleDateString('de-DE', options):"" ;
 		var absender = val.personal ? val.personal : val.sender;
-		var timestamp = '<div class=" message sender col-xl-3 col-sm-3">'+ absender +'</div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">'+ calctime +'</div>';
+		var timestamp = '<div class="sender elipse col-xl-3 col-sm-3"><a href="mailto:'+val.sender+'?subject='+val.name +'">'+ absender +'</a></div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">'+ calctime +'</div>';
 		var fontpictures ='<i class="marked '+marked+' fa-star favorite" style="margin-left:4" /><i class="toggle fas fa-xs fa-arrow-down '+childornot+'"/>';
 		var enddiv ='</div>';
 		$('.treeinfo').append(treeli + licontainer +jdenticonstring + fontpictures + enddiv +subject+ timestamp+enddiv+enddiv);
@@ -215,6 +215,12 @@ $(".toggle").on("click", function(d){
  $(this).toggleClass('fa-arrow-down');
  $(this).toggleClass('fa-arrow-right');
  $(this).hasClass('fa-arrow-right') ?  hideNext($(this).parent().parent().parent().parent(), 8) : showNext($(this).parent().parent().parent().parent(), 8);
+
+})
+
+$("#reloadbutton").on("click", function(d){
+xmlhttp.open("GET", "phpconn5.php?id="+f, true);
+xmlhttp.send(); 
 
 })
 
