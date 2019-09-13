@@ -276,7 +276,7 @@ $('.message').on("click", function(d){
 
 
 function sortbyDate(){
-$(".node").not('.header').sort(function(a,b){ 
+$(".node").not('.header').not('.hidden').sort(function(a,b){ 
     return new Date($(a).attr("data-date")) < new Date($(b).attr("data-date"));
 }).each(function(){
     $(".treeinfo").append(this);
@@ -288,7 +288,7 @@ function sortbyTree(){
 
 //$('.treeinfo').append("<li class='px-0 node header'><div class='container-fluid px-0'><div class='row px-0'><div class='favorite px-0 col-sm-2 col-xl-1 offset-xl-0'>"+jdenticonstring+fontpictures+"</div><div class='col-xl-7 px-0 col-sm-8 sortsubject'>Betreff</div><div class='sortdatetime datetime px-0 col-sm-1 col-xl-' >Datum</div></div></div></div></div></li>");
 //location.reload(true);
-$(".node").not('.header').sort(function(a,b){ 
+$(".node").not('.header').not('.hidden').sort(function(a,b){ 
     return parseInt($(a).attr("sequence")) > parseInt($(b).attr("sequence"));
 }).each(function(){
     $(".treeinfo").append(this);
@@ -320,7 +320,7 @@ function checkOrientation() {
 
 
 function sortbyFavorite(){
-$(".node").not('.header').sort(function(a, b) {
+$(".node").not('.header').not('.hidden').sort(function(a, b) {
    var compA = $(a).attr("marked").toUpperCase();
    var compB = $(b).attr("marked").toUpperCase();
    return (compA > compB) ? -1 : (compA < compB) ? 1 : 0;
@@ -328,7 +328,7 @@ $(".node").not('.header').sort(function(a, b) {
 }
 
 function sortbyName(){
-$(".node").not('.header').sort(function(a, b) { 
+$(".node").not('.header').not('.hidden').sort(function(a, b) { 
    var compA = $(a).find('.subject').text().toUpperCase();
    var compB = $(b).find('.subject').text().toUpperCase();
    return (compA < compB) ? -1 : (compA > compB) ? 1 : 0;
@@ -336,7 +336,7 @@ $(".node").not('.header').sort(function(a, b) {
 
 }
 function sortbyAbsender(){
-$(".node").not('.header').sort(function(a, b) { 
+$(".node").not('.header').not('.hidden').sort(function(a, b) { 
    var compA = $(a).find('.sender').text().toUpperCase();
    var compB = $(b).find('.sender').text().toUpperCase();
    return (compA < compB) ? -1 : (compA > compB) ? 1 : 0;
