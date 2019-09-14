@@ -131,7 +131,10 @@ file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize
 				$jsontree = $jsontree . '"name":"'.addcslashes(str_replace('\\','', $tempheader->subject),"\"").'",';
 				$jsontree = $jsontree . '"messageid":"'.$val.'",';
 				$jsontree = $jsontree . '"personal":"'.$tempheader->sender[0]->personal.'",';
-				$jsontree = $jsontree . '"sender":"'.$tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host.'",';
+				$escaped_hostdata = addcslashes(str_replace('\\','', $tempheader->sender[0]->host),"\"");
+                                $escaped_mailboxdata = addcslashes(str_replace('\\','', $tempheader->sender[0]->mailbox),"\"");
+
+				$jsontree = $jsontree . '"sender":"'.$escaped_mailboxdata."@".$escaped_hostdata.'",';
 				$jsontree = $jsontree . '"messagestatus":"'. $statusread->readstatus .'",';
 				$jsontree = $jsontree . '"markedstatus":"'. $statusread->marked .'",';
 				$jsontree = $jsontree . '"picturestatus":"'. $userinfo->picture .'",';
