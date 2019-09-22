@@ -5,7 +5,7 @@ require_once("../../config.php");
 //require_once('./edit_form.php');
 
 $id = required_param('id', PARAM_INT);
-$msgnr = required_param('msgnr',PARAM_RAW);
+$msgnr = required_param('msgnr', PARAM_RAW);
 //$sender = optional_param('sender',PARAM_TEXT);
 //$subject  = optional_param('subject', PARAM_TEXT);
 $form = data_submitted();
@@ -16,7 +16,6 @@ if (!$cm = get_coursemodule_from_id('newsmod', $id)) {
 
 if (!$course = $DB->get_record("course", array("id" => $cm->course))) {
     print_error("Course is misconfigured");
-
 }
 $journal = $DB->get_record("newsmod", array("id" => $cm->instance));
 $localconfig = get_config('newsmod');
@@ -38,57 +37,59 @@ $localconfig = get_config('newsmod');
 
 compose_mail();
 
-function compose_mail(){
-	global $form, $msgnr,$localconfig,$journal,$USER;
-        $username = "AUTHINFO USER ". $localconfig->newsgroupusername ."\n";
-	$eemail = explode("@",$USER->email);
-	$from = imap_rfc822_write_address ( $eemail[0] , $eemail[1],$USER->firstname ." ".$USER->lastname );
-        $headers['from'] = $from;
-        $headers['subject'] = $form->subject;
-        $headers['custom_headers'][] = 'Newsgroups: ' . $journal->newsgroup;
-	if($msgnr!="new"){
-//	echo "wo kommt das hin" . isset($msgnr);
-	 $headers['custom_headers'][] = 'References: ' . $msgnr;
-	}
-	$body[0]['type'] = TYPETEXT;
-        $body[0]['charset'] = 'UTF-8';
-        $body[0]['subtype'] = 'plain';
-        $body[0]['contents.data'] = $form->userInput;
-        $post = imap_mail_compose($headers, $body);
-        $server = $localconfig->newsgroupserver;
-        $port = 119;
-        $sh = fsockopen($server, $port) or die ("Can't connect to $server.");
-        //echo $sh;
-	print_r($post);
-//fwrite($sh, "STARTTLS\n");
-        if(fwrite($sh, $username)!=strlen($username)){
+function compose_mail()
+{
+    global $form, $msgnr,$localconfig,$journal,$USER;
+    $username = "AUTHINFO USER ". $localconfig->newsgroupusername ."\n";
+    $eemail = explode("@", $USER->email);
+    $from = imap_rfc822_write_address($eemail[0], $eemail[1], $USER->firstname ." ".$USER->lastname);
+    $headers['from'] = $from;
+    $headers['subject'] = $form->subject;
+    $headers['custom_headers'][] = 'Newsgroups: ' . $journal->newsgroup;
+    if ($msgnr!="new") {
+        //	echo "wo kommt das hin" . isset($msgnr);
+        $headers['custom_headers'][] = 'References: ' . $msgnr;
+    }
+    $body[0]['type'] = TYPETEXT;
+    $body[0]['charset'] = 'UTF-8';
+    $body[0]['subtype'] = 'plain';
+    $body[0]['contents.data'] = $form->userInput;
+    $post = imap_mail_compose($headers, $body);
+    $server = $localconfig->newsgroupserver;
+    $port = 119;
+    $sh = fsockopen($server, $port) or die("Can't connect to $server.");
+    //echo $sh;
+    print_r($post);
+    //fwrite($sh, "STARTTLS\n");
+    if (fwrite($sh, $username)!=strlen($username)) {
         fclose($sh);
         return(null);
-        }
-	$st=fgets($sh, 512);
-    if (substr($st, 0, 3)!="+OK")
-    {
+    }
+    $st=fgets($sh, 512);
+    if (substr($st, 0, 3)!="+OK") {
         //print_r($st);
         //fclose($sh);
         //return(NULL);
-    }else{print_r($st);}
-        $st="AUTHINFO PASS ".$localconfig->newsgrouppassword ."\n";
-        if (fwrite($sh, $st)!=strlen($st))
-        {
-                fclose($sh);
-        return(NULL);
-         }
-	$st=fgets($sh, 512);
-    if (substr($st, 0, 3)!="+OK")
-    {
+    } else {
+        print_r($st);
+    }
+    $st="AUTHINFO PASS ".$localconfig->newsgrouppassword ."\n";
+    if (fwrite($sh, $st)!=strlen($st)) {
+        fclose($sh);
+        return(null);
+    }
+    $st=fgets($sh, 512);
+    if (substr($st, 0, 3)!="+OK") {
 //        print_r($st);
 //        fclose($sh);
 //        return(NULL);
-    }else{print_r($st);}
-        fputs($sh, "POST\r\n");
-        fputs($sh, $post);
-        fputs($sh, ".\r\n");
-        fclose($sh);
+    } else {
+        print_r($st);
+    }
+    fputs($sh, "POST\r\n");
+    fputs($sh, $post);
+    fputs($sh, ".\r\n");
+    fclose($sh);
 }
 
 
@@ -102,4 +103,3 @@ function compose_mail(){
 //    $user->firstname = $sender;
 //    $user->lastname = "";
 //}
-

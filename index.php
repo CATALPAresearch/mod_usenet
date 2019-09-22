@@ -61,7 +61,7 @@ $table->attributes['class'] = 'generaltable mod_index';
 if ($course->format == 'weeks') {
     $table->head  = array(get_string('week'), get_string('name'));
     $table->align = array('center', 'left');
-} else if ($course->format == 'topics') {
+} elseif ($course->format == 'topics') {
     $table->head  = array(get_string('topic'), get_string('name'));
     $table->align = array('center', 'left', 'left', 'left');
 } else {
@@ -74,11 +74,13 @@ foreach ($newsmods as $newsmod) {
         $link = html_writer::link(
             new moodle_url('/mod/newsmod/view.php', array('id' => $newsmod->coursemodule)),
             format_string($newsmod->name, true),
-            array('class' => 'dimmed'));
+            array('class' => 'dimmed')
+        );
     } else {
         $link = html_writer::link(
             new moodle_url('/mod/newsmod/view.php', array('id' => $newsmod->coursemodule)),
-            format_string($newsmod->name, true));
+            format_string($newsmod->name, true)
+        );
     }
 
     if ($course->format == 'weeks' or $course->format == 'topics') {

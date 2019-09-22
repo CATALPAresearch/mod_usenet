@@ -24,14 +24,5 @@ $localconfig = get_config('newsmod');
 require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
 $jsontree = generateJsonFromNews($journal);
 header('Content-Type: application/json');
-//echo "<body>";
-echo $jsontree;
-//print_r(imap_headerinfo($nntp,1));
-//print_r( $threads);
-//echo "</body>";
-// $fp = fopen('results.json', 'w');
-// fwrite($fp, $jsontree);
-//
- //fclose($fp);
 
-//echo "<script type='text/javascript' src='jquery-3.4.1.min.js'></script>";
+echo $jsontree;

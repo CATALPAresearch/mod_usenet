@@ -35,7 +35,7 @@ if ($id) {
     $cm             = get_coursemodule_from_id('newsmod', $id, 0, false, MUST_EXIST);
     $course         = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     $moduleinstance = $DB->get_record('newsmod', array('id' => $cm->instance), '*', MUST_EXIST);
-} else if ($n) {
+} elseif ($n) {
     $moduleinstance = $DB->get_record('newsmod', array('id' => $n), '*', MUST_EXIST);
     $course         = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
     $cm             = get_coursemodule_from_instance('newsmod', $moduleinstance->id, $course->id, false, MUST_EXIST);
@@ -46,42 +46,28 @@ if ($id) {
 require_login($course, true, $cm);
 
 $modulecontext = context_module::instance($cm->id);
-//print_r($modulecontext);
-//$event = \mod_newsmod\event\course_module_viewed::create(array(
-//    'objectid' => $moduleinstance->id,
-//    'context' => $modulecontext
-//));
-//$event->add_record_snapshot('course', $course);
-//$event->add_record_snapshot('newsmod', $moduleinstance);
-//$event->trigger();
+
 
 $PAGE->set_url('/mod/newsmod/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
-//$PAGE->requires->js('https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js');
 
-
-//$PAGE->requires->js('/mod/newsmod/d3.v3.min.js','/mod/newsmod/treelist.js');
-//$PAGE->requires->js('/mod/newsmod/jdenticon-2.2.0.js');
-//$this->page->requires->jquery();
 echo '<script language="javascript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>';
 $PAGE->requires->js('/mod/newsmod/tree.js');
 echo '<script language="javascript" type="text/javascript" src="pnglib.js"></script>';
 echo '<script language="javascript" type="text/javascript" src="identicon.js"></script>';
-//echo '<script language="javascript" type="text/javascript" src="tree.js"></script>';
 echo '<script language="javascript" type="text/javascript" src="helper.js"></script>';
 echo "<link href=css/all.css rel=stylesheet>";
 
-//$myarray = array('apple', 'orange', 'pear');
 echo $OUTPUT->header();
-if(extension_loaded('imap')){
-$PAGE->requires->js_init_call('showtree',array('course'=>$cm->id, 'msgnr'=>$msgnr));
-}else{
-$warnung = "PHP-IMAP Modul ist nicht installiert.";
+if (extension_loaded('imap')) {
+    $PAGE->requires->js_init_call('showtree', array('course'=>$cm->id, 'msgnr'=>$msgnr));
+} else {
+    $warnung = "PHP-IMAP Modul ist nicht installiert.";
 }
 
-echo' 
+echo'
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -121,4 +107,3 @@ echo'
 
 //echo "<div id=contenttree><div id=tree1 class='col-6'></div><div id=treeinfo></div></div>";
 echo $OUTPUT->footer();
-

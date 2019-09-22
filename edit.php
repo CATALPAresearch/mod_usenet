@@ -12,7 +12,6 @@ if (!$cm = get_coursemodule_from_id('newsmod', $id)) {
 
 if (!$course = $DB->get_record("course", array("id" => $cm->course))) {
     print_error("Course is misconfigured");
-
 }
 
 $context = context_module::instance($cm->id);
@@ -32,5 +31,5 @@ $PAGE->set_heading($course->fullname);
 $data = new stdClass();
 
 $myfile = fopen("results.json", "r") or die("Unable to open file!");
-echo fread($myfile,filesize("results.json"));
+echo fread($myfile, filesize("results.json"));
 fclose($myfile);

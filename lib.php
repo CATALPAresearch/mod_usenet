@@ -30,7 +30,8 @@ defined('MOODLE_INTERNAL') || die();
  * @param string $feature Constant representing the feature.
  * @return true | null True if the feature is supported, null otherwise.
  */
-function newsmod_supports($feature) {
+function newsmod_supports($feature)
+{
     switch ($feature) {
         case FEATURE_MOD_INTRO:
             return true;
@@ -50,7 +51,8 @@ function newsmod_supports($feature) {
  * @param mod_newsmod_mod_form $mform The form.
  * @return int The id of the newly inserted record.
  */
-function newsmod_add_instance($moduleinstance, $mform = null) {
+function newsmod_add_instance($moduleinstance, $mform = null)
+{
     global $DB;
 
     $moduleinstance->timecreated = time();
@@ -70,7 +72,8 @@ function newsmod_add_instance($moduleinstance, $mform = null) {
  * @param newsmod_mod_form $mform The form.
  * @return bool True if successful, false otherwise.
  */
-function newsmod_update_instance($moduleinstance, $mform = null) {
+function newsmod_update_instance($moduleinstance, $mform = null)
+{
     global $DB;
 
     $moduleinstance->timemodified = time();
@@ -85,7 +88,8 @@ function newsmod_update_instance($moduleinstance, $mform = null) {
  * @param int $id Id of the module instance.
  * @return bool True if successful, false on failure.
  */
-function newsmod_delete_instance($id) {
+function newsmod_delete_instance($id)
+{
     global $DB;
 
     $exists = $DB->get_record('newsmod', array('id' => $id));
