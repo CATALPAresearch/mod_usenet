@@ -34,16 +34,26 @@ class send_summary extends \core\task\scheduled_task {
                 FROM mdl_mnet_host
                 WHERE id = '1';
                 ");
+$lastruntime = $DB->get_record_sql("
+                SELECT t.lastruntime
+                FROM {task_scheduled} t
+                where t.component = 'mod_newsmod'");
 
-
+        if($lastruntime->lastruntime>0){
+                $timetosearch=time();
+        }
+        else{
+                $timetosearch=strtotime("-40 hours", $lastruntrime->lastruntime);
+        }
 
 foreach ($httppos as $key) {
 $httppos=$key->wwwroot;
 }
 
 	foreach ($summary as $record){
+
 		$enrolled = $DB->get_records_sql("
-		SELECT c.id, nm.newsgroup, u.email, u.firstname
+		SELECT nm.newsgroup, u.id ,u.email, u.firstname
 		FROM {course} c
 		JOIN {newsmod} nm ON nm.course = c.id
 		JOIN {context} ct ON c.id = ct.instanceid
@@ -51,7 +61,6 @@ $httppos=$key->wwwroot;
 		JOIN {user} u ON u.id = ra.userid
 		JOIN {role} r ON r.id = ra.roleid
 		where u.id = $record->id");
-
 $summarytext = '
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -63,7 +72,7 @@ $summarytext = '
 </head>
 <body style="margin: 0; padding: 0;">';
 
-		$summarytext = $summarytext . "<b>Guten Tag, diese E-Mail enthält die tägliche Zusammenfassung neuer Newsgroupbeiträge</b>";
+		$summarytext = $summarytext . "<b>Guten Tag, diese E-Mail enthält die tägliche Zusammenfassung neuer Newsgroupbeiträge seit dem ".date("d-M-Y",$lastruntime->lastruntime)."</b>";
 $content= "";
 		foreach ($enrolled as $newsgr){
 		      $testhallo= $newsgr->newsgroup;
@@ -75,11 +84,11 @@ $content= "";
 			$key = array_search($newsgr->newsgroup, array_column($enrolledd, 'newsgroup'));
 			$keys = array_slice($enrolledd,$key,1);
 
-		      if(count($enrolled)>0){
+		if(count($enrolled)>0){
 			$content =1;
 			}
 			if(!isset($cachesummary[$newsgr->newsgroup])){
-			$cachesummary[$newsgr->newsgroup]=summary($newsgr);
+			$cachesummary[$newsgr->newsgroup]=summary($newsgr, $timetosearch);
 			}
 			if(count($cachesummary[$newsgr->newsgroup])>0){
 			//$summarytext = $summarytext . "\r\n\r\n<hr size=1 noshade=noshade />";
@@ -88,8 +97,8 @@ $content= "";
 		}
 
 
-			foreach($cachesummary[$newsgr->newsgroup] as $message){
-$summarytext= $summarytext .'<tr><td height="10px">';
+		foreach($cachesummary[$newsgr->newsgroup] as $message){
+		$summarytext= $summarytext .'<tr><td height="10px">';
                 $summarytext = $summarytext .  '<a class="searcher" href="'.$httppos .'/mod/newsmod/view.php?id='. $keys[0]->id .'&msgnr='. $message->uid .'">';
                 //$summarytext = $summarytext . '<li class="node" style="list-style:none">';
                 //$summarytext = $summarytext .  '<svg width="100" height="100" data-jdenticon-value=">';
@@ -100,11 +109,9 @@ $summarytext= $summarytext .'<tr><td height="10px">';
                 $summarytext = $summarytext . $tempheader->personal.'</p>';
                 //$summarytext = $summarytext . '</div><div class="timelist" timestamp="' .$message->date.'"';
                 //$summarytext = $summarytext . '</div></div></div></li></a>';
-$summarytext = $summarytext .'</td></tr>';
-
-
+		$summarytext = $summarytext .'</td></tr>';
 			}
-$summarytext = $summarytext .'</table>';
+		$summarytext = $summarytext .'</table>';
 		}
 
 		$summarytext = $summarytext . "</html>";
