@@ -33,12 +33,14 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
  * @copyright  Rudolf Patzer <rpatzer@gmx.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_newsmod_mod_form extends moodleform_mod {
+class mod_newsmod_mod_form extends moodleform_mod
+{
 
     /**
      * Defines forms elements
      */
-    public function definition() {
+    public function definition()
+    {
         global $CFG;
 
         $mform = $this->_form;
@@ -59,8 +61,8 @@ class mod_newsmod_mod_form extends moodleform_mod {
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         //$mform->addHelpButton('name', 'newsmodname', 'mod_newsmod');
         $mform->addElement('text', 'newsgroup', get_string('newsgroup', 'mod_newsmod'), array('size'=>'64'));
-                $mform->setType('newsgroup', PARAM_TEXT);
-                $mform->addRule('newsgroup', null, 'required', null, 'client');
+        $mform->setType('newsgroup', PARAM_TEXT);
+        $mform->addRule('newsgroup', null, 'required', null, 'client');
         // Adding the standard "intro" and "introformat" fields.
         if ($CFG->branch >= 29) {
             $this->standard_intro_elements();
