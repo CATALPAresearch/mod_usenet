@@ -83,9 +83,19 @@ function line_read(&$socket) {
     }
   }
 
+
+//empty the tcp buffer
 function flush_buf($socket)
 {
-
+    $lines_deleted = 0;
+    if (socket != false)
+    {
+        while (fgets($socket, 1200) !== false)
+        {
+            $lines_deleted++;
+        }
+    }
+    return $lines_deleted;
 }
 
 function thread_overview_read(&$socket) {
@@ -388,15 +398,14 @@ function formattree($headers)
     return $formatedtree;
 }
 
-//todo: security
-function nntp_open($host, $newsgroup, $user, $pass, $port = 119)
+//todo: function safety
+function nntp_open($host, $user, $pass, $port = 119)
 {
     $ipaddress = gethostbyname($host);
 
     $user_msg = "AUTHINFO USER ".$user."\r\n"; // fill in your ldap name here
     $pass_msg = "AUTHINFO PASS ".$pass."\r\n"; // enter your password here
 
-    $newsgroup_msg = $newsgroup."\r\n";
 
     $sock = fsockopen($ipaddress, $port);
 
@@ -405,12 +414,21 @@ function nntp_open($host, $newsgroup, $user, $pass, $port = 119)
     fputs($sock, $user_msg);
     fputs($sock, $pass_msg);
     
-    line_read($sock);
-    line_read($sock);
+    $line_del = flush_buf($sock);
+
+    echo $line_del;
 
 
 
     return $sock;
+}
+
+function nntp_headers($socket, $groupname)
+{
+    
+
+    $headers = thread_load_newsserver($socket, $groupname);
+
 }
 
 
@@ -445,7 +463,7 @@ echo (line_read($sock)."<br>");
         //$a = formattree($test);
 
         
-        echo ("<br>".var_dump(current($test)->subject));
+        echo ("<br>".var_dump($test));
 
     
 
