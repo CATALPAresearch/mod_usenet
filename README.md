@@ -52,13 +52,12 @@ TODO:
     *   [ ] article body formating
     *   [ ] thread sort (partialy done)
     *   [ ] search function
-    
-*   [ ] replace imap functions with nntp functions
-*   [ ] clean up code and add comments
+* [ ] replace imap functions with nntp functions
+* [ ] clean up code and add comments
 
 Additional TODO:
 
-    set up session/connection monitor - reason: right now each imap/nntp function opens up a new connection to the server
+set up session/connection monitor. reason: right now each imap/nntp function opens up a new connection to the server
 
 ## License ##
 
