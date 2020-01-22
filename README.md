@@ -45,15 +45,15 @@ Corresponding socket functions are called: nntp_xxxxx()
 
 TODO:
 
-[ ] library file / socket function collection (socketcon.php)
-    [ ] error handling on all new functions
-    [ ] article body formating
-    [ ] thread sort (partialy done)
-    [ ] search function
+*   [ ] library file / socket function collection (socketcon.php)
+*       [ ] error handling on all new functions
+*       [ ] article body formating
+*       [ ] thread sort (partialy done)
+*       [ ] search function
     
 
-[ ] replace imap functions with nntp functions
-[ ] clean up code and add comments
+*   [ ] replace imap functions with nntp functions
+*   [ ] clean up code and add comments
 
 Additional TODO:
     set up session/connection monitor - reason: right now each imap/nntp function opens up a new connection to the server
