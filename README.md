@@ -53,7 +53,6 @@ TODO:
     *   [ ] thread sort (partialy done)
     *   [ ] search function
     
-
 *   [ ] replace imap functions with nntp functions
 *   [ ] clean up code and add comments
 
