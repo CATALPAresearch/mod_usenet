@@ -398,7 +398,7 @@ function formattree($headers)
     return $formatedtree;
 }
 
-//todo: function safety
+//todo: error handling
 function nntp_open($host, $user, $pass, $port = 119)
 {
     $ipaddress = gethostbyname($host);
@@ -423,14 +423,129 @@ function nntp_open($host, $user, $pass, $port = 119)
     return $sock;
 }
 
-function nntp_headers($socket, $groupname)
+function nntp_header($socket, $groupname, $msgno)
 {
-    
+    $overviewformat=thread_overview_read($socket);
+    fputs($socket,"GROUP $groupname\r\n");   // select a group
+    $groupinfo=explode(" ",line_read($socket));
+    if (substr($groupinfo[0],0,1) != 2) 
+    {
+      echo "<p>".$text_error["error:"]."</p>";
+      echo "<p>".$text_thread["no_such_group"]."</p>";
+      flush();
+    } 
+    else 
+    {
+      
+        $firstarticle=$groupinfo[2];
+        $lastarticle=$groupinfo[3];
 
-    $headers = thread_load_newsserver($socket, $groupname);
-
+        // order the article overviews from the newsserver
+        fputs($socket,"XOVER ".$msgno."\r\n");
+        $tmp=line_read($socket);
+        // have the server accepted our order?
+        if (substr($tmp,0,3) == "224") {
+          $line=line_read($socket);
+          // read overview by overview until the data ends
+          
+            // parse the output of the server...
+            $article=thread_overview_interpret($line,$overviewformat,$groupname);
+            // ... and save it in our data structure
+            $article->threadsize++;
+            $article->date_thread=$article->date;
+            $header=$article;
+            
+            //$headers[$article->id]=$article;
+            // if we are in poll-mode: print status information and
+            // decode the article itself, so it can be saved in the article
+            // cache
+            
+            // read the next line from the newsserver
+            
+          }
+        
+    }
+    return $header;
 }
 
+
+function nntp_headers($socket, $groupname)
+{
+    $overviewformat=thread_overview_read($socket);
+    fputs($socket,"GROUP $groupname\r\n");   // select a group
+    $groupinfo=explode(" ",line_read($socket));
+    if (substr($groupinfo[0],0,1) != 2) 
+    {
+      echo "<p>".$text_error["error:"]."</p>";
+      echo "<p>".$text_thread["no_such_group"]."</p>";
+      flush();
+    } 
+    else 
+    {
+      
+        
+        $firstarticle=$groupinfo[2];
+        $lastarticle=$groupinfo[3];
+
+        // order the article overviews from the newsserver
+        fputs($socket,"XOVER ".$firstarticle."-".$lastarticle."\r\n");
+        $tmp=line_read($socket);
+        // have the server accepted our order?
+        if (substr($tmp,0,3) == "224") {
+          $line=line_read($socket);
+          // read overview by overview until the data ends
+          $i = 0;
+          while($line != ".")
+          {
+            // parse the output of the server...
+            $article=thread_overview_interpret($line,$overviewformat,$groupname);
+            // ... and save it in our data structure
+            $article->threadsize++;
+            $article->date_thread=$article->date;
+            $headers[$i]=$article;
+            $i++;
+            //$headers[$article->id]=$article;
+            // if we are in poll-mode: print status information and
+            // decode the article itself, so it can be saved in the article
+            // cache
+            
+            // read the next line from the newsserver
+            $line=line_read($socket);
+          }
+        }
+    }
+    return $headers;
+}
+
+
+function nntp_thread($socket, $groupname)
+{
+    
+}
+
+//todo: format the server response
+function nntp_fetchbody($socket, $groupname, $msgno)
+{
+    fputs($socket,"GROUP $groupname\r\n");   // select a group
+    $groupinfo=explode(" ",line_read($socket));
+    if (substr($groupinfo[0],0,1) != 2) 
+    {
+      echo "<p>".$text_error["error:"]."</p>";
+      echo "<p>".$text_thread["no_such_group"]."</p>";
+      flush();
+    } 
+    else
+    {
+        $article = fputs($socket, "BODY ".$msgno."\r\n");
+        $line=line_read($socket);
+        if (substr($line,0,3) != "222") {
+          echo "error";
+          return 0;
+        }
+
+        return $article;
+    }
+}
 
 
 $port = 119;
