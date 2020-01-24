@@ -4,6 +4,8 @@ require_once("../../config.php");
 //require_once('./conn_lib.php');
 //require_once('./edit_form.php');
 
+
+
 $id = required_param('id', PARAM_INT);
 $msgnr = required_param('msgnr', PARAM_INT);
 $sender = optional_param('sender', 0, PARAM_TEXT);
@@ -39,6 +41,9 @@ $PAGE->set_title(format_string($journal->name));
 $PAGE->set_heading($course->fullname);
 $data = new stdClass();
 $localconfig = get_config('newsmod');
+
+
+require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
 
 //$nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
 //$header = imap_header($nntp, imap_msgno($nntp, $msgnr));

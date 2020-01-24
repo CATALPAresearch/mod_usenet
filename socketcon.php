@@ -94,9 +94,9 @@ function line_read(&$socket) {
 function flush_buf($socket)
 {
     $lines_deleted = 0;
-    if (socket != false)
+    if ($socket)
     {
-        while (fgets($socket, 1200) !== false)
+        while ($tmp = fgets($socket, 1200) !== false)
         {
             $lines_deleted++;
         }
@@ -467,7 +467,7 @@ function nntp_header($socket, $groupname, $msgno)
             // cache
             
             // read the next line from the newsserver
-            
+            line_read($socket);
           }
         
     }
@@ -478,7 +478,7 @@ function nntp_header($socket, $groupname, $msgno)
 function nntp_headers($socket, $groupname)
 {
     $overviewformat=thread_overview_read($socket);
-    fputs($socket,"GROUP $groupname\r\n");   // select a group
+    fputs($socket,"GROUP ".$groupname."\r\n");   // select a group
     $groupinfo=explode(" ",line_read($socket));
     if (substr($groupinfo[0],0,1) != 2) 
     {
@@ -533,7 +533,7 @@ function nntp_thread($socket, $groupname)
 function nntp_fetchbody($socket, $groupname, $msgno)
 {
     $body = "";
-    fputs($socket,"GROUP $groupname\r\n");   // select a group
+    fputs($socket,"GROUP ".$groupname."\r\n");   // select a group
     $groupinfo=explode(" ",line_read($socket));
     if (substr($groupinfo[0],0,1) != 2) 
     {
