@@ -5,10 +5,16 @@
         ///nntp:        https://tools.ietf.org/html/rfc3977
         ///php sockets: https://www.php.net/manual/en/function.socket-recv.php
 */
-defined('MOODLE_INTERNAL')|| die;
 
 error_reporting(E_ALL);
 
+function debug2c($data) {
+  $output = $data;
+  if (is_array($output))
+      $output = implode(',', $output);
+
+  echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
+}
 
 function read($socket)
 {
@@ -414,10 +420,10 @@ function nntp_open($host, $user, $pass, $port = 119)
     fputs($sock, $user_msg);
     fputs($sock, $pass_msg);
     
-    $line_del = flush_buf($sock);
+    //$line_del = flush_buf($sock);
 
-    echo $line_del;
-
+    debug2c(line_read($sock)); 
+    debug2c(line_read($sock));
 
 
     return $sock;
@@ -526,6 +532,7 @@ function nntp_thread($socket, $groupname)
 //todo: format the server response
 function nntp_fetchbody($socket, $groupname, $msgno)
 {
+    $body = "";
     fputs($socket,"GROUP $groupname\r\n");   // select a group
     $groupinfo=explode(" ",line_read($socket));
     if (substr($groupinfo[0],0,1) != 2) 
@@ -536,23 +543,34 @@ function nntp_fetchbody($socket, $groupname, $msgno)
     } 
     else
     {
-        $article = fputs($socket, "BODY ".$msgno."\r\n");
+        fputs($socket, "BODY ".$msgno."\r\n");
         $line=line_read($socket);
         if (substr($line,0,3) != "222") {
-          echo "error";
-          return 0;
+          debug2c("error fetchbody");
+          return "error_fetchbody";
         }
+        else
+        {
+          $line = line_read($socket); 
 
-        return $article;
+          while ($line != ".")
+          {
+            $body .= $line;
+            $line = line_read($socket); 
+          }
+          debug2c($body);
+          return $body;
+        }
     }
 }
 
+/*
 
 $port = 119;
 $address = gethostbyname('feunews.fernuni-hagen.de');
-/*
+
     ///nntp commands must end with \r\n or \0
-*/
+
 $user = "AUTHINFO USER friedrichk\r\n"; // fill in your ldap name here
 $pass = "AUTHINFO PASS 241d0HB3450\r\n"; // enter your password here
 
@@ -588,5 +606,5 @@ echo (line_read($sock)."<br>");
 
         fclose($sock);
 
-
+*/
 ?>

@@ -39,17 +39,27 @@ $PAGE->set_title(format_string($journal->name));
 $PAGE->set_heading($course->fullname);
 $data = new stdClass();
 $localconfig = get_config('newsmod');
-$nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
-$header = imap_header($nntp, imap_msgno($nntp, $msgnr));
+
+//$nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+//$header = imap_header($nntp, imap_msgno($nntp, $msgnr));
 //print_r($header);
 //$message = imap_fetchbody($nntp, $msgnr, '1', FT_UID);
 //$message = nl2br($message);
 //print_r($header);
-if (!$user = $DB->get_record('user', ['email' => $header->fromaddress ])) {
+
+$nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+$header = nntp_header($nntp, $journal->newsgroup, $msgnr);
+
+$messagebody = nntp_fetchbody($nntp, $journal->newsgroup, $msgnr);
+
+
+
+//check out $header->fromaddress
+if (!$user = $DB->get_record('user', ['email' => $header->from])) {
     //echo "User Information not found";
     $user = new \stdClass();
     $user->id = "1";
-    $user->firstname = $header->from[0]->personal;
+    $user->firstname = $header->name;
     $user->lastname = "";
 }
 //print_r($user);
@@ -57,6 +67,8 @@ if (!$user = $DB->get_record('user', ['email' => $header->fromaddress ])) {
 require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
 //require_once($CFG->dirroot . '/mod/newsmod/src/image-master/src/Intervention/Image/autoload.php');
 markMessageRead($msgnr);
+//var itendi = new Identicon(btoa("'.$header->from[0]->mailbox."@".$header->from[0]->host .'"),options).toString();
+
 echo '<div class="container row-no-padding" style="padding-right:0px"><hr>
 	<div class="container row-no-padding row" style="padding-right:0px">
  	    <div class="svg col-sm-2 col-xl-2" style="padding-left:0px" id="identiconPlaceholder">
@@ -71,13 +83,13 @@ var options = {
                     };
 
 
-		var itendi = new Identicon(btoa("'.$header->from[0]->mailbox."@".$header->from[0]->host .'"),options).toString();
+		var itendi = new Identicon(btoa("'.$header->from .'"),options).toString();
 		var outerh = "<img width=100 height=100 src=\"data:image/svg+xml;base64,"+itendi+"";
 		$(\'#identiconPlaceholder\').append(outerh+"\"></img>");
 
 
 	   </script>
-        	<div id="messagehead" class="col-sm-8 col-xl-6" messageid='.htmlspecialchars($header->message_id).'>';
+        	<div id="messagehead" class="col-sm-8 col-xl-6" messageid='.htmlspecialchars($header->id).'>';
 echo '<div class="col-xl"><div></div><div id="name" >'.$user->firstname." ".$user->lastname.'</div>';
 
          //new moodle_url("/user/profile.php?id="'.$user->id).'></a>';
