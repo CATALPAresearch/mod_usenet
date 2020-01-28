@@ -1,9 +1,15 @@
 <?php
 defined('MOODLE_INTERNAL')|| die;
+
+error_reporting(E_ALL);
+
+require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
+
     function summary($journal, $timetosearch)
     {
         global $CFG, $DB;
         $localconfig = get_config('newsmod');
+        
         $nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword)
     or die("kann nicht verbinden: " . imap_last_error());
         $MC = imap_check($nntp);

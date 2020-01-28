@@ -6,7 +6,7 @@
         ///php sockets: https://www.php.net/manual/en/function.socket-recv.php
 */
 
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
 
 function debug2c($data) {
   $output = $data;
@@ -90,15 +90,31 @@ function line_read(&$socket) {
   }
 
 
+function line_read_nl(&$socket) {
+  if ($socket != false) {
+    $t=str_replace("\r","",fgets($socket,1200));
+    return $t;
+  }
+}
+
+
+
 //empty the tcp buffer
 function flush_buf($socket)
 {
     $lines_deleted = 0;
+    $limiter = 100;
+    $i = 0;
     if ($socket)
     {
-        while ($tmp = fgets($socket, 1200) !== false)
+        while (fgets($socket, 1200) !== false || $i < $limiter)
         {
             $lines_deleted++;
+        }
+
+        if ($i == $limiter -1)
+        {
+          return -1;
         }
     }
     return $lines_deleted;

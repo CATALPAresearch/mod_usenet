@@ -44,7 +44,6 @@ $localconfig = get_config('newsmod');
 
 
 require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
-
 //$nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
 //$header = imap_header($nntp, imap_msgno($nntp, $msgnr));
 //print_r($header);
@@ -56,7 +55,7 @@ $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername
 $header = nntp_header($nntp, $journal->newsgroup, $msgnr);
 
 $messagebody = nntp_fetchbody($nntp, $journal->newsgroup, $msgnr);
-
+$messagebody = nl2br($messagebody);
 
 
 //check out $header->fromaddress
@@ -64,7 +63,7 @@ if (!$user = $DB->get_record('user', ['email' => $header->from])) {
     //echo "User Information not found";
     $user = new \stdClass();
     $user->id = "1";
-    $user->firstname = $header->name;
+    $user->firstname = $header->name."TESTTEST";
     $user->lastname = "";
 }
 //print_r($user);
