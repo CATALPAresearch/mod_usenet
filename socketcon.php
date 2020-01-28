@@ -447,6 +447,7 @@ function nntp_open($host, $user, $pass, $port = 119)
 
 function nntp_header($socket, $groupname, $msgno)
 {
+  echo " ";
     $overviewformat=thread_overview_read($socket);
     fputs($socket,"GROUP $groupname\r\n");   // select a group
     $groupinfo=explode(" ",line_read($socket));
@@ -493,6 +494,7 @@ function nntp_header($socket, $groupname, $msgno)
 
 function nntp_headers($socket, $groupname)
 {
+  echo " ";
     $overviewformat=thread_overview_read($socket);
     fputs($socket,"GROUP ".$groupname."\r\n");   // select a group
     $groupinfo=explode(" ",line_read($socket));
@@ -548,6 +550,7 @@ function nntp_thread($socket, $groupname)
 //todo: format the server response
 function nntp_fetchbody($socket, $groupname, $msgno)
 {
+  echo " ";
     $body = "";
     fputs($socket,"GROUP ".$groupname."\r\n");   // select a group
     $groupinfo=explode(" ",line_read($socket));

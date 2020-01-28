@@ -1,7 +1,7 @@
 <?php
 defined('MOODLE_INTERNAL')|| die;
 
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
 
 require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
 
