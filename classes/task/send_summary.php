@@ -89,6 +89,11 @@ class send_summary extends \core\task\scheduled_task
                     $content =1;
                 }
                 if (!isset($cachesummary[$newsgr->newsgroup])) {
+
+
+                    //call to summary in libconn.php
+
+
                     $cachesummary[$newsgr->newsgroup]=summary($newsgr, $timetosearch);
                 }
                 if (count($cachesummary[$newsgr->newsgroup])>0) {

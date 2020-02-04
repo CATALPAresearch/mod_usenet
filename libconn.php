@@ -82,6 +82,106 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
     {
         global $CFG;
         $localconfig = get_config('newsmod');
+
+        $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+        //$cacheddata = loadCachedData($journal);
+        
+        $threads = thread_load_newsserver($nntp, $journal->newsgroup);
+        
+       
+
+        $jsontree = '{"name":"'. $journal->newsgroup. '/Aktivitätslog", "moodleurl":"'. new moodle_url("/") .'","children":[{';
+        $treend =0;
+        $last = "";
+        foreach ($threads as $header => $id) {
+            $tree = explode('.', $key);
+            if ($tree[1] == 'num') {
+                //echo $last;
+                if ($last == 'branch') {
+                    $jsontree = $jsontree . "},{";
+                }
+                $tempheader="";
+
+                /*
+                if ($cacheddata) {
+                    $key = array_search($val, array_column($cacheddata, 'uid'));
+                } else {
+                    $key ="";
+                }
+
+                if ($key!= "") {
+                    $tempheader=$cacheddata[$key];
+                    $tempheader->sender[0]= new \stdClass();
+                    $tempheader->sender=imap_rfc822_parse_adrlist($cacheddata[$key]->from, '');
+                    //$tempheader->subject=stripslashes(imap_utf8($tempheader->subject));
+                    $tempheader->subject=addcslashes(imap_utf8($tempheader->subject), "\"");
+                //print_r($tempheader->subject);
+                //$tempheader->subject ='Nachrichtenknoten gelöscht';
+                } else {
+                    $tempheader=headersubject($nntp, $val);
+                    if (@$tempheader->subject) {
+                        $tempheader->subject=imap_utf8($tempheader->subject);
+                    }
+                }
+                if (!is_object($tempheader)) {
+                    $tempheader= new \stdClass();
+                    $tempheader->subject ='Nachrichtenknoten gelöscht';
+                    $tempheader->sender[0] = new \stdClass();
+                    $tempheader->sender[0]->mailbox= 'nicht vorhanden';
+                    $tempheader->sender[0]->host= 'nicht vorhanden';
+                    $tempheader->date= 'Mon, 1 Jan 2019 11:28:23';
+                }
+                */
+                $statusread = @loadMessageStatus($val);
+                $userinfo = @getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host);
+                //print_r(getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host));
+                //$jsontree = $jsontree . '"name":"'. $tempheader->subject .'",';
+                $jsontree = $jsontree . '"name":"'.addcslashes(str_replace('\\', '', $tempheader->subject), "\"").'",';
+                $jsontree = $jsontree . '"messageid":"'.$val.'",';
+                $jsontree = $jsontree . '"personal":"'.$tempheader->sender[0]->personal.'",';
+                $escaped_hostdata = addcslashes(str_replace('\\', '', $tempheader->sender[0]->host), "\"");
+                $escaped_mailboxdata = addcslashes(str_replace('\\', '', $tempheader->sender[0]->mailbox), "\"");
+
+                $jsontree = $jsontree . '"sender":"'.$escaped_mailboxdata."@".$escaped_hostdata.'",';
+                $jsontree = $jsontree . '"messagestatus":"'. $statusread->readstatus .'",';
+                $jsontree = $jsontree . '"markedstatus":"'. $statusread->marked .'",';
+                $jsontree = $jsontree . '"picturestatus":"'. $userinfo->picture .'",';
+                $jsontree = $jsontree . '"user_id":"'.$userinfo->id.'",';
+                $jsontree = $jsontree . '"date":"'.$tempheader->date.'"';
+                if ($threads[$tree[0] . ".next"]!=0) 
+                {
+                    $jsontree = $jsontree . ',"children": [{'  ;
+                    $treend= '1';
+                } 
+                else 
+                {
+                    //$jsontree = $jsontree . '}]';
+                }
+            } 
+            elseif ($tree[1] == 'branch') 
+            {
+                if ($last=='branch') 
+                {
+                    $jsontree = $jsontree . "}]";
+                } 
+                else 
+                {
+                    $treend ='0';
+                }
+            }
+            $last = $tree[1];
+        }
+        $jsontree = $jsontree . "}]}";
+        return $jsontree;
+    }
+
+    /*
+
+
+    function generateJsonFromNews($journal)
+    {
+        global $CFG;
+        $localconfig = get_config('newsmod');
         $nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword)
         or die("kann nicht verbinden: " . imap_last_error());
         $cacheddata = loadCachedData($journal);
@@ -152,16 +252,24 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
                 $jsontree = $jsontree . '"picturestatus":"'. $userinfo->picture .'",';
                 $jsontree = $jsontree . '"user_id":"'.$userinfo->id.'",';
                 $jsontree = $jsontree . '"date":"'.$tempheader->date.'"';
-                if ($threads[$tree[0] . ".next"]!=0) {
+                if ($threads[$tree[0] . ".next"]!=0) 
+                {
                     $jsontree = $jsontree . ',"children": [{'  ;
                     $treend= '1';
-                } else {
+                } 
+                else 
+                {
                     //$jsontree = $jsontree . '}]';
                 }
-            } elseif ($tree[1] == 'branch') {
-                if ($last=='branch') {
+            } 
+            elseif ($tree[1] == 'branch') 
+            {
+                if ($last=='branch') 
+                {
                     $jsontree = $jsontree . "}]";
-                } else {
+                } 
+                else 
+                {
                     $treend ='0';
                 }
             }
@@ -170,6 +278,8 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         $jsontree = $jsontree . "}]}";
         return $jsontree;
     }
+
+*/
 
     function headersubject($nntp, $val)
     {
