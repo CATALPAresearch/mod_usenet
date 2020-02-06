@@ -148,6 +148,13 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
                 $jsontree = $jsontree . '"picturestatus":"'. $userinfo->picture .'",';
                 $jsontree = $jsontree . '"user_id":"'.$userinfo->id.'",';
                 $jsontree = $jsontree . '"date":"'.$tempheader->date.'"';
+
+                if (isset($header->answers))
+                {
+
+                    $jsontree .= getchildren($id);
+                }
+
                 if ($threads[$tree[0] . ".next"]!=0) 
                 {
                     $jsontree = $jsontree . ',"children": [{'  ;
@@ -173,6 +180,64 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         }
         $jsontree = $jsontree . "}]}";
         return $jsontree;
+    }
+
+    function getchildren($header)
+    {
+
+        $jsontree = "";
+
+
+        if (isset($header->answers))
+        {
+            $siblings = 0;
+            $jsontree = $jsontree . ',"children": [{'  ;
+
+            foreach ($header->answers as $childid)
+            {
+                if ($siblings > 0)
+                {
+                    $jsontree .= "},{";
+                }
+                //$header = getheader($childid);
+
+                
+                $statusread = @loadMessageStatus($val);
+                $userinfo = @getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host);
+                //print_r(getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host));
+                //$jsontree = $jsontree . '"name":"'. $tempheader->subject .'",';
+                $jsontree = $jsontree . '"name":"'.addcslashes(str_replace('\\', '', $tempheader->subject), "\"")."OMGOMG".'",';
+                $jsontree = $jsontree . '"messageid":"'.$val.'",';
+                $jsontree = $jsontree . '"personal":"'.$tempheader->sender[0]->personal.'",';
+                $escaped_hostdata = addcslashes(str_replace('\\', '', $tempheader->sender[0]->host), "\"");
+                $escaped_mailboxdata = addcslashes(str_replace('\\', '', $tempheader->sender[0]->mailbox), "\"");
+
+                $jsontree = $jsontree . '"sender":"'.$escaped_mailboxdata."@".$escaped_hostdata.'",';
+                $jsontree = $jsontree . '"messagestatus":"'. $statusread->readstatus .'",';
+                $jsontree = $jsontree . '"markedstatus":"'. $statusread->marked .'",';
+                $jsontree = $jsontree . '"picturestatus":"'. $userinfo->picture .'",';
+                $jsontree = $jsontree . '"user_id":"'.$userinfo->id.'",';
+                $jsontree = $jsontree . '"date":"'.$tempheader->date.'"';
+
+
+                $jsontree .= getchildren($childid);
+
+                $siblings++;
+            }
+
+            $jsontree = $jsontree . "}]";
+            
+        }
+        else
+        {
+            
+        }
+
+
+        
+        return $jsontree;
+        
+
     }
 
     /*
