@@ -78,6 +78,9 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         }
         return $user;
     }
+
+
+    
     function generateJsonFromNews($journal)
     {
         global $CFG;
@@ -93,156 +96,146 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         $jsontree = '{"name":"'. $journal->newsgroup. '/Aktivitätslog", "moodleurl":"'. new moodle_url("/") .'","children":[{';
         $treend =0;
         $last = "";
-        foreach ($threads as $header => $id) {
-            $tree = explode('.', $key);
-            if ($tree[1] == 'num') {
-                //echo $last;
-                if ($last == 'branch') {
-                    $jsontree = $jsontree . "},{";
-                }
-                $tempheader="";
-
-                /*
-                if ($cacheddata) {
-                    $key = array_search($val, array_column($cacheddata, 'uid'));
-                } else {
-                    $key ="";
-                }
-
-                if ($key!= "") {
-                    $tempheader=$cacheddata[$key];
-                    $tempheader->sender[0]= new \stdClass();
-                    $tempheader->sender=imap_rfc822_parse_adrlist($cacheddata[$key]->from, '');
-                    //$tempheader->subject=stripslashes(imap_utf8($tempheader->subject));
-                    $tempheader->subject=addcslashes(imap_utf8($tempheader->subject), "\"");
-                //print_r($tempheader->subject);
-                //$tempheader->subject ='Nachrichtenknoten gelöscht';
-                } else {
-                    $tempheader=headersubject($nntp, $val);
-                    if (@$tempheader->subject) {
-                        $tempheader->subject=imap_utf8($tempheader->subject);
-                    }
-                }
-                if (!is_object($tempheader)) {
-                    $tempheader= new \stdClass();
-                    $tempheader->subject ='Nachrichtenknoten gelöscht';
-                    $tempheader->sender[0] = new \stdClass();
-                    $tempheader->sender[0]->mailbox= 'nicht vorhanden';
-                    $tempheader->sender[0]->host= 'nicht vorhanden';
-                    $tempheader->date= 'Mon, 1 Jan 2019 11:28:23';
-                }
-                */
-                $statusread = @loadMessageStatus($val);
-                $userinfo = @getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host);
-                //print_r(getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host));
-                //$jsontree = $jsontree . '"name":"'. $tempheader->subject .'",';
-                $jsontree = $jsontree . '"name":"'.addcslashes(str_replace('\\', '', $tempheader->subject), "\"").'",';
-                $jsontree = $jsontree . '"messageid":"'.$val.'",';
-                $jsontree = $jsontree . '"personal":"'.$tempheader->sender[0]->personal.'",';
-                $escaped_hostdata = addcslashes(str_replace('\\', '', $tempheader->sender[0]->host), "\"");
-                $escaped_mailboxdata = addcslashes(str_replace('\\', '', $tempheader->sender[0]->mailbox), "\"");
-
-                $jsontree = $jsontree . '"sender":"'.$escaped_mailboxdata."@".$escaped_hostdata.'",';
-                $jsontree = $jsontree . '"messagestatus":"'. $statusread->readstatus .'",';
-                $jsontree = $jsontree . '"markedstatus":"'. $statusread->marked .'",';
-                $jsontree = $jsontree . '"picturestatus":"'. $userinfo->picture .'",';
-                $jsontree = $jsontree . '"user_id":"'.$userinfo->id.'",';
-                $jsontree = $jsontree . '"date":"'.$tempheader->date.'"';
-
-                if (isset($header->answers))
-                {
-
-                    $jsontree .= getchildren($id);
-                }
-
-                if ($threads[$tree[0] . ".next"]!=0) 
-                {
-                    $jsontree = $jsontree . ',"children": [{'  ;
-                    $treend= '1';
-                } 
-                else 
-                {
-                    //$jsontree = $jsontree . '}]';
-                }
-            } 
-            elseif ($tree[1] == 'branch') 
+        $siblings = 0;
+    foreach ($threads as $header) {
+        
+      if (!$header->isReply)
             {
-                if ($last=='branch') 
-                {
-                    $jsontree = $jsontree . "}]";
-                } 
-                else 
-                {
-                    $treend ='0';
+              if ($siblings > 0)
+            {
+                $jsontree .= "},{";
+            }
+            //print_r($header);
+            $tempheader="";
+
+            /*
+            if ($cacheddata) {
+                $key = array_search($val, array_column($cacheddata, 'uid'));
+            } else {
+                $key ="";
+            }
+
+            if ($key!= "") {
+                $tempheader=$cacheddata[$key];
+                $tempheader->sender[0]= new \stdClass();
+                $tempheader->sender=imap_rfc822_parse_adrlist($cacheddata[$key]->from, '');
+                //$tempheader->subject=stripslashes(imap_utf8($tempheader->subject));
+                $tempheader->subject=addcslashes(imap_utf8($tempheader->subject), "\"");
+            //print_r($tempheader->subject);
+            //$tempheader->subject ='Nachrichtenknoten gelöscht';
+            } else {
+                $tempheader=headersubject($nntp, $val);
+                if (@$tempheader->subject) {
+                    $tempheader->subject=imap_utf8($tempheader->subject);
                 }
             }
-            $last = $tree[1];
-        }
-        $jsontree = $jsontree . "}]}";
-        return $jsontree;
+            if (!is_object($tempheader)) {
+                $tempheader= new \stdClass();
+                $tempheader->subject ='Nachrichtenknoten gelöscht';
+                $tempheader->sender[0] = new \stdClass();
+                $tempheader->sender[0]->mailbox= 'nicht vorhanden';
+                $tempheader->sender[0]->host= 'nicht vorhanden';
+                $tempheader->date= 'Mon, 1 Jan 2019 11:28:23';
+            }
+            */
+            //$statusread = @loadMessageStatus($id);
+            //$userinfo = @getUserIdByEmail($header->from);
+            //print_r(getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host));
+            //$jsontree = $jsontree . '"subjfromfather":"'. $header->subject .'",';
+            $jsontree = $jsontree . '"name":"'.$header->subject.'",';
+            $jsontree = $jsontree . '"messageid":"'.$header->number.'",';
+            $jsontree = $jsontree . '"personal":"'.$header->name.'",';
+            //$escaped_hostdata = addcslashes(str_replace('\\', '', $tempheader->sender[0]->host), "\"");
+            //$escaped_mailboxdata = addcslashes(str_replace('\\', '', $tempheader->sender[0]->mailbox), "\"");
+
+            $jsontree = $jsontree . '"sender":"'.addcslashes(str_replace('\\', '', $header->from), "\"").'",';
+            //$jsontree = $jsontree . '"messagestatus":"'. $statusread->readstatus .'",';
+            //$jsontree = $jsontree . '"markedstatus":"'. $statusread->marked .'",';
+            //$jsontree = $jsontree . '"picturestatus":"'. $userinfo->picture .'",';
+            //$jsontree = $jsontree . '"user_id":"'.$header->id.'",';
+            $jsontree = $jsontree . '"date":"'.$header->date.'"';
+
+            
+          
+                $jsontree .= getchildren($header, $threads);
+     
+            $siblings++;
+
+            } 
+
+    }
+    $jsontree = $jsontree . "}]}";
+
+
+
+    return $jsontree;
     }
 
-    function getchildren($header)
+    
+
+    function getchildren($headeri, $threads)
     {
-
+    
         $jsontree = "";
-
-
-        if (isset($header->answers))
+    
+    
+        if (isset($headeri->answers))
         {
             $siblings = 0;
             $jsontree = $jsontree . ',"children": [{'  ;
-
-            foreach ($header->answers as $childid)
+    
+            foreach ($headeri->answers as $childid)
             {
                 if ($siblings > 0)
                 {
                     $jsontree .= "},{";
                 }
-                //$header = getheader($childid);
-
+                $header = $threads[$childid];
+    
                 
-                $statusread = @loadMessageStatus($val);
-                $userinfo = @getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host);
+                //$statusread = @loadMessageStatus($id);
+                //$userinfo = @getUserIdByEmail($header->from);
                 //print_r(getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host));
-                //$jsontree = $jsontree . '"name":"'. $tempheader->subject .'",';
-                $jsontree = $jsontree . '"name":"'.addcslashes(str_replace('\\', '', $tempheader->subject), "\"")."OMGOMG".'",';
-                $jsontree = $jsontree . '"messageid":"'.$val.'",';
-                $jsontree = $jsontree . '"personal":"'.$tempheader->sender[0]->personal.'",';
-                $escaped_hostdata = addcslashes(str_replace('\\', '', $tempheader->sender[0]->host), "\"");
-                $escaped_mailboxdata = addcslashes(str_replace('\\', '', $tempheader->sender[0]->mailbox), "\"");
-
-                $jsontree = $jsontree . '"sender":"'.$escaped_mailboxdata."@".$escaped_hostdata.'",';
-                $jsontree = $jsontree . '"messagestatus":"'. $statusread->readstatus .'",';
-                $jsontree = $jsontree . '"markedstatus":"'. $statusread->marked .'",';
-                $jsontree = $jsontree . '"picturestatus":"'. $userinfo->picture .'",';
-                $jsontree = $jsontree . '"user_id":"'.$userinfo->id.'",';
-                $jsontree = $jsontree . '"date":"'.$tempheader->date.'"';
-
-
-                $jsontree .= getchildren($childid);
-
+                //$jsontree = $jsontree . '"subj":"'. $header->subject .'",';
+                $jsontree = $jsontree . '"name":"'.$header->subject.'",';
+                $jsontree = $jsontree . '"messageid":"'.$header->number.'",';
+                $jsontree = $jsontree . '"personal":"'.$header->name.'",';
+                //$escaped_hostdata = addcslashes(str_replace('\\', '', $tempheader->sender[0]->host), "\"");
+                //$escaped_mailboxdata = addcslashes(str_replace('\\', '', $tempheader->sender[0]->mailbox), "\"");
+    
+                $jsontree = $jsontree . '"sender":"'.addcslashes(str_replace('\\', '', $header->from), "\"").'",';
+                //$jsontree = $jsontree . '"messagestatus":"'. $statusread->readstatus .'",';
+                //$jsontree = $jsontree . '"markedstatus":"'. $statusread->marked .'",';
+                //$jsontree = $jsontree . '"picturestatus":"'. $userinfo->picture .'",';
+                //$jsontree = $jsontree . '"user_id":"'.$header->id.'",';
+                $jsontree = $jsontree . '"date":"'.$header->date.'"';
+    
                 $siblings++;
+    
+                $jsontree .= getchildren($header, $threads);
+    
+                
             }
-
-            $jsontree = $jsontree . "}]";
+    
+            
             
         }
-        else
+    
+        if ($siblings > 0)
         {
-            
+         $jsontree = $jsontree . "}]";
         }
-
-
+    
+        
         
         return $jsontree;
         
-
+    
     }
 
-    /*
+    
 
-
+/*
     function generateJsonFromNews($journal)
     {
         global $CFG;
@@ -341,10 +334,11 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
             $last = $tree[1];
         }
         $jsontree = $jsontree . "}]}";
+        //debug2c($jsontree);
         return $jsontree;
     }
-
 */
+
 
     function headersubject($nntp, $val)
     {

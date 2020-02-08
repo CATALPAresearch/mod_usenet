@@ -49,7 +49,7 @@ function read($socket)
 
             if ($changed_sockets === false)
             {
-                echo "error - function read";
+                //echo "error - function read";
                 $done = true;
                 break;
             }
@@ -59,7 +59,7 @@ function read($socket)
                 $done = true;
             }
 
-            echo "ch sock: "."$changed_sockets<br>";
+            //echo "ch sock: "."$changed_sockets<br>";
             
 
         } 
@@ -69,12 +69,12 @@ function read($socket)
         if ($n === 0)
         {
             $done = true;
-            echo "connection widowed<br>";
+            //echo "connection widowed<br>";
         }
 
         $sum .= $buf;
 
-        echo "bytes rec:"."$n<br>";
+        //echo "bytes rec:"."$n<br>";
         
     }while(!$done);
 
@@ -191,7 +191,7 @@ function splitSubject(&$subject) {
 function thread_overview_interpret($line,$overviewformat,$groupname) {
     $return="";
     $overviewfmt=explode("\t",$overviewformat);
-    echo " ";                // keep the connection to the webbrowser alive
+    //echo " ";                // keep the connection to the webbrowser alive
     flush();                 // while generating the message-tree
   //  $over=split("\t",$line,count($overviewfmt)-1);
     $over=explode("\t",$line);
@@ -321,8 +321,8 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
     fputs($ns,"GROUP $groupname\r\n");   // select a group
     $groupinfo=explode(" ",line_read($ns));
     if (substr($groupinfo[0],0,1) != 2) {
-      echo "<p>".$text_error["error:"]."</p>";
-      echo "<p>".$text_thread["no_such_group"]."</p>";
+      //echo "<p>".$text_error["error:"]."</p>";
+      //echo "<p>".$text_thread["no_such_group"]."</p>";
       flush();
     } else {
       
@@ -438,8 +438,8 @@ function nntp_open($host, $user, $pass, $port = 119)
     
     //$line_del = flush_buf($sock);
 
-    debug2c(line_read($sock)); 
-    debug2c(line_read($sock));
+    line_read($sock); 
+    line_read($sock);
 
 
     return $sock;
@@ -447,14 +447,14 @@ function nntp_open($host, $user, $pass, $port = 119)
 
 function nntp_header($socket, $groupname, $msgno)
 {
-  echo " ";
+  //echo " ";
     $overviewformat=thread_overview_read($socket);
     fputs($socket,"GROUP $groupname\r\n");   // select a group
     $groupinfo=explode(" ",line_read($socket));
     if (substr($groupinfo[0],0,1) != 2) 
     {
-      echo "<p>".$text_error["error:"]."</p>";
-      echo "<p>".$text_thread["no_such_group"]."</p>";
+      //echo "<p>".$text_error["error:"]."</p>";
+      //echo "<p>".$text_thread["no_such_group"]."</p>";
       flush();
     } 
     else 
@@ -494,14 +494,14 @@ function nntp_header($socket, $groupname, $msgno)
 
 function nntp_headers($socket, $groupname)
 {
-  echo " ";
+  //echo " ";
     $overviewformat=thread_overview_read($socket);
     fputs($socket,"GROUP ".$groupname."\r\n");   // select a group
     $groupinfo=explode(" ",line_read($socket));
     if (substr($groupinfo[0],0,1) != 2) 
     {
-      echo "<p>".$text_error["error:"]."</p>";
-      echo "<p>".$text_thread["no_such_group"]."</p>";
+      //echo "<p>".$text_error["error:"]."</p>";
+      //echo "<p>".$text_thread["no_such_group"]."</p>";
       flush();
     } 
     else 
@@ -550,14 +550,14 @@ function nntp_thread($socket, $groupname)
 //todo: format the server response
 function nntp_fetchbody($socket, $groupname, $msgno)
 {
-  echo " ";
+  //echo " ";
     $body = "";
     fputs($socket,"GROUP ".$groupname."\r\n");   // select a group
     $groupinfo=explode(" ",line_read($socket));
     if (substr($groupinfo[0],0,1) != 2) 
     {
-      echo "<p>".$text_error["error:"]."</p>";
-      echo "<p>".$text_thread["no_such_group"]."</p>";
+      //echo "<p>".$text_error["error:"]."</p>";
+      //echo "<p>".$text_thread["no_such_group"]."</p>";
       flush();
     } 
     else
@@ -565,7 +565,7 @@ function nntp_fetchbody($socket, $groupname, $msgno)
         fputs($socket, "BODY ".$msgno."\r\n");
         $line=line_read($socket);
         if (substr($line,0,3) != "222") {
-          debug2c("error fetchbody");
+          //debug2c("error fetchbody");
           return "error_fetchbody";
         }
         else
@@ -577,7 +577,7 @@ function nntp_fetchbody($socket, $groupname, $msgno)
             $body .= $line;
             $line = line_read($socket); 
           }
-          debug2c($body);
+          //debug2c($body);
           return $body;
         }
     }
@@ -595,27 +595,27 @@ $pass = "AUTHINFO PASS 241d0HB3450\r\n"; // enter your password here
 
 
 $sock = fsockopen($address, $port);
-echo (line_read($sock)."<br>");
+//echo (line_read($sock)."<br>");
 
     $counter = 0;
   
         fputs($sock, $user);
         fputs($sock, $pass);
 
-        echo (line_read($sock)."<br>");
-        echo (line_read($sock)."<br>");
+        //echo (line_read($sock)."<br>");
+        //echo (line_read($sock)."<br>");
 
         $groupname = "feu.informatik.kurs.1515";
 
 
         $test = thread_load_newsserver($sock, $groupname);
 
-        //echo (var_dump($test));
+        ////echo (var_dump($test));
 
         //$a = formattree($test);
 
         
-        echo ("<br>".var_dump($test));
+        //echo ("<br>".var_dump($test));
 
     
 
