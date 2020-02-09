@@ -201,10 +201,12 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
           //todo preg_replace
         $subject=preg_replace('/\[doctalk\]/i','',headerDecode($over[$i+1]));
         $article->isReply=splitSubject($subject);
-        $article->subject=$subject;
+        $article->subject=$over[$i+1];
+        //$article->subject=$subject;
       }
       if ($overviewfmt[$i]=="Date:") {
-        $article->date=getTimestamp($over[$i+1]);
+        $article->date = $over[$i+1];
+        //$article->date=getTimestamp($over[$i+1]);
       }
       if ($overviewfmt[$i]=="From:") {
         $fromline=address_decode(headerDecode($over[$i+1]),"nirgendwo");

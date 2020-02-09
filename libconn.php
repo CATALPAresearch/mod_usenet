@@ -79,7 +79,11 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         return $user;
     }
 
-
+    function utf8_for_xml($string)
+    {
+      return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u',
+                          ' ', $string);
+    }
     
     function generateJsonFromNews($journal)
     {
@@ -142,6 +146,9 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
             //$userinfo = @getUserIdByEmail($header->from);
             //print_r(getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host));
             //$jsontree = $jsontree . '"subjfromfather":"'. $header->subject .'",';
+            
+            $header->subject=addcslashes(imap_utf8($header->subject), "\"");
+            $header->subject = utf8_for_xml($header->subject);
             $jsontree = $jsontree . '"name":"'.$header->subject.'",';
             $jsontree = $jsontree . '"messageid":"'.$header->number.'",';
             $jsontree = $jsontree . '"personal":"'.$header->name.'",';
@@ -192,7 +199,9 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
                 }
                 $header = $threads[$childid];
     
-                
+
+                $header->subject=addcslashes(imap_utf8($header->subject), "\"");
+                $header->subject = utf8_for_xml($header->subject);
                 //$statusread = @loadMessageStatus($id);
                 //$userinfo = @getUserIdByEmail($header->from);
                 //print_r(getUserIdByEmail($tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host));
