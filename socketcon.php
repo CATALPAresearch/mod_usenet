@@ -190,6 +190,7 @@ function splitSubject(&$subject) {
 
 function thread_overview_interpret($line,$overviewformat,$groupname) {
     $return="";
+    
     $overviewfmt=explode("\t",$overviewformat);
     //echo " ";                // keep the connection to the webbrowser alive
     flush();                 // while generating the message-tree
@@ -199,8 +200,10 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
     for ($i=0; $i<count($overviewfmt)-1; $i++) {
       if ($overviewfmt[$i]=="Subject:") {
           //todo preg_replace
-        $subject=preg_replace('/\[doctalk\]/i','',headerDecode($over[$i+1]));
-        $article->isReply=splitSubject($subject);
+          
+        //$subject=preg_replace('/\[doctalk\]/i','',headerDecode($over[$i+1]));
+        //$article->isReply=splitSubject($subject);
+        $article->isReply=splitSubject($over[$i+1]);
         $article->subject=$over[$i+1];
         //$article->subject=$subject;
       }
@@ -318,7 +321,6 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
 
 
   function thread_load_newsserver(&$ns,$groupname) {
-    
     $overviewformat=thread_overview_read($ns);
     fputs($ns,"GROUP $groupname\r\n");   // select a group
     $groupinfo=explode(" ",line_read($ns));
