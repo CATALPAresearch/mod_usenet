@@ -146,7 +146,7 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
             $statusread = @loadMessageStatus($header->number);
             $userinfo = @getUserIdByEmail($header->from);
 
-
+            
             $header->subject = addcslashes(utf8_encode($header->subject), "\"");
             $jsontree = $jsontree . '"name":"'.$header->subject.'",';
             $jsontree = $jsontree . '"messageid":"'.$header->number.'",';
@@ -157,7 +157,7 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
             $jsontree = $jsontree . '"markedstatus":"'. $statusread->marked .'",';
             $jsontree = $jsontree . '"picturestatus":"'. $userinfo->picture .'",';
             $jsontree = $jsontree . '"user_id":"'.$userinfo->id.'",';
-            $jsontree = $jsontree . '"date":"'.$header->date.'"';
+            $jsontree = $jsontree . '"date":"'.$header->displaydate.'"';
 
             
           
@@ -210,9 +210,9 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
                 $jsontree = $jsontree . '"markedstatus":"'. $statusread->marked .'",';
                 $jsontree = $jsontree . '"picturestatus":"'. $userinfo->picture .'",';
                 $jsontree = $jsontree . '"user_id":"'.$userinfo->id.'",';
-                $jsontree = $jsontree . '"date":"'.$header->date.'"';
+                $jsontree = $jsontree . '"date":"'.$header->displaydate.'"';
     
-                
+
                 $siblings++;
     
                 $jsontree .= getchildren($header, $threads);

@@ -55,8 +55,8 @@ $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername
 $header = nntp_header($nntp, $journal->newsgroup, $msgnr);
 
 $messagebody = nntp_fetchbody($nntp, $journal->newsgroup, $msgnr);
-$messagebody = nl2br($messagebody);
 
+//$messagebody = nl2br($messagebody);
 
 //check out $header->fromaddress
 if (!$user = $DB->get_record('user', ['email' => $header->from])) {

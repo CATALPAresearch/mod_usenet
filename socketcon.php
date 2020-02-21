@@ -97,6 +97,15 @@ function line_read_nl(&$socket) {
   }
 }
 
+//line read unformated
+function line_read_uf(&$socket) {
+  if ($socket != false) {
+    $t= fgets($socket,1200);
+    return $t;
+  }
+}
+
+
 
 
 //empty the tcp buffer
@@ -208,8 +217,8 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
         //$article->subject=$subject;
       }
       if ($overviewfmt[$i]=="Date:") {
-        $article->date = $over[$i+1];
-        //$article->date=getTimestamp($over[$i+1]);
+        $article->displaydate = $over[$i+1];
+        $article->date=getTimestamp($over[$i+1]);
       }
       if ($overviewfmt[$i]=="From:") {
         $fromline=address_decode(headerDecode($over[$i+1]),"nirgendwo");
@@ -309,7 +318,8 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
   function thread_mycompare($a,$b) {
     $thread_sort_order=-1;
     $thread_sort_type="thread";
-    if($thread_sort_type!="thread") {
+    if($thread_sort_type!="thread") 
+    {
       $r=($a->date<$b->date) ? -1 : 1;
       if ($a->date==$b->date) $r=0;
     } else {
@@ -574,12 +584,16 @@ function nntp_fetchbody($socket, $groupname, $msgno)
         }
         else
         {
-          $line = line_read($socket); 
+          $line = line_read_uf($socket); 
 
-          while ($line != ".")
+          $formatedline = str_replace("\n","",str_replace("\r","",$line));
+
+          while ($formatedline != ".")
           {
             $body .= $line;
-            $line = line_read($socket); 
+            $line = line_read_uf($socket); 
+
+            $formatedline = str_replace("\n","",str_replace("\r","",$line));
           }
           //debug2c($body);
           return $body;
