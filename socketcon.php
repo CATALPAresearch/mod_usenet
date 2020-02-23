@@ -508,14 +508,13 @@ function nntp_header($socket, $groupname, $msgno)
 
 function nntp_headers($socket, $groupname)
 {
-  //echo " ";
     $overviewformat=thread_overview_read($socket);
-    fputs($socket,"GROUP ".$groupname."\r\n");   // select a group
+    fputs($socket,"GROUP $groupname\r\n");   // select a group
     $groupinfo=explode(" ",line_read($socket));
     if (substr($groupinfo[0],0,1) != 2) 
     {
-      //echo "<p>".$text_error["error:"]."</p>";
-      //echo "<p>".$text_thread["no_such_group"]."</p>";
+      echo "<p>".$text_error["error:"]."</p>";
+      echo "<p>".$text_thread["no_such_group"]."</p>";
       flush();
     } 
     else 
@@ -532,7 +531,7 @@ function nntp_headers($socket, $groupname)
         if (substr($tmp,0,3) == "224") {
           $line=line_read($socket);
           // read overview by overview until the data ends
-          $i = 0;
+          
           while($line != ".")
           {
             // parse the output of the server...
@@ -540,8 +539,8 @@ function nntp_headers($socket, $groupname)
             // ... and save it in our data structure
             $article->threadsize++;
             $article->date_thread=$article->date;
-            $headers[$i]=$article;
-            $i++;
+            $headers[$article->id]=$article;
+            
             //$headers[$article->id]=$article;
             // if we are in poll-mode: print status information and
             // decode the article itself, so it can be saved in the article

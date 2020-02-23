@@ -10,14 +10,12 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         global $CFG, $DB;
         $localconfig = get_config('newsmod');
         
-        $nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword)
-    or die("kann nicht verbinden: " . imap_last_error());
-        $MC = imap_check($nntp);
-        $result = imap_fetch_overview($nntp, "1:{$MC->Nmsgs}", 0);
+        $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+        $result = nntp_headers($nntp, $journal->newsgroup);
         file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
         //$string_data = file_get_contents("filecontents.txt");
         //$result = unserialize($string_data);
-        print_r($timetosearch);
+        //print_r($timetosearch);
 
         //foreach ($result as $overview) {
 //    echo "#{$overview->msgno} ({$overview->date}) - From: {$overview->from}
@@ -25,9 +23,12 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         //echo mb_detect_encoding($overview->subject)."\r\n";
         //}
 
+        /*
         $email = imap_search($nntp, 'SINCE "'.Date("d M Y", $timetosearch).'"', SE_UID);
         $tmp =@imap_fetch_overview($nntp, implode(',', $email), FT_UID);
         return($tmp);
+        */
+        return $result;
     }
 
     function buildSearchSting()
@@ -38,9 +39,8 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
     {
         global $CFG;
         $localconfig = get_config('newsmod');
-        $nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
-        $MC = imap_check($nntp);
-        $result = imap_fetch_overview($nntp, "1:{$MC->Nmsgs}", 0);
+        $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+        $result = nntp_headers($nntp, $journal->newsgroup);
         file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
     }
 

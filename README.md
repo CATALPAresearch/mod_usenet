@@ -50,7 +50,7 @@ TODO:
 *   [ ] library file / socket function collection (socketcon.php)
     *   [ ] error handling on all new functions
     *   [ ] article body formating
-    *   [ ] thread sort (partialy done)
+    *   [X] thread sort (partialy done)
     *   [ ] search function
 * [ ] replace imap functions with nntp functions
 * [ ] clean up code and add comments

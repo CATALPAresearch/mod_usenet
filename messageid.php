@@ -63,7 +63,7 @@ if (!$user = $DB->get_record('user', ['email' => $header->from])) {
     //echo "User Information not found";
     $user = new \stdClass();
     $user->id = "1";
-    $user->firstname = $header->name."TESTTEST";
+    $user->firstname = $header->name;
     $user->lastname = "";
 }
 //print_r($user);
