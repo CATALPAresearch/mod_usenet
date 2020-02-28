@@ -37,13 +37,7 @@ $PAGE->set_title(format_string($journal->name));
 $PAGE->set_heading($course->fullname);
 $data = new stdClass();
 $localconfig = get_config('newsmod');
-$nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
 
-/*      data not used
-$header = imap_header($nntp, imap_msgno($nntp, $msgnr));
-$message = imap_fetchbody($nntp, $msgnr, '1', FT_UID);
-$message = nl2br($message);
-*/
 
 if (!$user = $DB->get_record('user', ['email' => $sender])) {
     //echo "User Information not found";
@@ -53,8 +47,12 @@ if (!$user = $DB->get_record('user', ['email' => $sender])) {
     $user->lastname = "";
 }
 require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
-$searchresult = msgSearch($nntp, $searchparam);
-$messages = imap_fetch_overview($nntp, implode(',', array_slice($searchresult, 0)), FT_UID);
+
+//$searchresult = msgSearch($nntp, $searchparam);
+//$messages = imap_fetch_overview($nntp, implode(',', array_slice($searchresult, 0)), FT_UID);
+
+//$nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+
 
 if ($messages) {
     header('Content-Type: application/json');

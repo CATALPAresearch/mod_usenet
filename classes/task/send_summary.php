@@ -108,10 +108,29 @@ class send_summary extends \core\task\scheduled_task
                     $summarytext = $summarytext .  '<a class="searcher" href="'.$httppos .'/mod/newsmod/view.php?id='. $keys[0]->id .'&msgnr='. $message->uid .'">';
                     //$summarytext = $summarytext . '<li class="node" style="list-style:none">';
                     //$summarytext = $summarytext .  '<svg width="100" height="100" data-jdenticon-value=">';
-                    $tempheader->sender=imap_rfc822_parse_adrlist($message->from, '');
+
+
+                    //original code:
+                    //$tempheader->sender=imap_rfc822_parse_adrlist($message->from, '');
+
+                    //maybe use formating on $message->from (example from generatejsonfromnews() in libconn.php)
+                    //$jsontree = $jsontree . '"sender":"'.addcslashes(str_replace('\\', '', $header->from), "\"").'",';
+                    $tempheader->sender=$message->from;
+
+
+
                     //print_r(new moodle_url("/mod/newsmod/messageid.php?id=" . $newsgr->id . "&msgnr=" . $message->uid));
                     $summarytext = $summarytext . '<p>Betreff: '. htmlspecialchars($message->subject).'</p><p> Absender: ';
-                    $summarytext = $summarytext . $tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host;
+
+
+
+                    //original code:
+                    //$summarytext = $summarytext . $tempheader->sender[0]->mailbox."@".$tempheader->sender[0]->host;
+
+                    //sender already contains mailbox@host
+                    $summarytext = $summarytext . $tempheader->sender;
+
+
                     $summarytext = $summarytext . $tempheader->personal.'</p>';
                     //$summarytext = $summarytext . '</div><div class="timelist" timestamp="' .$message->date.'"';
                     //$summarytext = $summarytext . '</div></div></div></li></a>';

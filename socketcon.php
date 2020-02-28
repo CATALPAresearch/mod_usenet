@@ -16,71 +16,6 @@ function debug2c($data) {
   echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
 }
 
-function read($socket)
-{
-
-    $done = false;  //loop exit condition
-
-
-    /*
-        //socket_select requieres arrays of socket to keep track of
-    */
-    $w = null;      //sockets for writing
-    $e = null;      //exception sockets
-    $r = array($socket);    //sockets for reading
-
-    $buf = "";      //receiver var for socket_recv() - data origin: tcp buffer 
-    $sum = "";      //concatenation of $buf
-    
-
-    /*
-        //pre loop initialization
-    */
-    $n = 0;     //return val of socket_recv(), stores amount of bytes read
-    $changed_sockets = 0;   //return val of socket_select(), stores amount of changed sockets
-
-
-    do{
-        
-        if($n === false)
-        {
-
-            $changed_sockets = socket_select($r,$w,$e, 0, 500000);  //500000us = 500ms
-
-            if ($changed_sockets === false)
-            {
-                //echo "error - function read";
-                $done = true;
-                break;
-            }
-
-            if ($changed_sockets == 0)
-            {
-                $done = true;
-            }
-
-            //echo "ch sock: "."$changed_sockets<br>";
-            
-
-        } 
-        $n = socket_recv($socket, $buf, 2048, MSG_DONTWAIT);
-
-        //0 received bytes indicate a closed connection
-        if ($n === 0)
-        {
-            $done = true;
-            //echo "connection widowed<br>";
-        }
-
-        $sum .= $buf;
-
-        //echo "bytes rec:"."$n<br>";
-        
-    }while(!$done);
-
-
-    return $sum;
-}
 
 function line_read(&$socket) {
     if ($socket != false) {
@@ -414,25 +349,7 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
   }  
 
 
-///evaluates a response coming from a nntp/nnrp server
-///param:   response string from nntp/nnrp server in response to command
-///returns: 
-function formattree($headers)
-{
-    $size = sizeof($headers);
 
-    $formatedtree = "";
-
-    for ($i = 0; $i < $size; $i++)
-    {
-        if ($headers[$i]['isreply'] === true) $formatedtree .= "\t";
-        $formatedtree .= $headers[$i]['subject'];
-
-
-        $formatedtree .= "\n";
-    }
-    return $formatedtree;
-}
 
 //todo: error handling
 function nntp_open($host, $user, $pass, $port = 119)
@@ -555,10 +472,6 @@ function nntp_headers($socket, $groupname)
 }
 
 
-function nntp_thread($socket, $groupname)
-{
-    
-}
 
 //todo: format the server response
 function nntp_fetchbody($socket, $groupname, $msgno)

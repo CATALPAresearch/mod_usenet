@@ -17,11 +17,7 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         //$result = unserialize($string_data);
         //print_r($timetosearch);
 
-        //foreach ($result as $overview) {
-//    echo "#{$overview->msgno} ({$overview->date}) - From: {$overview->from}
-//    {$overview->subject}\n<BR>";
-        //echo mb_detect_encoding($overview->subject)."\r\n";
-        //}
+       
 
         /*
         $email = imap_search($nntp, 'SINCE "'.Date("d M Y", $timetosearch).'"', SE_UID);
@@ -343,13 +339,13 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
 */
 
 
-    function headersubject($nntp, $val)
+    function headersubject($nntp, $groupname, $val)
     {
         if ($val==0) {
             return;
         }
 
-        $header = imap_headerinfo($nntp, imap_msgno($nntp, $val));
+        $header = nntp_header($nntp, $groupname, $val);
         //$tempheader = stripslashes($header->subject);
         //print_r("test");
         //addcslashes(imap_utf8($header->subject),'\"');
@@ -415,9 +411,10 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         }
         return;
     }
-
+//todo
     function msgSearch($nntp, $param)
     {
-        $some   = imap_search($nntp, 'TEXT "'. $param . '"', SE_UID);
-        return $some;
+        //$some   = imap_search($nntp, 'TEXT "'. $param . '"', SE_UID);
+        //return $some;
+        return 0;
     }

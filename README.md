@@ -49,7 +49,7 @@ TODO:
 
 *   [ ] library file / socket function collection (socketcon.php)
     *   [ ] error handling on all new functions
-    *   [ ] article body formating
+    *   [X] article body formating
     *   [X] thread sort (partialy done)
     *   [ ] search function
 * [ ] replace imap functions with nntp functions
