@@ -72,14 +72,18 @@ for(var i=0;i<f.length;i++){
   }else if (z.indexOf("Senden")>=0){
     var subject = $('#subject').text();
     var text = $('#messagebody').val();
+
+    var refs = $('#messagehead').attr('references');
+
+
     subject = "Re: " + subject;
 let searchParams = new URLSearchParams(window.location.search);
 let param = searchParams.get('id');
-$.post("posttest.php?id="+param+"&msgnr=" +$('#messagehead').attr('messageid'), { userInput : text, subject : subject }, function(data){ });
+$.post("posttest.php?id="+param+"&msgnr=" +$('#messagehead').attr('messageid'), { userInput : text, subject : subject, references : refs }, function(data){ });
 
 
-    alert("Nachricht gesendet");
-
+    //alert("Nachricht gesendet");
+    alert(refs);
 
     location.reload(false);
   }

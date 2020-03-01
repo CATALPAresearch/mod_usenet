@@ -93,7 +93,7 @@ var options = {
 
 
 	   </script>
-        	<div id="messagehead" class="col-sm-8 col-xl-6" messageid='.htmlspecialchars($header->id).'>';
+        	<div id="messagehead" class="col-sm-8 col-xl-6" messageid='.htmlspecialchars($header->id).' references='.htmlspecialchars(implode(" ",$header->references)).'>';
 echo '<div class="col-xl"><div></div><div id="name" >'.$user->firstname." ".$user->lastname.'</div>';
 
          //new moodle_url("/user/profile.php?id="'.$user->id).'></a>';
