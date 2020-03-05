@@ -412,7 +412,7 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         return;
     }
 //todo
-    function msgSearch($param)
+    function msgSearch($journal, $param)
     {
         global $CFG;
         $localconfig = get_config('newsmod');
