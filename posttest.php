@@ -138,7 +138,7 @@ function compose_mail()
   }
 }
 
-
+/*
 
 function acompose_mail()
 {
@@ -199,7 +199,7 @@ function acompose_mail()
 }
 
 
-
+*/
 
 
 

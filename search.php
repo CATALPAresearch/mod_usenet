@@ -48,15 +48,15 @@ if (!$user = $DB->get_record('user', ['email' => $sender])) {
 }
 require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
 
-//$searchresult = msgSearch($nntp, $searchparam);
+$searchresult = msgSearch($searchparam);
 //$messages = imap_fetch_overview($nntp, implode(',', array_slice($searchresult, 0)), FT_UID);
 
 //$nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
 
 
-if ($messages) {
+if ($searchresult) {
     header('Content-Type: application/json');
-    echo json_encode($messages);
+    echo json_encode($searchresult);
 } else {
     header('HTTP/1.1 204 No Content', true, 204);
 }

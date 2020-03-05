@@ -412,8 +412,50 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         return;
     }
 //todo
-    function msgSearch($nntp, $param)
+    function msgSearch($param)
     {
+        global $CFG;
+        $localconfig = get_config('newsmod');
+        $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+        
+        
+        $headers = nntp_headers($nntp, $journal->newsgroup);
+
+        foreach($headers as $key => $header)
+        {
+            if (stripos($header->subject, $param) !== false)
+            {
+                $headerdata = [
+                    "subject" => $header->subject,
+                    "from" => $header->name,
+                    "messageid" => $header->number,
+                    //"sender" => addcslashes(str_replace('\\', '', $header->from), "\""),
+                    "date" => $header->displaydate,
+                ];
+                //$value->id = $value->number;
+                //$value->references = 0;
+                $matches[] = $headerdata;
+            }
+            if (stripos($header->name, $param) !== false)
+            {
+                $headerdata = [
+                    "subject" => $header->subject,
+                    "from" => $header->name,
+                    "messageid" => $header->number,
+                    //"sender" => addcslashes(str_replace('\\', '', $header->from), "\""),
+                    "date" => $header->displaydate,
+                ];
+                //$value->id = $value->number;
+                //$value->references = 0;
+                $matches[] = $headerdata;
+            }
+        }
+
+
+        if (isset($matches))
+        {
+            return $matches;
+        }
         //$some   = imap_search($nntp, 'TEXT "'. $param . '"', SE_UID);
         //return $some;
         return 0;

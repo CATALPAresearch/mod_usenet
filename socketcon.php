@@ -430,8 +430,8 @@ function nntp_headers($socket, $groupname)
     $groupinfo=explode(" ",line_read($socket));
     if (substr($groupinfo[0],0,1) != 2) 
     {
-      echo "<p>".$text_error["error:"]."</p>";
-      echo "<p>".$text_thread["no_such_group"]."</p>";
+      //echo "<p>".$text_error["error:"]."</p>";
+      //echo "<p>".$text_thread["no_such_group"]."</p>";
       flush();
     } 
     else 
