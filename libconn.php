@@ -428,8 +428,9 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
                 $headerdata = [
                     "subject" => $header->subject,
                     "from" => $header->name,
-                    "messageid" => $header->number,
-                    //"sender" => addcslashes(str_replace('\\', '', $header->from), "\""),
+                    "messageid" => $header->id,
+                    "uid" => $header->number,
+                    "sender" => addcslashes(str_replace('\\', '', $header->from), "\""),
                     "date" => $header->displaydate,
                 ];
                 //$value->id = $value->number;
@@ -441,8 +442,9 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
                 $headerdata = [
                     "subject" => $header->subject,
                     "from" => $header->name,
-                    "messageid" => $header->number,
-                    //"sender" => addcslashes(str_replace('\\', '', $header->from), "\""),
+                    "messageid" => $header->id,
+                    "uid" => $header->number,
+                    "sender" => addcslashes(str_replace('\\', '', $header->from), "\""),
                     "date" => $header->displaydate,
                 ];
                 //$value->id = $value->number;
@@ -456,7 +458,8 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         {
             return $matches;
         }
-        //$some   = imap_search($nntp, 'TEXT "'. $param . '"', SE_UID);
-        //return $some;
-        return 0;
+        else
+        {
+            echo "error";
+        }
     }
