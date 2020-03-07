@@ -73,13 +73,11 @@ function compose_mail()
     $weg=line_read($ns);
     fputs($ns,'Subject: '.quoted_printable_encode($subject)."\r\n");
     fputs($ns,'From: '.$from."\r\n");
-    //fputs($ns,"From: iam test <blabla@gmail.com>\r\n");
-
     fputs($ns,'Newsgroups: '.$newsgroups."\r\n");
     fputs($ns,"Mime-Version: 1.0\r\n");
     fputs($ns,"Content-Type: text/plain; charset=UTF-8; format=flowed\r\n");
     fputs($ns,"Content-Transfer-Encoding: 8bit\r\n");
-    fputs($ns,"User-Agent: NewsPortal/0.38 (http://florian-amrhein.de/newsportal)\r\n");
+    fputs($ns,"User-Agent: NewsgroupReader\r\n");
     //if ($send_poster_host)
       //@fputs($ns,'X-HTTP-Posting-Host: '.gethostbyaddr(getenv("REMOTE_ADDR"))."\r\n");
     if (($ref!=false) && (count($ref)>0)) {

@@ -51,8 +51,8 @@ TODO:
     *   [ ] error handling on all new functions
     *   [X] article body formating
     *   [X] thread sort (partialy done)
-    *   [ ] search function
-* [ ] replace imap functions with nntp functions
+    *   [X] search function
+* [X] replace imap functions with nntp functions
 * [ ] clean up code and add comments
 
 Additional TODO:
