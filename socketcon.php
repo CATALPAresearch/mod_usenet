@@ -513,47 +513,41 @@ function nntp_fetchbody($socket, $groupname, $msgno)
     }
 }
 
-/*
+function nntp_search($nntp, $groupname, $param)
+{
+  $headers = nntp_headers($nntp, $groupname);
 
-$port = 119;
-$address = gethostbyname('feunews.fernuni-hagen.de');
+  foreach($headers as $key => $header)
+  {
+    $currentbody = nntp_fetchbody($nntp, $groupname, $header->id);
 
-    ///nntp commands must end with \r\n or \0
+    $paraminsubj = stripos($header->subject, $param);
+    $paraminname = stripos($header->name, $param);
+    $paraminbody = stripos($currentbody, $param);
 
-$user = "AUTHINFO USER friedrichk\r\n"; // fill in your ldap name here
-$pass = "AUTHINFO PASS 241d0HB3450\r\n"; // enter your password here
+    if (($paraminsubj !== false) || ($paraminname !== false) || ($paraminbody !== false))
+    {
+      $headerdata = [
+        "subject" => $header->subject,
+        "from" => $header->name,
+        "messageid" => $header->id,
+        "uid" => $header->number,
+        "sender" => addcslashes(str_replace('\\', '', $header->from), "\""),
+        "date" => $header->displaydate,
+      ];
+      $matches[] = $headerdata;
+    }
+  }
 
 
-$sock = fsockopen($address, $port);
-//echo (line_read($sock)."<br>");
+  if (isset($matches))
+  {
+      return $matches;
+  }
+  else
+  {
+      echo "error";
+  }
+}
 
-    $counter = 0;
-  
-        fputs($sock, $user);
-        fputs($sock, $pass);
-
-        //echo (line_read($sock)."<br>");
-        //echo (line_read($sock)."<br>");
-
-        $groupname = "feu.informatik.kurs.1515";
-
-
-        $test = thread_load_newsserver($sock, $groupname);
-
-        ////echo (var_dump($test));
-
-        //$a = formattree($test);
-
-        
-        //echo ("<br>".var_dump($test));
-
-    
-
-        //$message = "list overview.fmt\r\n";
-
-        //fputs($sock, $message);
-
-        fclose($sock);
-
-*/
 ?>
