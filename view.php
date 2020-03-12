@@ -61,11 +61,16 @@ echo '<script language="javascript" type="text/javascript" src="helper.js"></scr
 echo "<link href=css/all.css rel=stylesheet>";
 
 echo $OUTPUT->header();
+/*      //this check is no longer needed
 if (extension_loaded('imap')) {
     $PAGE->requires->js_init_call('showtree', array('course'=>$cm->id, 'msgnr'=>$msgnr));
 } else {
     $warnung = "PHP-IMAP Modul ist nicht installiert.";
 }
+*/
+
+$PAGE->requires->js_init_call('showtree', array('course'=>$cm->id, 'msgnr'=>$msgnr));
+
 
 echo'
 <div class="container-fluid">

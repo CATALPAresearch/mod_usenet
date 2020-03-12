@@ -49,9 +49,6 @@ if (!$user = $DB->get_record('user', ['email' => $sender])) {
 require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
 
 $searchresult = msgSearch($journal, $searchparam);
-//$messages = imap_fetch_overview($nntp, implode(',', array_slice($searchresult, 0)), FT_UID);
-
-//$nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
 
 
 if ($searchresult) {
