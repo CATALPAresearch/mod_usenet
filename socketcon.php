@@ -6,7 +6,7 @@
         ///php sockets: https://www.php.net/manual/en/function.socket-recv.php
 */
 
-//error_reporting(E_ALL);
+error_reporting(E_ERROR);
 
 function debug2c($data) {
   $output = $data;
@@ -542,12 +542,42 @@ function nntp_search($nntp, $groupname, $param)
 
   if (isset($matches))
   {
+    //return error_feedback($matches[0]);
       return $matches;
   }
   else
   {
-      echo "error";
+      return error_feedback(current($headers));
   }
+}
+
+// returns a message post (header and body) about an error
+// this message can then be displayed by frontend 
+// param
+
+function error_feedback($header)
+{
+  /*
+  $headerdata = [
+    "subject" => $header->subject,
+        "from" => $header->name,
+        "messageid" => $header->id,
+        "uid" => $header->number,
+        "sender" => addcslashes(str_replace('\\', '', $header->from), "\""),
+        "date" => $header->displaydate,
+  ];
+*/
+  $headerdata = [
+        "subject" => "Suchbegriff nicht gefunden",
+        "from" => "System",
+        "messageid" => 10,
+        "uid" => $header->number,
+        "sender" => "Nobody",
+        "date" => NULL,
+  ];
+
+  return $headerdata;
+
 }
 
 ?>
