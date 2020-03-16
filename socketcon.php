@@ -542,7 +542,6 @@ function nntp_search($nntp, $groupname, $param)
 
   if (isset($matches))
   {
-    //return error_feedback($matches[0]);
       return $matches;
   }
   else
@@ -568,15 +567,19 @@ function error_feedback($header)
   ];
 */
   $headerdata = [
-        "subject" => "Suchbegriff nicht gefunden",
-        "from" => "System",
+        "feedback" => '1',
+        "subject" => 'Suchbegriff nicht gefunden',
+        "from" => 'System',
         "messageid" => 10,
         "uid" => $header->number,
-        "sender" => "Nobody",
-        "date" => NULL,
+        "sender" => 'Nobody',
+        "date" => NULL
   ];
 
-  return $headerdata;
+  $returnval[] = $headerdata;
+
+
+  return $returnval;
 
 }
 

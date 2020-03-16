@@ -94,7 +94,7 @@ echo'
 	 <div class="col-12 row" >
 		<div class="col-xl-6 col-sm-10" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
 			<div class=loading><i class="fas fa-cog fa-spin fa-5x"></i>loading</div>
-		'.$warnung.'
+		
                 </div>
 		<div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
 		</div>
