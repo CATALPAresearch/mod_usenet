@@ -67,23 +67,36 @@ var u="";
 for(var i=0;i<f.length;i++){
     u = u +">"+ f[i]+"\n";
 }
+    var refs = $('#messagehead').attr('references');
+    var id = $('#messagehead').attr('uid');
+    var msgnr = $('#messagehead').attr('messageid');
+
+    //alert("Ref: " + refs + " ID: " + id + " MSGNR: " + msgnr);
+
+    
+
     $("#messagebody").val(u);
+    //$("#answerbutton").text("Senden"+id+"this");
     $("#answerbutton").text("Senden");
   }else if (z.indexOf("Senden")>=0){
     var subject = $('#subject').text();
     var text = $('#messagebody').val();
 
     var refs = $('#messagehead').attr('references');
+    var id = $('#messagehead').attr('uid');
+    var msgnr = $('#messagehead').attr('messageid');
 
+    //alert("Ref: " + refs + " ID: " + id + " MSGNR: " + msgnr);
 
+    
     subject = "Re: " + subject;
 let searchParams = new URLSearchParams(window.location.search);
 let param = searchParams.get('id');
-$.post("posttest.php?id="+param+"&msgnr=" +$('#messagehead').attr('messageid'), { userInput : text, subject : subject, references : refs }, function(data){ });
+$.post("posttest.php?id="+param+"&msgnr=" +$('#messagehead').attr('messageid'), { userInput : text, subject : subject, references : refs, uid : id }, function(data){ });
 
 
     //alert("Nachricht gesendet");
-    alert(refs);
+    //alert("Ref: " + ref + "ID: " + id);
 
     location.reload(false);
   }
@@ -111,7 +124,7 @@ $('#treeinfo').append("<div class='alert alert-success' role='alert'><h4 class='
 
 	break;
     case "error":
-	alert(data);
+	//alert(data);
 	break;
     default:
 	break;

@@ -122,39 +122,13 @@ function showtree(h, f, g) {
           if (this.readyState == 3) {}
           if (this.readyState == 4 && this.status == 200) {
             //if (isJsonString(this.responseText)){
-              console.log(this.responseText);
+             
             var search = JSON.parse(this.responseText);
-            /*
+            
             $(search).each(function(e, d) {
-              console.log("Debug:" + $(search));
               $('.searchresult').remove();
-              if ($(d).feedback == 1)  
-              {
-                //$('.node').not('.header').removeClass('hidden');
-                buildTree($(d), 1);
-                //$('#treeinfo').removeClass('hidden');
-                $('#treeinfo').append('Nicht gefunden');
-
-                //escape from jquery iteration
-                return false;
-              }
-              else
-              {
-                $('[messageid="' + d.uid + '"]').removeClass('hidden');
-              }
+              $('[messageid="' + d.uid + '"]').removeClass('hidden');
             });
-*/            var x;
-            /*
-            for (x in search)
-            {
-              if (search[x].feedback == 1)
-              {
-                alert('wow');
-              }
-              alert('yes');
-              //$('[messageid="' + search[x].uid + '"]').removeClass('hidden');
-            }
-*/
           }
           //}
         }

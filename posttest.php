@@ -40,7 +40,8 @@ $PAGE->set_heading($course->fullname);
 $data = new stdClass();
 $localconfig = get_config('newsmod');
 
-compose_mail();
+
+compose_mail($form, $msgnr);
 
 
 
@@ -52,15 +53,23 @@ function generate_msgid($identity) {
 
 
 
-function compose_mail()
+function compose_mail($form, $msgnr)
 {
-    global $form, $msgnr,$localconfig,$journal,$USER;
+    global $localconfig,$journal,$USER;
 
     $subject = $form->subject;
     $from = $USER->email;
     $newsgroups = $journal->newsgroup;
 
-    $ref = explode(" ",$form->references);
+    $ref = $form->references;
+
+    $uid = $form->uid;
+
+    if (is_array($ref))
+    {
+      $ref = explode(" ",$ref);
+    }
+
     $body = addslashes($form->userInput);
 
     $from = $USER->firstname." ".$USER->lastname."<".$from.">";  
@@ -78,8 +87,11 @@ function compose_mail()
     fputs($ns,"Content-Type: text/plain; charset=UTF-8; format=flowed\r\n");
     fputs($ns,"Content-Transfer-Encoding: 8bit\r\n");
     fputs($ns,"User-Agent: NewsgroupReader\r\n");
+
     //if ($send_poster_host)
       //@fputs($ns,'X-HTTP-Posting-Host: '.gethostbyaddr(getenv("REMOTE_ADDR"))."\r\n");
+
+      /*
     if (($ref!=false) && (count($ref)>0)) {
       // strip references
       if(strlen(implode(" ",$ref))>900) {
@@ -89,12 +101,14 @@ function compose_mail()
         } while(strlen(implode(" ",$ref))>800);
         array_unshift($ref,$ref_first);
       }
+    } 
+    */
       if ($msgnr!="new") {
         //	echo "wo kommt das hin" . isset($msgnr);
-        fputs($ns,'References: '.$msgnr."\r\n");
+        fputs($ns,'References: '.$uid."\r\n");
     }
       //fputs($ns,'References: '.implode(" ",$ref)."\r\n");
-    }
+    
     if (isset($organization))
       fputs($ns,'Organization: '.quoted_printable_encode($organization)."\r\n");
 

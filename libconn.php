@@ -96,7 +96,7 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         
     foreach ($threads as $header) {
         
-      if (!$header->isReply)
+      if (!$header->isReply && !$header->references)
             {
               if ($siblings > 0)
             {
