@@ -37,10 +37,15 @@ $PAGE->set_title(format_string($journal->name));
 $PAGE->set_heading($course->fullname);
 $data = new stdClass();
 $localconfig = get_config('newsmod');
+
+
+//imap - nothing meaningful is done with the data
+/*
 $nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
 $header = imap_header($nntp, imap_msgno($nntp, $msgnr));
 $message = imap_fetchbody($nntp, $msgnr, '1', FT_UID);
 $message = nl2br($message);
+*/
 
 if (!$user = $DB->get_record('user', ['email' => $sender])) {
     //echo "User Information not found";
@@ -50,11 +55,15 @@ if (!$user = $DB->get_record('user', ['email' => $sender])) {
     $user->lastname = "";
 }
 require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
+
+/*
 if (!$searchresult = msgSearch($nntp, $searchparam)) {
     echo "Keine Nachrichten gefunden";
 }
 
 $messages = imap_fetch_overview($nntp, implode(',', array_slice($searchresult, 0)), FT_UID);
+*/
+
 if ($messageid = $DB->record_exists('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))) {
     //$testmodule=$DB->get_record('messagestatus', array('id' => '2'), '*', MUST_EXIST);
     $moduleinstan=$DB->get_record('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr), '*', IGNORE_MISSING);
@@ -85,6 +94,7 @@ if ($messageid = $DB->record_exists('newsmod__messagestatus', array('userid' => 
 echo "<div>Ihre Suche hatte folgendes Ergebnis</div><ul>";
 
 
+/*
 foreach ($messages as $msg) {
     //print_r($msg);
 //echo "<a href=" .new moodle_url('/user/messageid.php?id='".$msg->uid)  .">";
@@ -94,7 +104,7 @@ foreach ($messages as $msg) {
 //echo '<div id="messagehead messageid="'.htmlspecialchars($header->message_id).'/>';
 
 //echo '</li>';
-}
+}       */
 //echo '</ul>';
 //print_r($markedstatus);
 //echo $searchparam;

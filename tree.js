@@ -2,6 +2,9 @@ function showtree(h, f, g) {
   var id = 0;
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange = function(data) {
+
+  
+
     if (this.readyState == 0) {
       $('#tree').append('Anfrage nicht initialisiert<br/>');
     }
@@ -15,10 +18,17 @@ function showtree(h, f, g) {
       $('#tree').append('Anfrage verarbeiten<br/>' + this.response);
     }
     if (this.readyState == 4 && this.status == 200) {
+      
 
       try {
         myObj = JSON.parse(this.responseText);
-      } catch (e) {}
+      } catch (e) 
+      {
+        var err_response = this.responseText;
+        var err_status = this.statusText;
+        var errormsg = this.err_response + " " + this.err_status;
+        $('#treeinfo').append(this.errormsg);
+      }
       $('#tree').empty();
       $('#tree').append('<ul class="treeinfo">');
       //$('#treeinfo').append('<ul class="activity">');
@@ -26,7 +36,16 @@ function showtree(h, f, g) {
       //    var dateA = new Date(a.date), dateB = new Date(b.date);
       //    return dateB - dateA;
       //});
-      var data = eval(myObj);
+      try 
+      {
+        var data = eval(myObj);
+      }
+      catch (e)
+      {
+        $('#treeinfo').append("Error eval(...)" + myObj);
+        $('#tree').append('<ul class="treeinfo">');
+      }
+      
       var results = data['children'];
 
       //SortTime
@@ -103,7 +122,9 @@ function showtree(h, f, g) {
           if (this.readyState == 3) {}
           if (this.readyState == 4 && this.status == 200) {
             //if (isJsonString(this.responseText)){
+             
             var search = JSON.parse(this.responseText);
+            
             $(search).each(function(e, d) {
               $('.searchresult').remove();
               $('[messageid="' + d.uid + '"]').removeClass('hidden');
