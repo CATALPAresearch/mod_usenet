@@ -82,20 +82,18 @@ echo'
                 <input type="text" class="form-control" placeholder="Suchen...">
                 <button class="btn btn-outline-success" type="submit">Suchen</button>
             </form>
-	    <div class="text-danger" id="orr">Bitte drehen Sie Ihr Gerät!</div>
-
+	        <div class="text-danger" id="orr">Bitte drehen Sie Ihr Gerät!</div>
         </div>
     </div>
 </div>
 <div class="container-fluid px-0 ">
      <div class="px-0">
 <hr>
-
 	 <div class="col-12 row" >
 		<div class="col-xl-6 col-sm-10" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
-			<div class=loading><i class="fas fa-cog fa-spin fa-5x"></i>loading</div>
-		
-                </div>
+            <div class=loading>
+                <i class="fas fa-cog fa-spin fa-5x"></i>loading</div>	
+            </div>
 		<div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
 		</div>
 	</div>
