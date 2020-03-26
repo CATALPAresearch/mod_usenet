@@ -65,6 +65,7 @@ if (extension_loaded('imap')) {
 
 echo'
 <div id="newsmod-container">
+    <div>Ich bin eine Variable aus der amd/src/Reader.js: {{ info }}</div>
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -82,6 +83,7 @@ echo'
         <div class="px-0">
             <hr />
             <div class="col-12 row" >
+                
                 <div class="col-xl-6 col-sm-10" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
                     <div class=loading>
                         <i class="fas fa-cog fa-spin fa-5x"></i>loading

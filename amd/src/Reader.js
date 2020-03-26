@@ -29,7 +29,7 @@ define([
                     filter_assessment: true,
                     filter_text: true,
                     content: [],
-                    info: ''
+                    info: 'Hallo, ich warte auf Daten vom usenet Server ...'
                 };
             },
             created: function () {
