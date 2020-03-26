@@ -18,7 +18,7 @@ define([
      * @param dc (Object) Dimensional Javascript Charting Library
      * @param utils (Object) Custome util class
      */
-        var Reader = function (Vue, d3, utils, log, courseid, messageid) {
+        var Reader = function (Vue, d3, axios, utils, log, courseid, messageid) {
 
         var app = new Vue({
             el: '#newsmod-container',
@@ -28,7 +28,8 @@ define([
                     search: '',
                     filter_assessment: true,
                     filter_text: true,
-                    content: []
+                    content: [],
+                    info: ''
                 };
             },
             created: function () {
@@ -44,21 +45,14 @@ define([
 
             },
             mounted: function () {
-                const h = messageid;
+                const h = messageid; // !!??
                 const f = courseid;
                 const g = 0;
                 let _this = this;
                 let id = 0;
-                const xmlhttp = new XMLHttpRequest();
-                xmlhttp.onreadystatechange = function (data) { 
-                    console.log(this.readyState, this.status)
-                    console.log(data);
-                    if (this.readyState == 4 && this.status == 200){
-                        _this.doo(data, this); 
-                    }
-                };
-                xmlhttp.open("GET", "phpconn5.php?id=" + courseid, true);
-                xmlhttp.send();
+                axios
+                    .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
+                    .then(response => (this.info = response));    
             },
             computed: {
 
@@ -76,8 +70,9 @@ define([
                         }
                         $('#tree').empty();
                         $('#tree').append('<ul class="treeinfo">');
-console.log(myObj)
-return;
+                        console.log(myObj)
+                        
+                        return;
                         try {
                             var data = eval(myObj);
                         }

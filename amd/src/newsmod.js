@@ -18,6 +18,7 @@ define([
             baseUrl: M.cfg.wwwroot + "/mod/newsmod/lib/",
             paths: {
                 "vue259": ["https://cdn.jsdelivr.net/npm/vue@2.5.9/dist/vue", "vue"],
+                "axios": ["https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js", "axios.min"],
                 "d3": ["d3.v5.min"],
                 "pnglib": ["pnglib"],
                 "identicon": ["identicon"],
@@ -26,6 +27,9 @@ define([
             shim: {
                 'vue259': {
                     exports: 'Vue'
+                },
+                'axios': {
+                    exports: 'axios'
                 }
             }
         });
@@ -34,14 +38,15 @@ define([
             
             require([
                 'vue259',
+                'axios',
                 'd3'
-            ], function (vue, d3) {
+            ], function (vue, axios, d3) {
                 var utils = new Utils(d3);
                 var log = new Log(utils, courseid, {
                     context: 'mod_newsmod',
                     outputType: 0 // set to 1 in order to store logs to the database
                 });
-                    new Reader(vue, d3, utils, log, courseid, messageid);
+                    new Reader(vue, d3, axios, utils, log, courseid, messageid);
             });
         };
 
