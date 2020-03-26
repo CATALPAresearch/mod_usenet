@@ -32,8 +32,6 @@ if (! $journal = $DB->get_record("newsmod", array("id" => $cm->instance))) {
 
 
 
- 
-
 //Header
 $PAGE->set_url('/mod/newsmod/edit.php', array('id' => $id));
 $PAGE->navbar->add(get_string('edit'));

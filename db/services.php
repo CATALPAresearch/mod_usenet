@@ -15,17 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Page external functions and service definitions.
  *
- * @package     mod_newsmod
- * @copyright   Rudolf Patzer <rpatzer@gmx.de>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    mod_newsmod
+ * @category   external
+ * @copyright  2015 Juan Leyva <juan@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since      Moodle 3.0
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-$plugin->component = 'mod_newsmod';
-$plugin->release = '0.2.0';
-$plugin->version = 2019060579;
-$plugin->requires = 2016120300;
-$plugin->maturity = MATURITY_ALPHA;
+$functions = array(
+
+      'mod_newsmod_log' => array(
+        'classname'     => 'mod_newsmod_external',
+        'methodname'    => 'log',
+        'description'   => 'Writes logdata to database',
+        'type'          => 'write',
+        'capabilities'  => 'mod/newsmod:view',
+        //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
+        'ajax'        => true 
+    )
+);

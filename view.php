@@ -52,13 +52,7 @@ $PAGE->set_url('/mod/newsmod/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
-
-echo '<script language="javascript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>';
-$PAGE->requires->js('/mod/newsmod/tree.js');
-echo '<script language="javascript" type="text/javascript" src="pnglib.js"></script>';
-echo '<script language="javascript" type="text/javascript" src="identicon.js"></script>';
-echo '<script language="javascript" type="text/javascript" src="helper.js"></script>';
-echo "<link href=css/all.css rel=stylesheet>";
+$PAGE->requires->css( '/mod/newsmod/css/newsmod.css', true );
 
 echo $OUTPUT->header();
 /*      //this check is no longer needed
@@ -69,44 +63,40 @@ if (extension_loaded('imap')) {
 }
 */
 
-$PAGE->requires->js_init_call('showtree', array('course'=>$cm->id, 'msgnr'=>$msgnr));
-
-
 echo'
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <form class="form-inline float-sm-left" action="" method="post">
-        	<button class="btn btn-default" type="button" id="createbutton" onclick="javascript: createButton();">Neues Thema</button>
-        	<button class="btn btn-default fa fa-sync" type="button" id="reloadbutton"></button>
-                <input type="text" class="form-control" placeholder="Suchen...">
-                <button class="btn btn-outline-success" type="submit">Suchen</button>
-            </form>
-	        <div class="text-danger" id="orr">Bitte drehen Sie Ihr Gerät!</div>
+<div id="newsmod-container">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <form class="form-inline float-sm-left" action="" method="post">
+                    <button class="btn btn-default" type="button" id="createbutton" onclick="javascript: createButton();">Neues Thema</button>
+                    <button class="btn btn-default fa fa-sync" type="button" id="reloadbutton"></button>
+                    <input type="text" class="form-control" placeholder="Suchen...">
+                    <button class="btn btn-outline-success" type="submit">Suchen</button>
+                </form>
+                <div class="text-danger" id="orr">Bitte drehen Sie Ihr Gerät!</div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid px-0 ">
+        <div class="px-0">
+            <hr />
+            <div class="col-12 row" >
+                <div class="col-xl-6 col-sm-10" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
+                    <div class=loading>
+                        <i class="fas fa-cog fa-spin fa-5x"></i>loading
+                    </div>	
+                </div>
+                <div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px"></div>
+            </div>
         </div>
     </div>
 </div>
-<div class="container-fluid px-0 ">
-     <div class="px-0">
-<hr>
-	 <div class="col-12 row" >
-		<div class="col-xl-6 col-sm-10" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
-            <div class=loading>
-                <i class="fas fa-cog fa-spin fa-5x"></i>loading</div>	
-            </div>
-		<div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
-		</div>
-	</div>
-    </div>
-</div>
-
-
-
-
 ';
 //<div class='btn-toolbar mb-3' role='toolbar' aria-label='Controlbar for Plugins'>";
 //echo "<div class='btn-group' role='group' aria-label='First Group'>";
-
-
 //echo "<div id=contenttree><div id=tree1 class='col-6'></div><div id=treeinfo></div></div>";
+
+$PAGE->requires->js_call_amd('mod_newsmod/newsmod', 'init', array('course'=>$cm->id, 'msgnr'=>$msgnr));
+
 echo $OUTPUT->footer();
