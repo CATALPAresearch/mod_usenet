@@ -34,26 +34,52 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
             {
                 props: ['content'],
 
-                methods:
-                {
-                    
+                data: function(){
+                    return{
+                        isSelected: false,
+                        
+                    };
                 },
 
+                methods:
+                {
+                    togglemarked: function()
+                    {
+                        axios   //returned data is already js object (axios automaticly converts json to js obj)
+                        .get(M.cfg.wwwroot + "/mod/newsmod/statuschange.php?id=" + courseid + "&msgnr=" +this.content.messageid)
+                        .then();
+
+                        if (this.content.marked)
+                        {
+                            this.content.marked = false;
+                        }
+                        else
+                        {
+                            this.content.marked = true;
+                        }
+                    }
+                },
 
                 template: `
                 <div class = "post">
                     <li class= "node px-0" :column="content.margin" :sequence="content.sequence" :marked="content.marked"
-                    :messageid="content.messageid" :data-date="new Date(content.date)">
+                    :messageid="content.messageid" :data-date="new Date(content.date)" :style="{'text-indent': content.margin + 'px'}">
                         <div class ="container-fluid">
-                            <div class = "row" v-bind:class="{'bg-info': content.isSelected}" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
+                            <div class = "row" v-bind:class="{'bg-info': content.isSelected}">
                                 
                                 
-                                <div class = "col-md-2">
-                                    <i class="marked far fa-star favorite" style="margin-left:4" /><i class="toggle fas fa-xs fa-arrow-down"/>
+                                <div class = "col-md-2" v-on:click="togglemarked">
+                                    <template v-if="content.marked">
+                                    <i class="fas starmarked fa-star" />
+                                    </template>
+                                    <template v-else>
+                                    <i class="far fa-star" />
+                                    </template>
+                                    <i class="toggle fas fa-xs fa-arrow-down"/>
 
                                     
                                 </div>
-                                <div class = "col-md-5">
+                                <div class = "col-md-5" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
                                     {{content.subject}}
                                 </div>
                                 <div class = "col-md-3">
@@ -68,12 +94,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                 </div>
                 `,
 
-                data: function(){
-                    return{
-                        isSelected: false,
-                        
-                    };
-                },
+                
 
                 
 
@@ -94,7 +115,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                 v-on:getmsg="ongetmsg"
                 ></post>
                 <div>test2: {{messagetest}} </div>
-                <div>test3: {{messagetest3}} </div>
+                <div>test3: {{null}} </div>
                 <h6>iterations: {{iterations}} </h6>
                 </div>
                 `,
@@ -139,6 +160,8 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                         this.previouspost = arraypos;
 
                     },
+
+                    
                 },
             });
 
@@ -283,7 +306,8 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                             
                             
                             
-                            var marked = val.markedstatus != '0' ? "fas starmarked " : "far ";
+                        //var marked = val.markedstatus != '0' ? "fas starmarked " : "far ";
+                        var marked = val.markedstatus != '0' ? true : false;
                         var read = val.messagestatus == '0' ? "font-weight-bold " : "";
                         var childpresent = 0;
                         if (val.picturestatus > '0') 
@@ -328,7 +352,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                         var enddiv = '</div>';
                         app.tree_built += treeli + licontainer + jdenticonstring + fontpictures + enddiv + subject + timestamp + enddiv + enddiv;
                         app.iterations++;
-                        var content = {marked: val.markedstatus, read: val.messagestatus, markedhtml: marked, markedread: read,
+                        var content = {marked: marked, read: val.messagestatus, markedhtml: marked, markedread: read,
                             picturestatus: val.picturestatus, personal: val.personal, sender: val.sender,
                             user_id: val.user_id, margin: margin, sequence: this.sequence++, messageid: val.messageid,
                             date: val.date, subject: val.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,

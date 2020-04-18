@@ -63,9 +63,9 @@ if (extension_loaded('imap')) {
 }
 */
 
+//<div>Ich bin eine Variable aus der amd/src/Reader.js: {{ info }}</div>
 echo'
 <div id="newsmod-container">
-    <div>Ich bin eine Variable aus der amd/src/Reader.js: {{ info }}</div>
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -85,16 +85,31 @@ echo'
             <div class="col-12 row" >
                 
                 <div class="col-xl-6 col-sm-10" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
-                    <div class=loading>
-                        <i class="fas fa-cog fa-spin fa-5x"></i>loading
-                    </div>	
+                <post-container v-bind:postlist="post_list" v-bind:iterations="iterations" ></post-container>
+                
                 </div>
-                <div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px"></div>
+                <div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
+                    
+                
+                </div>
             </div>
         </div>
     </div>
 </div>
 ';
+
+/*
+
+
+<div class=loading>
+                        <i class="fas fa-cog fa-spin fa-5x"></i>loading
+                    </div>
+
+
+
+
+*/
+
 //<div class='btn-toolbar mb-3' role='toolbar' aria-label='Controlbar for Plugins'>";
 //echo "<div class='btn-group' role='group' aria-label='First Group'>";
 //echo "<div id=contenttree><div id=tree1 class='col-6'></div><div id=treeinfo></div></div>";
