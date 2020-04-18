@@ -63,12 +63,12 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                 template: `
                 <div class = "post">
                     <li class= "node px-0" :column="content.margin" :sequence="content.sequence" :marked="content.marked"
-                    :messageid="content.messageid" :data-date="new Date(content.date)" :style="{'text-indent': content.margin + 'px'}">
-                        <div class ="container-fluid">
-                            <div class = "row" v-bind:class="{'bg-info': content.isSelected}">
+                    :messageid="content.messageid" :data-date="new Date(content.date)" >
+                        <div class ="container-fluid px-0">
+                            <div class = "row px-0" v-bind:class="{'bg-info': content.isSelected}">
                                 
                                 
-                                <div class = "col-md-2" v-on:click="togglemarked">
+                                <div class = "px-0 col-sm-2 col-md-2 col-lg-2 col-xl-2" v-on:click="togglemarked">
                                     <template v-if="content.marked">
                                     <i class="fas starmarked fa-star" />
                                     </template>
@@ -79,13 +79,13 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
 
                                     
                                 </div>
-                                <div class = "col-md-5" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
+                                <div class = "col-sm-5 col-md-5 col-lg-5 col-xl-5" :style="{'text-indent': content.margin + 'px'}" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
                                     {{content.subject}}
                                 </div>
-                                <div class = "col-md-3">
+                                <div class = "col-sm-3 col-md-3 col-lg-3 col-xl-3">
                                     {{content.personal}}
                                 </div>
-                                <div class="datetime message col-sm-2 col-xl-2 col-md-2" data-date-format="DD.MM.YYYY">
+                                <div class="datetime message col-sm-2 col-md-2 col-lg-2 col-xl-2" data-date-format="DD.MM.YYYY">
                                     {{content.calctime}}
                                 </div>
                             </div>
