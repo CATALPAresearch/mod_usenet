@@ -8,6 +8,7 @@
  * @since      3.1
  */
 
+
 define([
     'jquery' // maybe not needed? We should stick with native javascript
 ], function ($) {
@@ -18,7 +19,131 @@ define([
      * @param dc (Object) Dimensional Javascript Charting Library
      * @param utils (Object) Custome util class
      */
+/*
+props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
+                        'markedstatus', 'picturestatus', 'user_id', 'date', 'children'],
+
+*/
+    
+
         var Reader = function (Vue, d3, axios, utils, log, courseid, messageid) {
+
+        
+
+            Vue.component('post', 
+            {
+                props: ['content'],
+
+                methods:
+                {
+                    
+                },
+
+
+                template: `
+                <div class = "post">
+                    <li class= "node px-0" :column="content.margin" :sequence="content.sequence" :marked="content.marked"
+                    :messageid="content.messageid" :data-date="new Date(content.date)">
+                        <div class ="container-fluid">
+                            <div class = "row" v-bind:class="{'bg-info': content.isSelected}" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
+                                
+                                
+                                <div class = "col-md-2">
+                                    <i class="marked far fa-star favorite" style="margin-left:4" /><i class="toggle fas fa-xs fa-arrow-down"/>
+
+                                    
+                                </div>
+                                <div class = "col-md-5">
+                                    {{content.subject}}
+                                </div>
+                                <div class = "col-md-3">
+                                    {{content.personal}}
+                                </div>
+                                <div class="datetime message col-sm-2 col-xl-2 col-md-2" data-date-format="DD.MM.YYYY">
+                                    {{content.calctime}}
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </div>
+                `,
+
+                data: function(){
+                    return{
+                        isSelected: false,
+                        
+                    };
+                },
+
+                
+
+            
+            });
+            
+            Vue.component('post-container', 
+            {
+                props: ['postlist', 'mytree_data', 'mytree_built', 'iterations'],
+                template:
+                
+                `
+                <div class ="post-container">
+                <post    
+                v-for="singlepost in postlist"
+                v-bind:content="singlepost"
+                v-bind:key = "singlepost.messageid"
+                v-on:getmsg="ongetmsg"
+                ></post>
+                <div>test2: {{messagetest}} </div>
+                <div>test3: {{messagetest3}} </div>
+                <h6>iterations: {{iterations}} </h6>
+                </div>
+                `,
+                data: function(){
+                    return{
+                        messagetest: '',
+                        messagetest3: '',
+                        previouspost: -1,
+                    };
+                },
+
+                methods: 
+                {
+                    //function called by event: getmsg, getmsg-event is emitted by 'post' (child component)
+                    
+                    ongetmsg: function (msgid, arraypos)
+                    {
+                        axios   //returned data is already js object (axios automaticly converts json to js obj)
+                        .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" +msgid)
+                        .then(response => (this.messagetest = response.data));
+
+
+                        //mark the clicked post with blue bg-colour & unmark previous clicked post
+                        //why vue.set: vue cant track following changes to array:
+                            //When you directly set an item with the index, e.g. vm.items[indexOfItem] = newValue
+                            //When you modify the length of the array, e.g. vm.items.length = newLength
+                            //
+                            //Vue.set() helps, see https://vuejs.org/v2/guide/reactivity.html#Change-Detection-Caveats   
+                        var modpost = this.postlist[arraypos];
+                        modpost.isSelected = true;
+                        Vue.set(this.postlist, arraypos, modpost);      
+
+                        if (this.previouspost != -1)
+                        {
+                            if (this.previouspost != arraypos)
+                            {
+                                modpost = this.postlist[this.previouspost];
+                                modpost.isSelected = false;
+                                Vue.set(this.postlist, this.previouspost, modpost);  
+                            }                          
+                        }
+                        this.previouspost = arraypos;
+
+                    },
+                },
+            });
+
+
+            
 
         var app = new Vue({
             el: '#newsmod-container',
@@ -29,9 +154,23 @@ define([
                     filter_assessment: true,
                     filter_text: true,
                     content: [],
-                    info: 'Hallo, ich warte auf Daten vom usenet Server ...'
+                    info: 'Hallo, ich warte auf Daten vom usenet Server ...',
+                    tree_json: '',
+                    tree_data: '',
+                    tree_built: 0,
+                    sequence: 1,
+                    iterations: 0,
+                    arraypos: 0,
+                    post_list: []
                 };
             },
+            components: {
+                
+                // home,
+                // test
+            },
+
+          
             created: function () {
                 log.add('hello_world', { level: 'fun', target: 'vue is in place' });
 
@@ -43,36 +182,50 @@ define([
                     log.add('toc_entry_open', { level: 'h3', target: $(this).attr('href') });
                 });
 
+                
+
             },
             mounted: function () {
+
+
                 const h = messageid; // !!??
                 const f = courseid;
                 const g = 0;
                 let _this = this;
                 let id = 0;
-                axios
+                
+                axios   //returned data is already js object (axios automaticly converts json to js obj)
                     .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
-                    .then(response => (this.info = response));    
+                    .then(response => (this.info = response, this.tree_data = response.data, this.buildtree(response.data, 1)));
+
+                
             },
             computed: {
 
             },
             methods: {
-                doo: function (data, obj) {
+                strtojson: function (jsonstring) {
 
                         try {
-                            myObj = JSON.parse(obj.responseText);
+                            if (typeof jsonstring == 'object') {console.log("isobj");}
+                            this.tree_data = JSON.parse(jsonstring);
+                            //console.log(this.tree_data);
                         } catch (e) {
+                            /*
                             var err_response = obj.responseText;
                             var err_status = obj.statusText;
                             var errormsg = obj.err_response + " " + obj.err_status;
                             $('#treeinfo').append(obj.errormsg);
+                            */
+                           
                         }
+                        /*
                         $('#tree').empty();
                         $('#tree').append('<ul class="treeinfo">');
                         console.log(myObj)
-                        
+                        */
                         return;
+                        /*
                         try {
                             var data = eval(myObj);
                         }
@@ -115,9 +268,84 @@ define([
                             });
                         }
                     
+                        */
+                },
 
-                }
-            }
+                
+                buildtree: function (tree_data,margin)
+                {
+                    
+                    
+                    //var data = tree_data_children;
+
+                    tree_data.children.forEach(val => 
+                        {
+                            
+                            
+                            
+                            var marked = val.markedstatus != '0' ? "fas starmarked " : "far ";
+                        var read = val.messagestatus == '0' ? "font-weight-bold " : "";
+                        var childpresent = 0;
+                        if (val.picturestatus > '0') 
+                        {
+                            var jdenticonstring = '<div class="control col-sm-3 col-xl-4"><img title="Name: ' + val.personal + '\r\nE-Mail-Adresse: ' + val.sender + '" src="' + M.cfg.wwwroot + '/user/pix.php/' + val.user_id + '/f1.jpg" width="20" height="20"></img></div>';
+                        } 
+                        else 
+                        {
+                            var options = {
+                                background: [255, 255, 255, 255], // rgba white
+                                margin: 0.05, // 20% margin
+                                size: 20, // 420px square
+                                format: 'svg' // use SVG instead of PNG
+                            };
+                            var jdenticonstring = '';
+                        jdenticonstring = jdenticonstring + `'<div class="control col-sm-3 col-xl-4" title="Name: ' + val.personal 
+                        + '\r\nE-Mail-Adresse: ' + val.sender + '">
+                        <img width=19 height=20 src="data:image/svg+xml;base64,' + data + '"></div>'`;
+                        }
+                        if (val.children)
+                        {
+                            childpresent = 1;
+                        }
+                        
+                        if (!val.children) {
+                            var childornot = "hidden";
+                        }
+                        var treeli = '<li column="' + margin + '" sequence="' + this.sequence + '" marked="' + val.markedstatus + ' " class="node px-0 ' + read + '" messageid="' + val.messageid + '" data-date="' + new Date(val.date) + '">';
+                        var licontainer = '<div class="px-0 container-fluid"><div class="row px-0"><div class="px-0 col-sm-2 col-xl-2 offset-xl-0 row">';
+                        var sender = '<div class="col-xl-3 px-0">' + val.sender + '</div>';
+                        var subject = '<div  class="col-xl-5 subject col-sm-4 message" style="text-indent: ' + margin + 'px">' + val.name + '</div>';
+                        var calctime = new Date(val.date);
+                        var options = {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        };
+                        calctime = new Date(val.date).toLocaleDateString('de-DE', options) ? new Date(val.date).toLocaleDateString('de-DE', options) : "";
+                        var absender = val.personal ? val.personal : val.sender;
+                        var timestamp = '<div class="sender elipse col-xl-3 col-sm-3"><a href="mailto:' + val.sender + '?subject=' + val.name + '">' + absender + '</a></div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">' + calctime + '</div>';
+                        var fontpictures = '<i class="marked ' + marked + ' fa-star favorite" style="margin-left:4" /><i class="toggle fas fa-xs fa-arrow-down ' + childornot + '"/>';
+                        var enddiv = '</div>';
+                        app.tree_built += treeli + licontainer + jdenticonstring + fontpictures + enddiv + subject + timestamp + enddiv + enddiv;
+                        app.iterations++;
+                        var content = {marked: val.markedstatus, read: val.messagestatus, markedhtml: marked, markedread: read,
+                            picturestatus: val.picturestatus, personal: val.personal, sender: val.sender,
+                            user_id: val.user_id, margin: margin, sequence: this.sequence++, messageid: val.messageid,
+                            date: val.date, subject: val.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
+                            isSelected: false};
+                        
+                        app.post_list.push(content);
+                        if (val.children)
+                        {
+                            app.buildtree(val,margin + 25);
+                        }
+                        
+                        
+                    });
+                    
+                },
+                
+            },
                 /* ,
                 dooWhenReady: function () {
                     $(".toggle").on("click", function (d) {
@@ -413,7 +641,55 @@ define([
         });
 
 
+        
+        /*
+        jQuery.each(myObj.children, function (d, val) {
+            var data = eval(myObj);
+            var results = data['children'];
+            var marked = val.markedstatus != '0' ? "fas starmarked " : "far ";
+            var read = val.messagestatus == '0' ? "font-weight-bold " : "";
+            if (val.picturestatus > '0') {
+                var jdenticonstring = '<div class="control col-sm-3 col-xl-4"><img title="Name: ' + val.personal + '\r\nE-Mail-Adresse: ' + val.sender + '" src="' + moodleurl + '/user/pix.php/' + val.user_id + '/f1.jpg" width="20" height="20"></img></div>';
+            } else {
+                var options = {
+                    background: [255, 255, 255, 255], // rgba white
+                    margin: 0.05, // 20% margin
+                    size: 20, // 420px square
+                    format: 'svg' // use SVG instead of PNG
+                };
+
+                var data = new Identicon(btoa(val.sender).length > 15 ? btoa(val.sender) : btoa("keine e-mail angegeben"), options).toString();
+                var jdenticonstring = ''; //'<img style="visibility:hidden" src="' + moodleurl +'/user/pix.php/'+val.user_id+'/f1.jpg" width="0" height="20"></img>';
+                jdenticonstring = jdenticonstring + '<div class="control col-sm-3 col-xl-4" title="Name: ' + val.personal + '\r\nE-Mail-Adresse: ' + val.sender + '"><img width=19 height=20 src="data:image/svg+xml;base64,' + data + '"></div>';
+                // + jdenticon.toSvg(val.sender, 19,{lightness: { color: [0.40, 0.80], grayscale: [0.30, 0.90]}, saturation: { color: 0.50, grayscale: 0.00}, backColor: "#86444400"})+ '</div>';
+            }
+            if (!val.children) {
+                var childornot = "hidden";
+            }
+            var treeli = '<li column="' + margin + '" sequence="' + sequence++ + '" marked="' + val.markedstatus + ' " class="node px-0 ' + read + '" messageid="' + val.messageid + '" data-date="' + new Date(val.date) + '">';
+            var licontainer = '<div class="px-0 container-fluid"><div class="row px-0"><div class="px-0 col-sm-2 col-xl-2 offset-xl-0 row">';
+            var sender = '<div class="col-xl-3 px-0">' + val.sender + '</div>';
+            var subject = '<div  class="col-xl-5 subject col-sm-4 message" style="text-indent: ' + margin + 'px">' + val.name + '</div>';
+            var calctime = new Date(val.date);
+            var options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            };
+            calctime = new Date(val.date).toLocaleDateString('de-DE', options) ? new Date(val.date).toLocaleDateString('de-DE', options) : "";
+            var absender = val.personal ? val.personal : val.sender;
+            var timestamp = '<div class="sender elipse col-xl-3 col-sm-3"><a href="mailto:' + val.sender + '?subject=' + val.name + '">' + absender + '</a></div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">' + calctime + '</div>';
+            var fontpictures = '<i class="marked ' + marked + ' fa-star favorite" style="margin-left:4" /><i class="toggle fas fa-xs fa-arrow-down ' + childornot + '"/>';
+            var enddiv = '</div>';
+            $('.treeinfo').append(treeli + licontainer + jdenticonstring + fontpictures + enddiv + subject + timestamp + enddiv + enddiv);
+            buildTree(val, margin + 25);
+*/
+
+
+
     };// end Reader
+
+    
 
     return Reader;
 });
