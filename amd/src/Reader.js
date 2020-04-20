@@ -28,8 +28,18 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
 
         var Reader = function (Vue, d3, axios, utils, log, courseid, messageid) {
 
-        
-
+            /**
+             * 
+             * 
+             * 
+             *  @param content created in buildtree(...) 
+             *  var content = {marked: marked, unread: unread, markedhtml: marked,
+                picturestatus: val.picturestatus, personal: val.personal, sender: val.sender,
+                user_id: val.user_id, margin: margin, sequence: this.sequence++, messageid: val.messageid,
+                date: val.date, subject: val.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
+                isSelected: false};
+             * 
+             */
             Vue.component('post', 
             {
                 props: ['content'],
@@ -62,29 +72,40 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
 
                 template: `
                 <div class = "post">
-                    <li class= "node px-0" :column="content.margin" :sequence="content.sequence" :marked="content.marked"
-                    :messageid="content.messageid" :data-date="new Date(content.date)" >
+                    <li class="node px-0" :column="content.margin" :sequence="content.sequence" :marked="content.marked"
+                    :messageid="content.messageid" :data-date="new Date(content.date)" :class = "{'font-weight-bold': content.unread}">
                         <div class ="container-fluid px-0">
                             <div class = "row px-0" v-bind:class="{'bg-info': content.isSelected}">
                                 
                                 
                                 <div class = "px-0 col-sm-2 col-md-2 col-lg-2 col-xl-2" v-on:click="togglemarked">
+
+                                    <!-- TODO insert jdenticon -->
+
                                     <template v-if="content.marked">
                                     <i class="fas starmarked fa-star" />
                                     </template>
                                     <template v-else>
                                     <i class="far fa-star" />
                                     </template>
-                                    <i class="toggle fas fa-xs fa-arrow-down"/>
 
-                                    
+                                    <template v-if="content.haschild">
+                                    <i class="fas fa-xs fa-arrow-down" />
+                                    </template>
+                                    <template v-else>
+                                    <!-- <i class="fas fa-xs fa-arrow-down hidden" /> -->
+                                    </template>
                                 </div>
+
+
                                 <div class = "col-sm-5 col-md-5 col-lg-5 col-xl-5" :style="{'text-indent': content.margin + 'px'}" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
                                     {{content.subject}}
                                 </div>
+
                                 <div class = "col-sm-3 col-md-3 col-lg-3 col-xl-3">
                                     {{content.personal}}
                                 </div>
+
                                 <div class="datetime message col-sm-2 col-md-2 col-lg-2 col-xl-2" data-date-format="DD.MM.YYYY">
                                     {{content.calctime}}
                                 </div>
@@ -104,20 +125,21 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
             Vue.component('post-container', 
             {
                 props: ['postlist', 'mytree_data', 'mytree_built', 'iterations'],
-                template:
-                
-                `
-                <div class ="post-container">
-                <post    
-                v-for="singlepost in postlist"
-                v-bind:content="singlepost"
-                v-bind:key = "singlepost.messageid"
-                v-on:getmsg="ongetmsg"
-                ></post>
-                <div>test2: {{messagetest}} </div>
-                <div>test3: {{null}} </div>
-                <h6>iterations: {{iterations}} </h6>
-                </div>
+
+                template: `
+                    <div class ="post-container">
+                        <post    
+                        v-for="singlepost in postlist"
+                        v-bind:content="singlepost"
+                        v-bind:key = "singlepost.messageid"
+                        v-on:getmsg="ongetmsg">
+
+                        </post>
+
+                        <div>test2: {{messagetest}} </div>
+                        <div>test3: {{null}} </div>
+                        <h6>iterations: {{iterations}} </h6>
+                    </div>
                 `,
                 data: function(){
                     return{
@@ -138,32 +160,46 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                         .then(response => (this.messagetest = response.data));
 
 
-                        //mark the clicked post with blue bg-colour & unmark previous clicked post
-                        //why vue.set: vue cant track following changes to array:
-                            //When you directly set an item with the index, e.g. vm.items[indexOfItem] = newValue
-                            //When you modify the length of the array, e.g. vm.items.length = newLength
+                        // mark the clicked post with blue bg-colour & unmark previous clicked post
+                        // "unbold" the clicked post, marking it as read
+                        // why vue.set: vue cant track following changes to array:
+                            // When you directly set an item with the index, e.g. vm.items[indexOfItem] = newValue
+                            // When you modify the length of the array, e.g. vm.items.length = newLength
                             //
-                            //Vue.set() helps, see https://vuejs.org/v2/guide/reactivity.html#Change-Detection-Caveats   
+                            // Vue.set() helps, see https://vuejs.org/v2/guide/reactivity.html#Change-Detection-Caveats   
                         var modpost = this.postlist[arraypos];
                         modpost.isSelected = true;
+                        modpost.unread = false;
                         Vue.set(this.postlist, arraypos, modpost);      
 
-                        if (this.previouspost != -1)
+                        if (this.previouspost != -1)    // was there a post previously selected ?
                         {
-                            if (this.previouspost != arraypos)
+                            if (this.previouspost != arraypos)  // is the user not clicking on the same post ?
                             {
                                 modpost = this.postlist[this.previouspost];
                                 modpost.isSelected = false;
                                 Vue.set(this.postlist, this.previouspost, modpost);  
                             }                          
                         }
-                        this.previouspost = arraypos;
+                        this.previouspost = arraypos;   // current post is next previouspost
+                        
+                    }, // END event method ongetmsg
 
-                    },
+                }, // END component methods
 
-                    
-                },
-            });
+            }); // END component post-container
+
+
+        Vue.component('messagebody-container',
+        {
+            props: ['headerinfo', 'messagebody'],
+
+            template: `
+                <div class="container row-no-padding" style="padding-right:0px">
+            
+            
+            `,
+        });
 
 
             
@@ -308,8 +344,10 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                             
                         //var marked = val.markedstatus != '0' ? "fas starmarked " : "far ";
                         var marked = val.markedstatus != '0' ? true : false;
-                        var read = val.messagestatus == '0' ? "font-weight-bold " : "";
-                        var childpresent = 0;
+                        //var read = val.messagestatus == '0' ? "font-weight-bold " : "";
+                        var unread = val.messagestatus == '0' ? true : false;
+
+                        var childpresent = false;
                         if (val.picturestatus > '0') 
                         {
                             var jdenticonstring = '<div class="control col-sm-3 col-xl-4"><img title="Name: ' + val.personal + '\r\nE-Mail-Adresse: ' + val.sender + '" src="' + M.cfg.wwwroot + '/user/pix.php/' + val.user_id + '/f1.jpg" width="20" height="20"></img></div>';
@@ -323,22 +361,26 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                                 format: 'svg' // use SVG instead of PNG
                             };
                             var jdenticonstring = '';
-                        jdenticonstring = jdenticonstring + `'<div class="control col-sm-3 col-xl-4" title="Name: ' + val.personal 
-                        + '\r\nE-Mail-Adresse: ' + val.sender + '">
-                        <img width=19 height=20 src="data:image/svg+xml;base64,' + data + '"></div>'`;
+                            jdenticonstring = jdenticonstring + `'<div class="control col-sm-3 col-xl-4" title="Name: ' + val.personal 
+                            + '\r\nE-Mail-Adresse: ' + val.sender + '">
+                            <img width=19 height=20 src="data:image/svg+xml;base64,' + data + '"></div>'`;
                         }
                         if (val.children)
                         {
-                            childpresent = 1;
+                            childpresent = true;
+                        }
+                        else
+                        {
+                            childpresent = false;
                         }
                         
                         if (!val.children) {
                             var childornot = "hidden";
                         }
-                        var treeli = '<li column="' + margin + '" sequence="' + this.sequence + '" marked="' + val.markedstatus + ' " class="node px-0 ' + read + '" messageid="' + val.messageid + '" data-date="' + new Date(val.date) + '">';
-                        var licontainer = '<div class="px-0 container-fluid"><div class="row px-0"><div class="px-0 col-sm-2 col-xl-2 offset-xl-0 row">';
-                        var sender = '<div class="col-xl-3 px-0">' + val.sender + '</div>';
-                        var subject = '<div  class="col-xl-5 subject col-sm-4 message" style="text-indent: ' + margin + 'px">' + val.name + '</div>';
+                        //var treeli = '<li column="' + margin + '" sequence="' + this.sequence + '" marked="' + val.markedstatus + ' " class="node px-0 ' + unread + '" messageid="' + val.messageid + '" data-date="' + new Date(val.date) + '">';
+                        //var licontainer = '<div class="px-0 container-fluid"><div class="row px-0"><div class="px-0 col-sm-2 col-xl-2 offset-xl-0 row">';
+                        //var sender = '<div class="col-xl-3 px-0">' + val.sender + '</div>';
+                        //var subject = '<div  class="col-xl-5 subject col-sm-4 message" style="text-indent: ' + margin + 'px">' + val.name + '</div>';
                         var calctime = new Date(val.date);
                         var options = {
                             year: 'numeric',
@@ -347,12 +389,12 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                         };
                         calctime = new Date(val.date).toLocaleDateString('de-DE', options) ? new Date(val.date).toLocaleDateString('de-DE', options) : "";
                         var absender = val.personal ? val.personal : val.sender;
-                        var timestamp = '<div class="sender elipse col-xl-3 col-sm-3"><a href="mailto:' + val.sender + '?subject=' + val.name + '">' + absender + '</a></div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">' + calctime + '</div>';
-                        var fontpictures = '<i class="marked ' + marked + ' fa-star favorite" style="margin-left:4" /><i class="toggle fas fa-xs fa-arrow-down ' + childornot + '"/>';
-                        var enddiv = '</div>';
-                        app.tree_built += treeli + licontainer + jdenticonstring + fontpictures + enddiv + subject + timestamp + enddiv + enddiv;
+                        //var timestamp = '<div class="sender elipse col-xl-3 col-sm-3"><a href="mailto:' + val.sender + '?subject=' + val.name + '">' + absender + '</a></div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">' + calctime + '</div>';
+                        //var fontpictures = '<i class="marked ' + marked + ' fa-star favorite" style="margin-left:4" /><i class="toggle fas fa-xs fa-arrow-down ' + childornot + '"/>';
+                        //var enddiv = '</div>';
+                        //app.tree_built += treeli + licontainer + jdenticonstring + fontpictures + enddiv + subject + timestamp + enddiv + enddiv;
                         app.iterations++;
-                        var content = {marked: marked, read: val.messagestatus, markedhtml: marked, markedread: read,
+                        var content = {marked: marked, unread: unread, markedhtml: marked,
                             picturestatus: val.picturestatus, personal: val.personal, sender: val.sender,
                             user_id: val.user_id, margin: margin, sequence: this.sequence++, messageid: val.messageid,
                             date: val.date, subject: val.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
