@@ -143,9 +143,9 @@ function compose_mail($form, $msgnr)
 
     $message=line_read($ns);
     //nntp_close($ns);
-    
+    echo ($subject);
   } else {
-    $message=$text_error["post_failed"];
+    echo 'fail';
     
   }
 }

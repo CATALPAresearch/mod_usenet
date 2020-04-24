@@ -54,7 +54,12 @@ $header = nntp_header($nntp, $journal->newsgroup, $msgnr);
 
 $messagebody = nntp_fetchbody($nntp, $journal->newsgroup, $msgnr);
 
-$messagebody = nl2br($messagebody);
+//$messagebody = nl2br($messagebody);
+
+$returnmsg = [
+    "header" => $header,
+    "messagebody" => $messagebody
+];
 
 //check out $header->fromaddress
 if (!$user = $DB->get_record('user', ['email' => $header->from])) {
@@ -71,6 +76,9 @@ require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
 markMessageRead($msgnr);
 //var itendi = new Identicon(btoa("'.$header->from[0]->mailbox."@".$header->from[0]->host .'"),options).toString();
 
+header('Content-Type: application/json');
+echo json_encode($returnmsg);
+/*
 echo '<div class="container row-no-padding" style="padding-right:0px"><hr>
 	<div class="container row-no-padding row" style="padding-right:0px">
  	    <div class="svg col-sm-2 col-xl-2" style="padding-left:0px" id="identiconPlaceholder">
@@ -92,11 +100,11 @@ var options = {
 
 	   </script>
         	<div id="messagehead" class="col-sm-8 col-xl-6" messageid="'.htmlspecialchars($header->number).'" references="'.htmlspecialchars(implode(" ",$header->references)).'" uid="'.$header->id.'">';
-echo '<div class="col-xl"><div></div><div id="name" >'.$user->firstname." ".$user->lastname.'</div>';
+echo '<div class="col-xl"><div id="name" >'.$user->firstname." ".$user->lastname.'</div>';
 
          //new moodle_url("/user/profile.php?id="'.$user->id).'></a>';
 //echo '<div class="col-xl"><div><h4><span class="label label-default">Name</span></h4></div><div id=name >'.$user->firstname." ".$user->lastname.'</div></div>';
-echo '<div><div></div><div class="font-weight-bold" id=subject >'.htmlspecialchars($header->subject).'</div></div></div>';
+echo '<div><div class="font-weight-bold" id=subject >'.htmlspecialchars($header->subject).'</div></div></div>';
 echo '</div>';
 
 if ($user->picture > 0) {
@@ -115,3 +123,4 @@ echo '<div class="container row-no-padding" style="padding-right:0px">';
 echo "<hr><div id=messagebody class='row-no-padding' style='overflow-y: scroll;height: 335.9px' >".$messagebody."</div>";
 echo '</div>';
 echo '</div>';
+*/
