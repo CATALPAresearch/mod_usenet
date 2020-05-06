@@ -47,6 +47,7 @@ require_login($course, true, $cm);
 
 $modulecontext = context_module::instance($cm->id);
 
+    
 
 $PAGE->set_url('/mod/newsmod/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($moduleinstance->name));
@@ -54,7 +55,9 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 $PAGE->requires->css( '/mod/newsmod/css/newsmod.css', true );
 
+
 echo $OUTPUT->header();
+//header('X-Content-Type-Options: nosniff');
 /*      //this check is no longer needed
 if (extension_loaded('imap')) {
     $PAGE->requires->js_init_call('showtree', array('course'=>$cm->id, 'msgnr'=>$msgnr));
@@ -64,6 +67,10 @@ if (extension_loaded('imap')) {
 */
 
 //<div>Ich bin eine Variable aus der amd/src/Reader.js: {{ info }}</div>
+
+echo '<newsmod-container>   </newsmod-container>';
+
+/*
 echo'
 <div id="newsmod-container">
     <div class="container-fluid">
@@ -85,19 +92,19 @@ echo'
             <div class="col-12 row" >
                 
                 <div class="col-xl-6 col-sm-10" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
-                <post-container v-bind:postlist="post_list" v-bind:iterations="iterations" ></post-container>
+                <post-container v-bind:postlist="post_list" v-bind:iterations="iterations"  v-on:displaymsg="ondisplaymsg"></post-container>
                 
                 </div>
                 <div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
+                    <messagebody-container v-bind:postdata = "singlepostdata" v-on:answeredmsg="onansweredmsg"></messagebody-container>
                     
-                
                 </div>
             </div>
         </div>
     </div>
 </div>
 ';
-
+*/
 /*
 
 
