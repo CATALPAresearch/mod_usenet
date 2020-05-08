@@ -37,6 +37,24 @@ Newsgroups tested with
 resolution >1440x900 is optimal for now
 time to send summary to e-mail can be changed under task options in moodle ui
 
+##  Vue migration:
+
+TODO:
+
+*   [ ] Window "Post-container" (left side window)
+    *   [ ] scrolldown and highlight post after commiting it
+    *   [ ] user feedback on viewing empty newsgroup
+*   [ ] Window "messagebody-container" (right side window)
+    *   [ ] include toggle mode: "viewing" and "answering message or creating new topic"
+        *   [ ] toggle buttons + automatic switch and highlight when changing mode
+        *   [ ] include warning of text loss when answering message + creating new topic
+        *   [ ] Viewing mode
+        *   [ ] Editing mode
+*   [ ] newsgroup selector (design TBD, maybe dropdown list)
+*   [ ] user feedback on loading and errors
+*   [ ] migrate components to single files
+
+
 
 ##  Conversion: socket- in place of imap functions  ##
 

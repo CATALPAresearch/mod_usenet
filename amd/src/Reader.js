@@ -10,9 +10,10 @@
 
 
 define([
-    'jquery' // maybe not needed? We should stick with native javascript
+    'jquery', // maybe not needed? We should stick with native javascript
 ], function ($) {
-
+    
+    
     /**
      * Plot a timeline
      * @param d3 (Object) Data Driven Documents
@@ -28,6 +29,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
 
         var Reader = function (Vue, d3, axios, utils, log, courseid, messageid) {
 
+            
             /**
              * 
              * 
@@ -189,15 +191,16 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
 
         Vue.component('messagebody-container',
         {
-            props: ['postdata', 'isused'],
+            props: ['postdata', 'isused', 'isreading', 'isanswering', 'iscreatingtopic'],
 
             data: function() {
                 return {
                     answerbuttontext: 'Antworten',  // Text is toggled between 'Antworten' and 'Senden'
-                    isreading: true,                // class state  
-                    isanswering: false,
                     textareacontent: '',
                     value: '',
+                    usrinput_subject: '',
+                    textarea_usrinput: '',
+
                     
                 };
             },
@@ -218,7 +221,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                         for (var i = 0; i < messagesplit.length; i++) {
                             newmessage = newmessage + ">" + messagesplit[i] + "\n";
                         }
-                        this.textareacontent = newmessage;
+                        this.textarea_usrinput = newmessage;
                     }
                     else {                      // ==If user is answering a post
                         // this.textareacontent = this.postdata.messagebody;
@@ -230,7 +233,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                             // which is incompatible with moodles "data_submitted()"
                             // thats why the classic approach of urlsearchparams() is needed 
                         const params = new URLSearchParams();
-                        params.append('userInput', this.textareacontent);
+                        params.append('userInput', this.textarea_usrinput);
                         params.append('subject', this.postdata.header.subject);
                         params.append('references', this.postdata.header.references);
                         params.append('uid', this.postdata.header.id);
@@ -247,7 +250,21 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     }
                     
 
-                }
+                },
+
+                createtopic: function() {
+                    const params = new URLSearchParams();
+                    params.append('userInput', this.textareacontent);
+                    params.append('subject', this.usrinput_subject);
+                    
+                    
+                    axios   //returned data is already js object (axios automaticly converts json to js obj)
+                    .post(M.cfg.wwwroot + "/mod/newsmod/posttest.php?id=" + courseid + "&msgnr=new",
+                    params)
+                    .then(response => (this.value = response));
+
+                    this.$emit('answeredmsg');
+                },
 
             },
 
@@ -259,45 +276,74 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     this.isreading = true;
                     this.isanswering = false;
                     this.answerbuttontext = "Antworten";
-                }
+                },
+                iscreatingtopic: function( ) {
+                    if (this.iscreatingtopic) {
+                        this.textarea_usrinput = '';
+                    }
+                    
+                },
             },
 
             template: `
                 <div class = "messagebody-container" :style = "{display: isused}">
                     <div class="row-no-padding" style="padding-right:0px">
                         <div class="col-xl">
-                            <div>{{postdata.header.name}}
-                            </div>
-                            <div>{{postdata.header.subject}}
-                            </div>
+                            <template v-if = "iscreatingtopic">
+                                <button :class="'btn btn-primary'" v-on:click="createtopic">
+                                    Senden
+                                </button>
+                                <BR></BR>
+                                <label>
+                                    Betreff:
+                                </label>
+                                <textarea v-model="usrinput_subject" :class="{'form-control': true}" cols=30 rows=1> </textarea>
+                                <label>
+                                    Text:
+                                </label>
+                                <BR></BR>
+                                <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>                        
+                            </template>
+                            <template v-else>
+                                <div>{{postdata.header.name}}
+                                </div>
+                                <div>{{postdata.header.subject}}
+                                </div>
+                            </template>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <button :class="'btn btn-primary'" v-on:click="onanswerbuttonclick">
-                            {{answerbuttontext}}
-                        </button>
-                        <button :class="'btn btn-primary'" v-on:click="">
-                            Vorherige Nachricht
-                        </button>
-                        <button :class="'btn btn-primary'" v-on:click="">
-                            Nächste Nachricht
-                        </button>
-                    </div>
-                    <template v-if="isreading">
-                        <div :class="'row-no-padding'" :style="{'overflow-y': 'scroll', height: '335.9px'}">
-                            <div>
-                                <!-- 'white-space': 'pre-line' is needed here because v-model automatically formats nl it seems -->
-                                <span :style="{'white-space': 'pre-line'}"> {{textareacontent}}</span>
-                            </div>
-                        </div>
+                    <template v-if = "iscreatingtopic">
                     </template>
+
                     <template v-else>
-                        <div :class="'form-group'" :style="{'overflow-y': 'scroll', height: '335.9px'}">
-                            <textarea v-model="textareacontent" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>
+                    
+
+                        <div class="row">
+                            <button :class="'btn btn-primary'" v-on:click="onanswerbuttonclick">
+                                {{answerbuttontext}}
+                            </button>
+                            <button :class="'btn btn-primary'" v-on:click="">
+                                Vorherige Nachricht
+                            </button>
+                            <button :class="'btn btn-primary'" v-on:click="">
+                                Nächste Nachricht
+                            </button>
                         </div>
+                        <template v-if="isreading">
+                            <div :class="'row-no-padding'" :style="{'overflow-y': 'scroll', height: '335.9px'}">
+                                <div>
+                                    <!-- 'white-space': 'pre-line' is needed here because v-model automatically formats nl it seems -->
+                                    <span :style="{'white-space': 'pre-line'}"> {{textareacontent}}</span>
+                                </div>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div :class="'form-group'" :style="{'overflow-y': 'scroll', height: '335.9px'}">
+                                <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>
+                            </div>
+                        </template>
                     </template>                        
-                    </div>
                 </div>
             `,
         });     // END component messagebody-container
@@ -323,10 +369,13 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     post_list: [],
                     singlepostdata:[],
                     msgbodycontainerdisplay: 'none',
+                    isreading: false,
+                    isanswering: false,
+                    iscreatingtopic: false
                 };
             },
             components: {
-                
+                //testcomp,
                 // home,
                 // test
             },
@@ -372,7 +421,9 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                         .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" +msgid)
                         .then(response => (this.singlepostdata = response.data,this.iterations = 999));
                         this.msgbodycontainerdisplay = '';      // Set display to "visible"
-
+                        this.iscreatingtopic = false;
+                        this.isreading = true;
+                        this.isanswering = false;  
                     
                 },
                 /**
@@ -382,6 +433,9 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     app.post_list.splice(0);    //unset content array
                     this.arraypos = 0;          //reset index counter of content
                     this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
+                    this.isanswering = false;
+                    this.iscreatingtopic = false;
+                    this.isreading = false;
                     axios   //returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
                         .then(response => (this.info = response, this.tree_data = response.data, this.buildtree(response.data, 1)));
@@ -469,7 +523,10 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                 },
 
                 newTopic: function() {
-
+                    this.msgbodycontainerdisplay = ''; 
+                    this.iscreatingtopic = true;
+                    this.isreading = false;
+                    this.isanswering = false;    
                 }
                 
             }, // END app methods
@@ -479,12 +536,21 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12">
-                                <form class="form-inline float-sm-left" action="" method="post">
-                                    <button class="btn btn-default" type="button" id="createbutton" v-on:click="newTopic"> Neues Thema </button>
-                                    <button class="btn btn-default fa fa-sync" type="button" v-on:click=""></button>
+                                <div class="form-inline float-sm-left">
+                                    <button :class="'btn btn-default'" v-on:click="newTopic">
+                                        Neues Thema
+                                    </button>
+
+                                    <button :class="'btn btn-default fa fa-sync'" v-on:click="">
+                                         
+                                    </button>
+
                                     <input type="text" class="form-control" placeholder="Suchen...">
-                                    <button class="btn btn-outline-success" type="submit">Suchen</button>
-                                </form>
+
+                                    <button :class="'btn btn-outline-success'" type="submit" v-on:click="">
+                                        Suchen
+                                    </button>
+                                </div>
                                 <div class="text-danger" id="orr">Bitte drehen Sie Ihr Gerät!</div>
                             </div>
                         </div>
@@ -499,7 +565,8 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                                 
                                 </div>
                                 <div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
-                                    <messagebody-container v-bind:postdata = "singlepostdata" :isused ="msgbodycontainerdisplay"  v-on:answeredmsg="onansweredmsg"></messagebody-container>
+                                    <messagebody-container v-bind:postdata = "singlepostdata" :isused ="msgbodycontainerdisplay" 
+                                    :isreading = "isreading" :isanswering = "isanswering" :iscreatingtopic = "iscreatingtopic" v-on:answeredmsg="onansweredmsg"></messagebody-container>
                                     
                                 </div>
                             </div>
