@@ -177,12 +177,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                         v-bind:key = "singlepost.messageid"
                         v-on:getmsg="ongetmsg">
                         
-
                         </post>
-
-                        <div>test2: {{messagetest}} </div>
-                        <div>test3: {{null}} </div>
-                        <h6>iterations: {{iterations}} </h6>
                     </div>
                 `,
 
@@ -251,6 +246,15 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     
 
                 },
+
+                prevmsg: function() {
+                    this.$emit('prevmsg', this.postdata.header.number);
+                },
+
+                nextmsg: function() {
+                    this.$emit('nextmsg', this.postdata.header.number);
+                },
+
 
                 createtopic: function() {
                     const params = new URLSearchParams();
@@ -323,10 +327,10 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                             <button :class="'btn btn-primary'" v-on:click="onanswerbuttonclick">
                                 {{answerbuttontext}}
                             </button>
-                            <button :class="'btn btn-primary'" v-on:click="">
+                            <button :class="'btn btn-primary'" v-on:click="prevmsg">
                                 Vorherige Nachricht
                             </button>
-                            <button :class="'btn btn-primary'" v-on:click="">
+                            <button :class="'btn btn-primary'" v-on:click="nextmsg">
                                 Nächste Nachricht
                             </button>
                         </div>
@@ -426,6 +430,42 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                         this.isanswering = false;  
                     
                 },
+                onprevmsg: function(msgid) {
+                
+                    console.log(msgid);
+
+
+                    msgid = parseInt(msgid, 10);
+                    msgid = msgid - 1;
+                    msgid = msgid.toString();
+
+                    console.log(msgid);
+
+                    
+                    axios   // Returned data is already js object (axios automaticly converts json to js obj)
+                        .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" +msgid)
+                        .then(response => (this.singlepostdata = response.data,this.iterations = 999));
+                        this.msgbodycontainerdisplay = '';      // Set display to "visible"
+                        this.iscreatingtopic = false;
+                        this.isreading = true;
+                        this.isanswering = false;
+                },
+
+                onnextmsg: function(msgid) {
+                    msgid = parseInt(msgid, 10);
+                    msgid = msgid + 1;
+                    msgid = msgid.toString();
+
+                    console.log(msgid);
+
+                    axios   // Returned data is already js object (axios automaticly converts json to js obj)
+                        .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" +msgid)
+                        .then(response => (this.singlepostdata = response.data,this.iterations = 999));
+                        this.msgbodycontainerdisplay = '';      // Set display to "visible"
+                        this.iscreatingtopic = false;
+                        this.isreading = true;
+                        this.isanswering = false;
+                },
                 /**
                  * Refresh post
                  */
@@ -448,7 +488,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     
                     
                     //var data = tree_data_children;
-
+                    
                     tree_data.children.forEach(val => {
                             
                            
@@ -566,7 +606,10 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                                 </div>
                                 <div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
                                     <messagebody-container v-bind:postdata = "singlepostdata" :isused ="msgbodycontainerdisplay" 
-                                    :isreading = "isreading" :isanswering = "isanswering" :iscreatingtopic = "iscreatingtopic" v-on:answeredmsg="onansweredmsg"></messagebody-container>
+                                    :isreading = "isreading" :isanswering = "isanswering" :iscreatingtopic = "iscreatingtopic" v-on:answeredmsg="onansweredmsg"
+                                    v-on:prevmsg="onprevmsg" v-on:nextmsg="onnextmsg">
+                                    
+                                    </messagebody-container>
                                     
                                 </div>
                             </div>
