@@ -118,15 +118,35 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
             
             Vue.component('post-container', 
             {
-                props: ['postlist', 'mytree_data', 'mytree_built', 'iterations'],
+                props: ['postlist', 'markedpost'],
 
                 
                 data: function() {
                     return {
-                        messagetest: '',
-                        messagetest3: '',
                         previouspost: -1,
                     };
+                },
+
+                watch: {
+                    markedpost: function() {
+                        var modpost = this.postlist[this.markedpost];
+                        modpost.isSelected = true;
+                        modpost.unread = false;
+                        Vue.set(this.postlist, this.markedpost, modpost);      
+
+                        if (this.previouspost != -1)    // was there a post previously selected ?
+                        {
+                            if (this.previouspost != this.markedpost)  // is the user not clicking on the same post ?
+                            {
+                                modpost = this.postlist[this.previouspost];
+                                modpost.isSelected = false;
+                                Vue.set(this.postlist, this.previouspost, modpost);  
+                            }                          
+                        }
+                        this.previouspost = this.markedpost;   // current post is next previouspost
+
+                    }
+
                 },
 
                 methods: 
@@ -135,9 +155,6 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     
                     ongetmsg: function (msgid, arraypos)
                     {
-                        axios   // returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" +msgid)
-                        .then(response => (this.messagetest = response.data));
                         
                         this.$emit('displaymsg', msgid);
 
@@ -149,7 +166,6 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                             //
                             // Vue.set() helps, see https://vuejs.org/v2/guide/reactivity.html#Change-Detection-Caveats   
                         var modpost = this.postlist[arraypos];
-                        console.log(modpost);
                         modpost.isSelected = true;
                         modpost.unread = false;
                         Vue.set(this.postlist, arraypos, modpost);      
@@ -247,7 +263,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
 
                 },
 
-                prevmsg: function() {
+                prevmsg: function() {   // Number = messageid
                     this.$emit('prevmsg', this.postdata.header.number);
                 },
 
@@ -375,7 +391,8 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     msgbodycontainerdisplay: 'none',
                     isreading: false,
                     isanswering: false,
-                    iscreatingtopic: false
+                    iscreatingtopic: false,
+                    markedpost: -1
                 };
             },
             components: {
@@ -419,6 +436,14 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
             },
             methods: {
 
+                findinarr: function (key, inputArray) {
+                    for (let i = 0; i < inputArray.length; i++) {
+                        if (inputArray[i].messageid === key) {
+                            return inputArray[i];
+                        }
+                    }
+                },
+
                 ondisplaymsg: function (msgid)
                 {
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
@@ -428,19 +453,60 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                         this.iscreatingtopic = false;
                         this.isreading = true;
                         this.isanswering = false;  
+
+                        let post = this.findinarr(msgid, this.post_list);
+                    
+                        let arraypos = post.arraypos;
+                        this.markedpost = arraypos;
                     
                 },
+
+                /**
+                 * 
+                 * @param {*} msgid
+                 * 
+                 * function is called from button click "(Show) Previous message"
+                 * Shows previous message in thread
+                 * 
+                 * Notes:
+                 * 
+                 * When the page is first loaded, a json data structure is fetched
+                 * from the server (headers of postings) and gets processed into an array post_data in buildtree(), along with
+                 * the corresponding position on the array
+                 * 
+                 * When user clicks on a post however, post data (header and body) is fetched from server,
+                 * lacking the matching position on existing array post_data
+                 * Position on array post_data is found by searching for param msgid (every post has a msgid, whatever the source)
+                 * Previous post is then loaded by getting the correct msgid from the previous post on the array post_list
+                 * 
+                 * Why is this important:
+                 * msgid is an ascending number, increasing with each posting/reply. 
+                 * multiple threads in a newsgroup can be replied to, so msgid doesnt represent the
+                 * order/structure of one thread
+                 * 
+                 * User expection is to see the next/prev post from a thread as shown from array post_list,
+                 * so fetching the next/prev post by msgid doesnt result in expected behavior
+                 * 
+                 * 
+                 * 
+                 * Future todo:
+                 *      only fetch body from server and attach it to element on array post_list
+                 */
                 onprevmsg: function(msgid) {
-                
+                    
+                    let post = this.findinarr(msgid, this.post_list);
+                    
+                    let arraypos = post.arraypos;
+
+                    arraypos -= 1;
+                    this.markedpost = arraypos;
+
+                    
+                    msgid = this.post_list[arraypos].messageid;
+                    
+
+                    console.log(arraypos);
                     console.log(msgid);
-
-
-                    msgid = parseInt(msgid, 10);
-                    msgid = msgid - 1;
-                    msgid = msgid.toString();
-
-                    console.log(msgid);
-
                     
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" +msgid)
@@ -452,12 +518,24 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                 },
 
                 onnextmsg: function(msgid) {
-                    msgid = parseInt(msgid, 10);
-                    msgid = msgid + 1;
-                    msgid = msgid.toString();
+                  
 
+                    let post = this.findinarr(msgid, this.post_list);
+                    
+                    let arraypos = post.arraypos;
+
+                    arraypos += 1;
+                   
+                    this.markedpost = arraypos;         // Variable is transmitted to "post-container"
+
+                    msgid = this.post_list[arraypos].messageid;
+                    
+
+                    console.log(arraypos);
                     console.log(msgid);
 
+                    
+                    //msgid = parseInt(msgid);
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" +msgid)
                         .then(response => (this.singlepostdata = response.data,this.iterations = 999));
@@ -601,7 +679,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                             <div class="col-12 row" >
                                 
                                 <div class="col-xl-6 col-sm-10" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
-                                <post-container v-bind:postlist="post_list" v-bind:iterations="iterations"  v-on:displaymsg="ondisplaymsg"></post-container>
+                                <post-container v-bind:postlist="post_list" v-bind:markedpost="markedpost"  v-on:displaymsg="ondisplaymsg"></post-container>
                                 
                                 </div>
                                 <div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
