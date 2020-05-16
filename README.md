@@ -44,12 +44,6 @@ TODO:
 *   [ ] Window "Post-container" (left side window)
     *   [ ] scrolldown and highlight post after commiting it
     *   [ ] user feedback on viewing empty newsgroup
-*   [ ] Window "messagebody-container" (right side window)
-    *   [ ] include toggle mode: "viewing" and "answering message or creating new topic"
-        *   [ ] toggle buttons + automatic switch and highlight when changing mode
-        *   [ ] include warning of text loss when answering message + creating new topic
-        *   [ ] Viewing mode
-        *   [ ] Editing mode
 *   [ ] newsgroup selector (design TBD, maybe dropdown list)
 *   [ ] user feedback on loading and errors
 *   [ ] migrate components to single files

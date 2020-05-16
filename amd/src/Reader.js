@@ -70,7 +70,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                 },
 
                 template: `
-                <div class = "post">
+                <div class = "post" :class="{hidden: this.content.hidden}">
                     <li class="node px-0" :column="content.margin" :sequence="content.sequence" :marked="content.marked"
                     :messageid="content.messageid" :data-date="new Date(content.date)" :class = "{'font-weight-bold': content.unread}">
                         <div class ="container-fluid px-0">
@@ -375,7 +375,9 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
             data: function () {
                 return {
                     message: '',
-                    search: '',
+                    searchstring: '',
+                    searchresult: [],
+                    hiddenposts: [],        // Stores array pos of searchresult items in array post_list
                     filter_assessment: true,
                     filter_text: true,
                     content: [],
@@ -626,7 +628,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                             picturestatus: val.picturestatus, personal: val.personal, sender: val.sender,
                             user_id: val.user_id, margin: margin, sequence: this.sequence++, messageid: val.messageid,
                             date: val.date, subject: val.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
-                            isSelected: false};
+                            isSelected: false, hidden: false};
                         
                         this.post_list.push(content);
                         //Vue.set(this.post_list, this.arraypos, content);
@@ -645,7 +647,46 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     this.iscreatingtopic = true;
                     this.isreading = false;
                     this.isanswering = false;    
-                }
+                },
+
+                search: function(options) {
+                    axios   // Returned data is already js object (axios automaticly converts json to js obj)
+                        .get(M.cfg.wwwroot + "/mod/newsmod/search.php?id=" + courseid + "&searchparam=" +this.searchstring)
+                        .then(response => (this.displaysearchresult('',response.data)));
+
+
+                    
+                },
+
+                displaysearchresult: function(options, searchresult) {
+                    for (let i=0; i<this.post_list.length; i++) {
+                        let modpost = this.post_list[i];
+                        modpost.hidden = true;
+                        Vue.set(this.post_list, i, modpost);
+                    }
+
+
+                    for (let i=0; i<searchresult.length; i++) {
+                        this.hiddenposts.push(this.findinarr(searchresult[i].number, this.post_list));
+
+                        let modpost = this.hiddenposts[i];
+                        modpost.hidden = false;
+                        Vue.set(this.post_list, modpost.arraypos, modpost);
+                    }
+                },
+
+                resetsearchstring: function() {
+                    this.searchstring = '';
+                    this.hiddenposts.splice(0);  
+
+                    for (let i=0; i<this.post_list.length; i++) {
+                        let modpost = this.post_list[i];
+                        modpost.hidden = false;
+                        Vue.set(this.post_list, i, modpost);
+                    }
+
+                },
+
                 
             }, // END app methods
 
@@ -663,9 +704,9 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                                          
                                     </button>
 
-                                    <input type="text" class="form-control" placeholder="Suchen...">
+                                    <input v-model="searchstring" placeholder="Suchen..." v-on:click="resetsearchstring">
 
-                                    <button :class="'btn btn-outline-success'" type="submit" v-on:click="">
+                                    <button :class="'btn btn-outline-success'" type="submit" v-on:click="search">
                                         Suchen
                                     </button>
                                 </div>
