@@ -15,10 +15,10 @@ define([
 
         require.config({
             enforceDefine: false,
-            baseUrl: M.cfg.wwwroot + "/mod/newsmod/lib/",
+            baseUrl: M.cfg.wwwroot + "/mod/newsmod/lib/build",
             paths: {
                 "vue259": ["https://cdn.jsdelivr.net/npm/vue@2.5.9/dist/vue", "vue"],
-                "axios": ["https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js", "axios.min"],
+                "axios": ["https://cdn.jsdelivr.net/npm/axios/dist/axios.min", "axios.min"],
                 "d3": ["d3.v5.min"],
                 "pnglib": ["pnglib"],
                 "identicon": ["identicon"],
