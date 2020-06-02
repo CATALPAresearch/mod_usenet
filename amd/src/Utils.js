@@ -9,9 +9,13 @@
  * @license    MIT
  * @since      3.1
  */
-define(['jquery', 'core/ajax'], function ($, ajax) {
+define([
+    'jquery',
+    'core/ajax',
+    M.cfg.wwwroot + "/mod/newsmod/lib/build/d3.v5.min"
+], function ($, ajax, d3) {
 
-    var Utils = function (d3) {
+    var Utils = function () {
         this.d3 = d3;
 
         /**

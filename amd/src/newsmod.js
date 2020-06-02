@@ -16,8 +16,6 @@ define([
             enforceDefine: false,
             baseUrl: M.cfg.wwwroot + "/mod/newsmod/lib/build",
             paths: {
-                "vue259": ["https://cdn.jsdelivr.net/npm/vue@2.5.9/dist/vue", "vue"],
-                "axios": ["https://cdn.jsdelivr.net/npm/axios/dist/axios.min", "axios.min"],
                 "d3": ["d3.v5.min"],
                 "pnglib": ["pnglib"],
                 "identicon": ["identicon"],
@@ -36,16 +34,14 @@ define([
         var start = function (courseid, messageid) {
 
             require([
-                'vue259',
-                'axios',
                 'd3'
-            ], function (vue, axios, d3) {
+            ], function (d3) {
                 var utils = new Utils(d3);
                 var log = new Log(utils, courseid, {
                     context: 'mod_newsmod',
                     outputType: 0 // set to 1 in order to store logs to the database
                 });
-                new Reader(vue, d3, axios, utils, log, courseid, messageid);
+                new Reader(log, courseid, messageid);
             });
         };
 

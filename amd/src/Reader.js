@@ -9,365 +9,26 @@
 
 
 define([
-    'jquery', // maybe not needed? We should stick with native javascript
-], function ($) {
-    
-    
+    'jquery',
+    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min',
+    M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min',
+    M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderMessageBody.js',
+    M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderPostContainer.js'
+], function ($, Vue, axios, MessageBodyContainer, PostContainer) {
+
     /**
      * Plot a timeline
      * @param d3 (Object) Data Driven Documents
      * @param dc (Object) Dimensional Javascript Charting Library
      * @param utils (Object) Custome util class
      */
-/*
-props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
-                        'markedstatus', 'picturestatus', 'user_id', 'date', 'children'],
-
-*/
+    /*
+    props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
+                            'markedstatus', 'picturestatus', 'user_id', 'date', 'children'],
     
+    */
 
-        var Reader = function (Vue, d3, axios, utils, log, courseid, messageid) {
-
-            
-            /**
-             *  @param content created in buildtree(...) 
-             *  var content = {marked: marked, unread: unread, markedhtml: marked,
-                picturestatus: val.picturestatus, personal: val.personal, sender: val.sender,
-                user_id: val.user_id, margin: margin, sequence: this.sequence++, messageid: val.messageid,
-                date: val.date, subject: val.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
-                isSelected: false};
-             */
-            Vue.component('post',
-            {
-                props: ['content'],
-
-                data: function() {
-                    return {
-                        isSelected: false                        
-                    };
-                },
-
-                methods:
-                {
-                    togglemarked: function() {
-                        axios   //returned data is already js object (axios automaticly converts json to js obj)
-                        .get( [
-                            M.cfg.wwwroot,
-                            "/mod/newsmod/statuschange.php?id=",
-                            courseid,
-                            "&msgnr=",
-                            this.content.messageid
-                        ].join())
-                        .then();
-
-                        if (this.content.marked) {
-                            this.content.marked = false;
-                        }
-                        else {
-                            this.content.marked = true;
-                        }
-                    }
-                },
-
-                template: `
-                <div class = "post" :class="{hidden: this.content.hidden}">
-                    <li class="node px-0" :column="content.margin" :sequence="content.sequence" :marked="content.marked"
-                    :messageid="content.messageid" :data-date="new Date(content.date)" :class = "{'font-weight-bold': content.unread}">
-                        <div class ="container-fluid px-0">
-                            <div class = "row px-0" v-bind:class="{'bg-info': content.isSelected}">
-                                
-                                
-                                <div class = "px-0 col-sm-2 col-md-2 col-lg-2 col-xl-2" v-on:click="togglemarked">
-
-                                    <!-- TODO insert jdenticon -->
-
-                                    <template v-if="content.marked">
-                                    <i class="fas starmarked fa-star" />
-                                    </template>
-                                    <template v-else>
-                                    <i class="far fa-star" />
-                                    </template>
-
-                                    <template v-if="content.haschild">
-                                    <i class="fas fa-xs fa-arrow-down" />
-                                    </template>
-                                    <template v-else>
-                                    </template>
-                                </div>
-
-
-                                <div class = "col-sm-5 col-md-5 col-lg-5 col-xl-5" :style="{'text-indent': content.margin + 'px'}" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
-                                    {{content.subject}}
-                                </div>
-
-                                <div class = "col-sm-3 col-md-3 col-lg-3 col-xl-3">
-                                    {{content.personal}}
-                                </div>
-
-                                <div class="datetime message col-sm-2 col-md-2 col-lg-2 col-xl-2" data-date-format="DD.MM.YYYY">
-                                    {{content.calctime}}
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                </div>
-                `,
-
-            });
-            
-            Vue.component('post-container', 
-            {
-                props: ['postlist', 'markedpost'],
-
-                
-                data: function() {
-                    return {
-                        previouspost: -1,
-                    };
-                },
-
-                watch: {
-                    markedpost: function() {
-                        var modpost = this.postlist[this.markedpost];
-                        modpost.isSelected = true;
-                        modpost.unread = false;
-                        Vue.set(this.postlist, this.markedpost, modpost);      
-
-                        if (this.previouspost != -1)    // was there a post previously selected ?
-                        {
-                            if (this.previouspost != this.markedpost)  // is the user not clicking on the same post ?
-                            {
-                                modpost = this.postlist[this.previouspost];
-                                modpost.isSelected = false;
-                                Vue.set(this.postlist, this.previouspost, modpost);  
-                            }                          
-                        }
-                        this.previouspost = this.markedpost;   // current post is next previouspost
-
-                    }
-
-                },
-
-                methods: 
-                {
-                    // Function ongetmsg called by event getmsg, getmsg-event is emitted by 'post' (child component)
-                    
-                    ongetmsg: function (msgid, arraypos)
-                    {
-                        
-                        this.$emit('displaymsg', msgid);
-
-                        // Mark the clicked post with blue bg-colour & unmark previous clicked post
-                        // "unbold" the clicked post, marking it as read
-                        // why vue.set: vue cant track following changes to array:
-                            // When you directly set an item with the index, e.g. vm.items[indexOfItem] = newValue
-                            // When you modify the length of the array, e.g. vm.items.length = newLength
-                            //
-                            // Vue.set() helps, see https://vuejs.org/v2/guide/reactivity.html#Change-Detection-Caveats   
-                        var modpost = this.postlist[arraypos];
-                        modpost.isSelected = true;
-                        modpost.unread = false;
-                        Vue.set(this.postlist, arraypos, modpost);      
-
-                        if (this.previouspost != -1)    // was there a post previously selected ?
-                        {
-                            if (this.previouspost != arraypos)  // is the user not clicking on the same post ?
-                            {
-                                modpost = this.postlist[this.previouspost];
-                                modpost.isSelected = false;
-                                Vue.set(this.postlist, this.previouspost, modpost);  
-                            }                          
-                        }
-                        this.previouspost = arraypos;   // current post is next previouspost
-                        
-                    }, // END event method ongetmsg
-
-                }, // END component methods
-
-                template: `
-                    <div class ="post-container">
-                        <post    
-                        v-for="singlepost in postlist"
-                        v-bind:content="singlepost"
-                        v-bind:key = "singlepost.messageid"
-                        v-on:getmsg="ongetmsg">
-                        
-                        </post>
-                    </div>
-                `,
-
-            }); // END component post-container
-
-
-        Vue.component('messagebody-container',
-        {
-            props: ['postdata', 'isused', 'isreading', 'isanswering', 'iscreatingtopic'],
-
-            data: function() {
-                return {
-                    answerbuttontext: 'Antworten',  // Text is toggled between 'Antworten' and 'Senden'
-                    textareacontent: '',
-                    value: '',
-                    usrinput_subject: '',
-                    textarea_usrinput: '',
-
-                    
-                };
-            },
-
-            methods: {
-
-                onanswerbuttonclick: function() {
-                    this.answerbuttontext = this.answerbuttontext == 'Antworten' ? 'Senden' : 'Antworten';
-                    
-                    if (this.isreading) {
-                        this.isreading = false;
-                        this.isanswering = true;
-
-                                // previous post is included in a reply
-                                    // placing ">" to distinguish old message from new reply 
-                        var messagesplit = this.textareacontent.split('\n');
-                        var newmessage = "\n";
-                        for (var i = 0; i < messagesplit.length; i++) {
-                            newmessage = newmessage + ">" + messagesplit[i] + "\n";
-                        }
-                        this.textarea_usrinput = newmessage;
-                    }
-                    else {                      // ==If user is answering a post
-                        // this.textareacontent = this.postdata.messagebody;
-                        this.isreading = true;
-                        this.isanswering = false;
-
-
-                        // Why PARAMS: axios also converts js objects to json on POST
-                            // which is incompatible with moodles "data_submitted()"
-                            // thats why the classic approach of urlsearchparams() is needed 
-                        const params = new URLSearchParams();
-                        params.append('userInput', this.textarea_usrinput);
-                        params.append('subject', this.postdata.header.subject);
-                        params.append('references', this.postdata.header.references);
-                        params.append('uid', this.postdata.header.id);
-                        
-                        axios   //returned data is already js object (axios automaticly converts json to js obj)
-                        .post(M.cfg.wwwroot + "/mod/newsmod/posttest.php?id=" + courseid + "&msgnr=" + this.postdata.header.id,
-                        params)
-                        .then(response => (this.value = response));
-
-                        this.$emit('answeredmsg');
-
-//{ userInput : this.textareacontent, subject : this.postdata.header.subject, references : this.postdata.header.references, uid : this.postdata.header.id }
-
-                    }
-                    
-
-                },
-
-                prevmsg: function() {   // Number = messageid
-                    this.$emit('prevmsg', this.postdata.header.number);
-                },
-
-                nextmsg: function() {
-                    this.$emit('nextmsg', this.postdata.header.number);
-                },
-
-
-                createtopic: function() {
-                    const params = new URLSearchParams();
-                    params.append('userInput', this.textareacontent);
-                    params.append('subject', this.usrinput_subject);
-                    
-                    
-                    axios   //returned data is already js object (axios automaticly converts json to js obj)
-                    .post(M.cfg.wwwroot + "/mod/newsmod/posttest.php?id=" + courseid + "&msgnr=new",
-                    params)
-                    .then(response => (this.value = response));
-
-                    this.$emit('answeredmsg');
-                },
-
-            },
-
-           
-
-            watch: {
-                postdata: function() {      // when postdata changes (user clicks on a different post), reset stuff
-                    this.textareacontent = this.postdata.messagebody;
-                    this.isreading = true;
-                    this.isanswering = false;
-                    this.answerbuttontext = "Antworten";
-                },
-                iscreatingtopic: function( ) {
-                    if (this.iscreatingtopic) {
-                        this.textarea_usrinput = '';
-                    }
-                    
-                },
-            },
-
-            template: `
-                <div class = "messagebody-container" :style = "{display: isused}">
-                    <div class="row-no-padding" style="padding-right:0px">
-                        <div class="col-xl">
-                            <template v-if = "iscreatingtopic">
-                                <button :class="'btn btn-primary'" v-on:click="createtopic">
-                                    Senden
-                                </button>
-                                <BR></BR>
-                                <label>
-                                    Betreff:
-                                </label>
-                                <textarea v-model="usrinput_subject" :class="{'form-control': true}" cols=30 rows=1> </textarea>
-                                <label>
-                                    Text:
-                                </label>
-                                <BR></BR>
-                                <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>                        
-                            </template>
-                            <template v-else>
-                                <div>{{postdata.header.name}}
-                                </div>
-                                <div>{{postdata.header.subject}}
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-
-                    <template v-if = "iscreatingtopic">
-                    </template>
-
-                    <template v-else>
-                    
-
-                        <div class="row">
-                            <button :class="'btn btn-primary'" v-on:click="onanswerbuttonclick">
-                                {{answerbuttontext}}
-                            </button>
-                            <button :class="'btn btn-primary'" v-on:click="prevmsg">
-                                Vorherige Nachricht
-                            </button>
-                            <button :class="'btn btn-primary'" v-on:click="nextmsg">
-                                Nächste Nachricht
-                            </button>
-                        </div>
-                        <template v-if="isreading">
-                            <div :class="'row-no-padding'" :style="{'overflow-y': 'scroll', height: '335.9px'}">
-                                <div>
-                                    <!-- 'white-space': 'pre-line' is needed here because v-model automatically formats nl it seems -->
-                                    <span :style="{'white-space': 'pre-line'}"> {{textareacontent}}</span>
-                                </div>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <div :class="'form-group'" :style="{'overflow-y': 'scroll', height: '335.9px'}">
-                                <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>
-                            </div>
-                        </template>
-                    </template>                        
-                </div>
-            `,
-        });     // END component messagebody-container
-
-            
+    var Reader = function (Log, courseid, messageid) {
 
         var app = new Vue({
             el: 'newsmod-container',
@@ -388,7 +49,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     iterations: 0,
                     arraypos: 0,
                     post_list: [],
-                    singlepostdata:[],
+                    singlepostdata: [],
                     msgbodycontainerdisplay: 'none',
                     isreading: false,
                     isanswering: false,
@@ -396,41 +57,35 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     markedpost: -1
                 };
             },
+
             components: {
-                //testcomp,
-                // home,
-                // test
+                'messagebody-container': MessageBodyContainer,
+                'post-container': PostContainer
             },
 
-          
             created: function () {
-                log.add('hello_world', { level: 'fun', target: 'vue is in place' });
+                Log.add('hello_world', { level: 'fun', target: 'vue is in place' });
 
                 // log interactions (example)
                 $('.nav-link-h4').click(function () {
-                    log.add('toc_entry_open', { level: 'h4', target: $(this).attr('href') });
+                    Log.add('toc_entry_open', { level: 'h4', target: $(this).attr('href') });
                 });
                 $('.nav-link-h3').click(function () {
-                    log.add('toc_entry_open', { level: 'h3', target: $(this).attr('href') });
+                    Log.add('toc_entry_open', { level: 'h3', target: $(this).attr('href') });
                 });
-
-                
 
             },
             mounted: function () {
-
-
                 const h = messageid; // !!??
                 const f = courseid;
                 const g = 0;
                 let _this = this;
                 let id = 0;
-                
-                axios   //returned data is already js object (axios automaticly converts json to js obj)
+
+                //returned data is already js object (axios automaticly converts json to js obj)
+                axios
                     .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
                     .then(response => (this.info = response, this.tree_data = response.data, this.buildtree(response.data, 1)));
-
-                
             },
             computed: {
 
@@ -445,21 +100,20 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     }
                 },
 
-                ondisplaymsg: function (msgid)
-                {
+                ondisplaymsg: function (msgid) {
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" +msgid)
-                        .then(response => (this.singlepostdata = response.data,this.iterations = 999));
-                        this.msgbodycontainerdisplay = '';      // Set display to "visible"
-                        this.iscreatingtopic = false;
-                        this.isreading = true;
-                        this.isanswering = false;  
+                        .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" + msgid)
+                        .then(response => (this.singlepostdata = response.data, this.iterations = 999));
+                    this.msgbodycontainerdisplay = '';      // Set display to "visible"
+                    this.iscreatingtopic = false;
+                    this.isreading = true;
+                    this.isanswering = false;
 
-                        let post = this.findinarr(msgid, this.post_list);
-                    
-                        let arraypos = post.arraypos;
-                        this.markedpost = arraypos;
-                    
+                    let post = this.findinarr(msgid, this.post_list);
+
+                    let arraypos = post.arraypos;
+                    this.markedpost = arraypos;
+
                 },
 
                 /**
@@ -493,62 +147,62 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                  * Future todo:
                  *      only fetch body from server and attach it to element on array post_list
                  */
-                onprevmsg: function(msgid) {
-                    
+                onprevmsg: function (msgid) {
+
                     let post = this.findinarr(msgid, this.post_list);
-                    
+
                     let arraypos = post.arraypos;
 
                     arraypos -= 1;
                     this.markedpost = arraypos;
 
-                    
+
                     msgid = this.post_list[arraypos].messageid;
-                    
+
 
                     console.log(arraypos);
                     console.log(msgid);
-                    
+
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" +msgid)
-                        .then(response => (this.singlepostdata = response.data,this.iterations = 999));
-                        this.msgbodycontainerdisplay = '';      // Set display to "visible"
-                        this.iscreatingtopic = false;
-                        this.isreading = true;
-                        this.isanswering = false;
+                        .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" + msgid)
+                        .then(response => (this.singlepostdata = response.data, this.iterations = 999));
+                    this.msgbodycontainerdisplay = '';      // Set display to "visible"
+                    this.iscreatingtopic = false;
+                    this.isreading = true;
+                    this.isanswering = false;
                 },
 
-                onnextmsg: function(msgid) {
-                  
+                onnextmsg: function (msgid) {
+
 
                     let post = this.findinarr(msgid, this.post_list);
-                    
+
                     let arraypos = post.arraypos;
 
                     arraypos += 1;
-                   
+
                     this.markedpost = arraypos;         // Variable is transmitted to "post-container"
 
                     msgid = this.post_list[arraypos].messageid;
-                    
+
 
                     console.log(arraypos);
                     console.log(msgid);
 
-                    
+
                     //msgid = parseInt(msgid);
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" +msgid)
-                        .then(response => (this.singlepostdata = response.data,this.iterations = 999));
-                        this.msgbodycontainerdisplay = '';      // Set display to "visible"
-                        this.iscreatingtopic = false;
-                        this.isreading = true;
-                        this.isanswering = false;
+                        .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" + msgid)
+                        .then(response => (this.singlepostdata = response.data, this.iterations = 999));
+                    this.msgbodycontainerdisplay = '';      // Set display to "visible"
+                    this.iscreatingtopic = false;
+                    this.isreading = true;
+                    this.isanswering = false;
                 },
                 /**
                  * Refresh post
                  */
-                onansweredmsg: function() {
+                onansweredmsg: function () {
                     app.post_list.splice(0);    //unset content array
                     this.arraypos = 0;          //reset index counter of content
                     this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
@@ -561,28 +215,23 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
 
                 },
 
+                buildtree: function (tree_data, margin) {
 
-                
-                buildtree: function (tree_data,margin) {
-                    
-                    
                     //var data = tree_data_children;
-                    
+
                     tree_data.children.forEach(val => {
-                            
-                           
+
+
                         //var marked = val.markedstatus != '0' ? "fas starmarked " : "far ";
                         var marked = val.markedstatus != '0' ? true : false;
                         //var read = val.messagestatus == '0' ? "font-weight-bold " : "";
                         var unread = val.messagestatus == '0' ? true : false;
 
                         var childpresent = false;
-                        if (val.picturestatus > '0') 
-                        {
+                        if (val.picturestatus > '0') {
                             var jdenticonstring = '<div class="control col-sm-3 col-xl-4"><img title="Name: ' + val.personal + '\r\nE-Mail-Adresse: ' + val.sender + '" src="' + M.cfg.wwwroot + '/user/pix.php/' + val.user_id + '/f1.jpg" width="20" height="20"></img></div>';
-                        } 
-                        else 
-                        {
+                        }
+                        else {
                             var options = {
                                 background: [255, 255, 255, 255], // rgba white
                                 margin: 0.05, // 20% margin
@@ -594,15 +243,13 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                             + '\r\nE-Mail-Adresse: ' + val.sender + '">
                             <img width=19 height=20 src="data:image/svg+xml;base64,' + data + '"></div>'`;
                         }
-                        if (val.children)
-                        {
+                        if (val.children) {
                             childpresent = true;
                         }
-                        else
-                        {
+                        else {
                             childpresent = false;
                         }
-                        
+
                         if (!val.children) {
                             var childornot = "hidden";
                         }
@@ -622,50 +269,46 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                         //var fontpictures = '<i class="marked ' + marked + ' fa-star favorite" style="margin-left:4" /><i class="toggle fas fa-xs fa-arrow-down ' + childornot + '"/>';
                         //var enddiv = '</div>';
                         //app.tree_built += treeli + licontainer + jdenticonstring + fontpictures + enddiv + subject + timestamp + enddiv + enddiv;
-                        
-                        var content = {marked: marked, unread: unread, markedhtml: marked,
+
+                        var content = {
+                            marked: marked, unread: unread, markedhtml: marked,
                             picturestatus: val.picturestatus, personal: val.personal, sender: val.sender,
                             user_id: val.user_id, margin: margin, sequence: this.sequence++, messageid: val.messageid,
                             date: val.date, subject: val.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
-                            isSelected: false, hidden: false};
-                        
+                            isSelected: false, hidden: false
+                        };
+
                         this.post_list.push(content);
-                        //Vue.set(this.post_list, this.arraypos, content);
-                        if (val.children)
-                        {
-                            app.buildtree(val,margin + 25);
+                        // Vue.set(this.post_list, this.arraypos, content);
+                        if (val.children) {
+                            app.buildtree(val, margin + 25);
                         }
-                        
-                        
+
                     });
-                    
+
                 },
 
-                newTopic: function() {
-                    this.msgbodycontainerdisplay = ''; 
+                newTopic: function () {
+                    this.msgbodycontainerdisplay = '';
                     this.iscreatingtopic = true;
                     this.isreading = false;
-                    this.isanswering = false;    
+                    this.isanswering = false;
                 },
 
-                search: function(options) {
+                search: function (options) {
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/search.php?id=" + courseid + "&searchparam=" +this.searchstring)
-                        .then(response => (this.displaysearchresult('',response.data)));
-
-
-                    
+                        .get(M.cfg.wwwroot + "/mod/newsmod/search.php?id=" + courseid + "&searchparam=" + this.searchstring)
+                        .then(response => (this.displaysearchresult('', response.data)));
                 },
 
-                displaysearchresult: function(options, searchresult) {
-                    for (let i=0; i<this.post_list.length; i++) {
+                displaysearchresult: function (options, searchresult) {
+                    for (let i = 0; i < this.post_list.length; i++) {
                         let modpost = this.post_list[i];
                         modpost.hidden = true;
                         Vue.set(this.post_list, i, modpost);
                     }
 
-
-                    for (let i=0; i<searchresult.length; i++) {
+                    for (let i = 0; i < searchresult.length; i++) {
                         this.hiddenposts.push(this.findinarr(searchresult[i].number, this.post_list));
 
                         let modpost = this.hiddenposts[i];
@@ -674,11 +317,11 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     }
                 },
 
-                resetsearchstring: function() {
+                resetsearchstring: function () {
                     this.searchstring = '';
-                    this.hiddenposts.splice(0);  
+                    this.hiddenposts.splice(0);
 
-                    for (let i=0; i<this.post_list.length; i++) {
+                    for (let i = 0; i < this.post_list.length; i++) {
                         let modpost = this.post_list[i];
                         modpost.hidden = false;
                         Vue.set(this.post_list, i, modpost);
@@ -686,7 +329,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
 
                 },
 
-                
+
             }, // END app methods
 
             template: `
@@ -738,11 +381,7 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
         });
 
 
-       
-
     };// end Reader
-
-    
 
     return Reader;
 });

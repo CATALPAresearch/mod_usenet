@@ -101,6 +101,6 @@ module.exports = function (grunt) { // jshint ignore:line
     grunt.loadNpmTasks('grunt-terser');
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
-    grunt.registerTask("build-newsmod", ["terser"]);
+    grunt.registerTask("build-plugin", ["terser"]);
     grunt.registerTask("check", ["jshint"]);
 };
