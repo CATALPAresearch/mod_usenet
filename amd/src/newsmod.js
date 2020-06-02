@@ -1,8 +1,7 @@
 /**
  * @module     mod/newsmod
- * @package    mod_newsmod
  * @class      newsmod
- * @copyright  2020 Niels Seidel, niels.seidel@fernuni-hagen.de
+ * @copyright  2020 Niels Seidel <niels.seidel@fernuni-hagen.de>
  * @license    MIT
  * @since      3.1
  */
@@ -35,7 +34,7 @@ define([
         });
 
         var start = function (courseid, messageid) {
-            
+
             require([
                 'vue259',
                 'axios',
@@ -46,7 +45,7 @@ define([
                     context: 'mod_newsmod',
                     outputType: 0 // set to 1 in order to store logs to the database
                 });
-                    new Reader(vue, d3, axios, utils, log, courseid, messageid);
+                new Reader(vue, d3, axios, utils, log, courseid, messageid);
             });
         };
 

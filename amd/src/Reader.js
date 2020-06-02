@@ -1,9 +1,8 @@
 /**
  * Newsgroup reader
  * @module     mod/newsmod/Reader
- * @package    mod_newsmod
  * @class      newsmod
- * @copyright  2020 Niels Seidel, niels.seidel@fernuni-hagen.de
+ * @copyright  2020 Niels Seidel <niels.seidel@fernuni-hagen.de>
  * @license    MIT
  * @since      3.1
  */
@@ -31,25 +30,20 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
 
             
             /**
-             * 
-             * 
-             * 
              *  @param content created in buildtree(...) 
              *  var content = {marked: marked, unread: unread, markedhtml: marked,
                 picturestatus: val.picturestatus, personal: val.personal, sender: val.sender,
                 user_id: val.user_id, margin: margin, sequence: this.sequence++, messageid: val.messageid,
                 date: val.date, subject: val.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
                 isSelected: false};
-             * 
              */
-            Vue.component('post', 
+            Vue.component('post',
             {
                 props: ['content'],
 
                 data: function() {
                     return {
-                        isSelected: false,
-                        
+                        isSelected: false                        
                     };
                 },
 
@@ -57,7 +51,13 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                 {
                     togglemarked: function() {
                         axios   //returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/statuschange.php?id=" + courseid + "&msgnr=" +this.content.messageid)
+                        .get( [
+                            M.cfg.wwwroot,
+                            "/mod/newsmod/statuschange.php?id=",
+                            courseid,
+                            "&msgnr=",
+                            this.content.messageid
+                        ].join())
                         .then();
 
                         if (this.content.marked) {
@@ -112,7 +112,6 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     </li>
                 </div>
                 `,
-
 
             });
             
@@ -736,7 +735,6 @@ props: ['subject', 'messagenum', 'personal', 'sender', 'messagestatus',
                     </div>
                 </div>
             `,
-             
         });
 
 
