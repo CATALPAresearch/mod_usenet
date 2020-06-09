@@ -31,7 +31,7 @@ feunews.fernuni-hagen.de
 Newsgroups tested with
 1.  misc.test
 2.  feu.cafe
-3.  feu.informatik.kurs.1678
+3.  feu.informatik.kurs.1801
 
 
 resolution >1440x900 is optimal for now
