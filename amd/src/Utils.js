@@ -12,7 +12,7 @@
 define([
     'jquery',
     'core/ajax',
-    M.cfg.wwwroot + "/mod/newsmod/lib/build/d3.v5.min"
+    M.cfg.wwwroot + "/mod/newsmod/lib/src/d3.v5.js"
 ], function ($, ajax, d3) {
 
     var Utils = function () {

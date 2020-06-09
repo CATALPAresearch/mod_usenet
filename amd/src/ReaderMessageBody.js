@@ -46,6 +46,9 @@ define([
                         // thats why the classic approach of urlsearchparams() is needed 
                         const params = new URLSearchParams();
                         params.append('userInput', this.textarea_usrinput);
+                        if (this.postdata.header === undefined){
+                            this.postdata.header = {subject:'', references:'', id:-1};
+                        }
                         params.append('subject', this.postdata.header.subject);
                         params.append('references', this.postdata.header.references);
                         params.append('uid', this.postdata.header.id);
@@ -65,11 +68,11 @@ define([
                 },
 
                 prevmsg: function () {   // Number = messageid
-                    this.$emit('prevmsg', this.postdata.header.number);
+                    this.$emit('prevmsg', this.postdata.header !== undefined ? this.postdata.header.number : 0);
                 },
 
                 nextmsg: function () {
-                    this.$emit('nextmsg', this.postdata.header.number);
+                    this.$emit('nextmsg', this.postdata.header !== undefined ? this.postdata.header.number : 0);
                 },
 
 
@@ -126,9 +129,9 @@ define([
                                 <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>                        
                             </template>
                             <template v-else>
-                                <div>{{postdata.header.name}}
+                                <div v-if="postdata.header !== undefined">{{postdata.header.name}}
                                 </div>
-                                <div>{{postdata.header.subject}}
+                                <div v-if="postdata.header !== undefined">{{postdata.header.subject}}
                                 </div>
                             </template>
                         </div>

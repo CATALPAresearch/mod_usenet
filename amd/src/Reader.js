@@ -13,8 +13,9 @@ define([
     M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min',
     M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min',
     M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderMessageBody.js',
-    M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderPostContainer.js'
-], function ($, Vue, axios, MessageBodyContainer, PostContainer) {
+    M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderPostContainer.js',
+    M.cfg.wwwroot + '/mod/newsmod/amd/src/VizBubble.js',
+], function ($, Vue, axios, MessageBodyContainer, PostContainer, BubbleChart) {
 
     /**
      * Plot a timeline
@@ -60,7 +61,8 @@ define([
 
             components: {
                 'messagebody-container': MessageBodyContainer,
-                'post-container': PostContainer
+                'post-container': PostContainer,
+                'viz-bubble': BubbleChart
             },
 
             created: function () {
@@ -334,6 +336,7 @@ define([
 
             template: `
                 <div id="newsmod-container">
+                    <viz-bubble tree="tree_data"></viz-bubble>
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12">
@@ -376,6 +379,7 @@ define([
                             </div>
                         </div>
                     </div>
+                    
                 </div>
             `,
         });
