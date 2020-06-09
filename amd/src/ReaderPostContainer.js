@@ -2,7 +2,7 @@ define([
     'jquery',
     M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderPost.js',
     M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min'
-], function ($, Post, Vue) {
+], function($, Post, Vue) {
 
     
     return Vue.component('post-container',

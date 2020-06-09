@@ -366,7 +366,7 @@ define([
                                 
                                 </div>
                                 <div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
-                                    <messagebody-container v-bind:postdata = "singlepostdata" :isused ="msgbodycontainerdisplay" 
+                                    <messagebody-container v-bind:postdata="singlepostdata" :isused ="msgbodycontainerdisplay" 
                                     :isreading = "isreading" :isanswering = "isanswering" :iscreatingtopic = "iscreatingtopic" v-on:answeredmsg="onansweredmsg"
                                     v-on:prevmsg="onprevmsg" v-on:nextmsg="onnextmsg">
                                     
