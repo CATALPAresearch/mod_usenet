@@ -4,127 +4,168 @@ define([
     M.cfg.wwwroot + '/mod/newsmod/lib/src/d3.v5.js'
 ], function ($, Vue, d3) {
 
-    
+
     return Vue.component('post',
         {
-            props: ['tree'],
+            props: ['treedata'],
 
             data: function () {
                 return {
                     isSelected: false
                 };
             },
-            mounted: function(){ return;
-                var dataset = {
-                    "children": [{ "Name": "Olives", "Count": 4319 },
-                    { "Name": "Tea", "Count": 4159 },
-                    { "Name": "Mashed Potatoes", "Count": 2583 },
-                    { "Name": "Boiled Potatoes", "Count": 2074 },
-                    { "Name": "Milk", "Count": 1894 },
-                    { "Name": "Chicken Salad", "Count": 1809 },
-                    { "Name": "Vanilla Ice Cream", "Count": 1713 },
-                    { "Name": "Cocoa", "Count": 1636 },
-                    { "Name": "Lettuce Salad", "Count": 1566 },
-                    { "Name": "Lobster Salad", "Count": 1511 },
-                    { "Name": "Chocolate", "Count": 1489 },
-                    { "Name": "Apple Pie", "Count": 1487 },
-                    { "Name": "Orange Juice", "Count": 1423 },
-                    { "Name": "American Cheese", "Count": 1372 },
-                    { "Name": "Green Peas", "Count": 1341 },
-                    { "Name": "Assorted Cakes", "Count": 1331 },
-                    { "Name": "French Fried Potatoes", "Count": 1328 },
-                    { "Name": "Potato Salad", "Count": 1306 },
-                    { "Name": "Baked Potatoes", "Count": 1293 },
-                    { "Name": "Roquefort", "Count": 1273 },
-                    { "Name": "Stewed Prunes", "Count": 1268 }]
-                };
-                console.log(d3.scaleOrdinal)
-                var diameter = 300;
-                var color = d3.scaleOrdinal(d3.schemeCategory20);
-
-                var bubble = d3.pack(dataset)
-                    .size([diameter, diameter])
-                    .padding(1.5);
-
-                var svg = d3.select("#chart")
-                    .append("svg")
-                    .attr("width", diameter)
-                    .attr("height", diameter)
-                    .attr("class", "bubble");
-
-                var nodes = d3.hierarchy(dataset)
-                    .sum(function (d) { return d.Count; });
-
-                var node = svg.selectAll(".node")
-                    .data(bubble(nodes).descendants())
-                    .enter()
-                    .filter(function (d) {
-                        return !d.children
-                    })
-                    .append("g")
-                    .attr("class", "node")
-                    .attr("transform", function (d) {
-                        return "translate(" + d.x + "," + d.y + ")";
-                    });
-
-                node.append("title")
-                    .text(function (d) {
-                        return d.Name + ": " + d.Count;
-                    });
-
-                node.append("circle")
-                    .attr("r", function (d) {
-                        return d.r;
-                    })
-                    .style("fill", function (d, i) {
-                        return color(i);
-                    });
-
-                node.append("text")
-                    .attr("dy", ".2em")
-                    .style("text-anchor", "middle")
-                    .text(function (d) {
-                        return d.data.Name.substring(0, d.r / 3);
-                    })
-                    .attr("font-family", "sans-serif")
-                    .attr("font-size", function (d) {
-                        return d.r / 5;
-                    })
-                    .attr("fill", "white");
-
-                node.append("text")
-                    .attr("dy", "1.3em")
-                    .style("text-anchor", "middle")
-                    .text(function (d) {
-                        return d.data.Count;
-                    })
-                    .attr("font-family", "Gill Sans", "Gill Sans MT")
-                    .attr("font-size", function (d) {
-                        return d.r / 5;
-                    })
-                    .attr("fill", "white");
-
-                //d3.select(self.frameElement)
-                  //  .style("height", diameter + "px");
-
+            watch: {
+                treedata: function () {
+                    //console.log('bubble ', this.treedata);
+                    this.createBubbleChart();
+                }
+            },
+            mounted: function () {
 
             },
-            methods:
-            {
-                togglemarked: function () {
-                   
+            methods: {
+                createBubbleChart: function () {
+                    const height = 300;
+                    const width = 500;
+                    const velocityDecay = 0.15;
+                    const forceStrength = 0.03;
 
-                    if (this.content.marked) {
-                        this.content.marked = false;
+                    let nodes;
+                    let bubbles;
+                    let text;
+
+                    let rawData = [];
+                    for (var i in this.treedata) {
+                        this.treedata[i].count = this.treedata[i].children === undefined ? 10 : this.treedata[i].children.length * 10;
+                        rawData.push(this.treedata[i]);
                     }
-                    else {
-                        this.content.marked = true;
+                    console.log(rawData[1])
+                    let forceSimulation;
+
+                    let radiusScale;
+                    let colorScale;
+                    let heightScale;
+
+
+                    radiusScale = d3.scaleLinear()
+                        .domain([1, Math.max.apply(Math, rawData.map(a => a.count))])
+                        .range([5, 40]);
+
+                    colorScale = d3.scaleSequential()
+                        .domain([0, 100])
+                        .interpolator(d3.interpolateRainbow);
+
+                    heightScale = d3.scaleLinear()
+                        .domain([0, 100])
+                        .range([0, height]);
+
+                    nodes = rawData.map(d => {
+                        return {
+                            name: d.name,
+                            radius: radiusScale(d.count),
+                            fill: colorScale(d.count),
+                            x: Math.random() * width,
+                            y: heightScale(d.count)/*  Math.random() * height */
+                        }
+                    })
+
+                    /* console.log('node ', nodes);
+                    console.log('data', rawData); */
+
+                    /* nodes.sort((a, b) => b.radius - a.radius) */
+
+                    d3.select('#chart')
+                        .append('svg')
+                        .attr('height', height)
+                        .attr('width', width)
+
+
+                    bubbles = d3.select('#chart svg')
+                        .selectAll('circle')
+                        .data(nodes)
+                        .enter()
+                        .append('circle')
+                        .attr('r', d => { return d.radius })
+                        .attr('fill', d => 'salmon')
+                        .attr('stroke', d => { return d3.rgb('salmon').darker() })
+                        .call(d3.drag()
+                            //.on('start', dragStarted)
+                            //.on('drag', dragged)
+                            //.on('end', dragEnded)
+                        );
+
+                    text = d3.select('#chart svg')
+                        .selectAll('circle')
+                        .data(nodes)
+                        .enter()
+                        .append('text')
+                        .text(function(d){ 
+                            console.log(d.name); 
+                            return d.name })
+                        .attr('color', 'black')
+                        .attr('font-size', 15);
+
+
+                    forceSimulation = d3.forceSimulation()
+                        .nodes(nodes)
+                        .velocityDecay(velocityDecay)
+                        .on('tick', ticked)
+                        .force('x', d3.forceX().strength(forceStrength).x(width / 2))
+                        .force('y', d3.forceY().strength(forceStrength).y(height / 2))
+                        .force("charge", d3.forceManyBody().strength(charge))
+
+
+                    function dragStarted(d) {
+                        console.log('start');
+                        forceSimulation.alphaTarget(0.3).restart()
                     }
+                    function dragged(d) {
+                        console.log('drag');
+                        /* bubbles.attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y); */
+                        d.fx = d3.event.x
+                        d.fy = d3.event.y
+                    }
+
+                    function dragEnded(d) {
+                        console.log('end');
+                        delete d.fx;
+                        delete d.fy;
+                        forceSimulation.alphaTarget(0);
+                    }
+
+
+
+                    function ticked() {
+                        bubbles
+                            .attr("cx", function (d) {
+                                return d.x;
+                            })
+                            .attr("cy", function (d) {
+                                return d.y;
+                            });
+
+                        text
+                            .attr('x', (data) => {
+                                return data.x
+                            })
+                            .attr('y', (data) => {
+                                return data.y
+                            });
+                    }
+
+                    function radius(d) {
+                        return d.radius + 1
+                    }
+
+                    function charge(d) {
+                        return -Math.pow(d.radius, 2) * forceStrength;
+                    }
+
                 }
             },
 
             template: `
-                <div class="vizbam">hello
+                <div>
                     <div id="chart"></div>
                 </div>
                 `

@@ -45,6 +45,7 @@ define([
                     info: 'Hallo, ich warte auf Daten vom usenet Server ...',
                     tree_json: '',
                     tree_data: '',
+                    treedata: {},
                     tree_built: 0,
                     sequence: 1,
                     iterations: 0,
@@ -84,16 +85,23 @@ define([
                 let _this = this;
                 let id = 0;
 
-                //returned data is already js object (axios automaticly converts json to js obj)
                 axios
                     .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
-                    .then(response => (this.info = response, this.tree_data = response.data, this.buildtree(response.data, 1)));
+                    .then(function (response) {
+                        _this.treedata = response.data.children;
+                        _this.info = response;
+                        _this.tree_data = response.data;
+                        _this.buildtree(response.data);
+                        return 1;
+                    });
             },
             computed: {
 
             },
             methods: {
-
+                getMessageTree: function () {
+                    return this.tree_data.children;
+                },
                 findinarr: function (key, inputArray) {
                     for (let i = 0; i < inputArray.length; i++) {
                         if (inputArray[i].messageid === key) {
@@ -218,7 +226,6 @@ define([
                 },
 
                 buildtree: function (tree_data, margin) {
-
                     //var data = tree_data_children;
 
                     tree_data.children.forEach(val => {
@@ -336,7 +343,7 @@ define([
 
             template: `
                 <div id="newsmod-container">
-                    <viz-bubble tree="tree_data"></viz-bubble>
+                    <viz-bubble v-bind:treedata="treedata"></viz-bubble>
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12">
