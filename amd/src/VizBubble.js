@@ -25,8 +25,8 @@ define([
             },
             methods: {
                 createBubbleChart: function () {
-                    const height = 300;
-                    const width = 500;
+                    const height = 350;
+                    const width = 600;
                     const velocityDecay = 0.15;
                     const forceStrength = 0.03;
 
@@ -35,11 +35,36 @@ define([
                     let text;
 
                     let rawData = [];
+                    
+
+                    // 
+                    d3.timeFormatDefaultLocale({
+                        "decimal": ",",
+                        "thousands": ".",
+                        "grouping": [3],
+                        "currency": ["€", ""],
+                        "dateTime": "%a %b %e %X %Y",
+                        "date": "%d.%m.%Y",
+                        "time": "%H:%M:%S",
+                        "periods": ["AM", "PM"],
+                        "days": ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+                        "shortDays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], // need to be english in order to parse the server date
+                        "months": ["Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+                        "shortMonths": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] // english
+                    });
+
+                    var parseTime = d3.timeParse("%a, %e %b %Y %H:%M:%S %Z");
+                    var parseTime2 = d3.timeParse("%a, %e %b %Y %H:%M:%S %Z (UTC)");
+
                     for (var i in this.treedata) {
                         this.treedata[i].count = this.treedata[i].children === undefined ? 10 : this.treedata[i].children.length * 10;
+                        this.treedata[i].time = parseTime(this.treedata[i].date) || parseTime2(this.treedata[i].date);
+                        if (this.treedata[i].time === null){
+                            console.log('warning: could not convert usenet date string into date object: ',this.treedata[i].date);
+                        }
                         rawData.push(this.treedata[i]);
                     }
-                    console.log(rawData[1])
+                    console.log(rawData[1]);
                     let forceSimulation;
 
                     let radiusScale;
@@ -62,6 +87,7 @@ define([
                     nodes = rawData.map(d => {
                         return {
                             name: d.name,
+                            date: d.time,
                             radius: radiusScale(d.count),
                             fill: colorScale(d.count),
                             x: Math.random() * width,
@@ -72,7 +98,7 @@ define([
                     /* console.log('node ', nodes);
                     console.log('data', rawData); */
 
-                    /* nodes.sort((a, b) => b.radius - a.radius) */
+                    nodes.sort((a, b) => b.date - a.date);
 
                     d3.select('#chart')
                         .append('svg')
@@ -95,15 +121,15 @@ define([
                         );
 
                     text = d3.select('#chart svg')
-                        .selectAll('circle')
+                        .selectAll('text')
                         .data(nodes)
                         .enter()
                         .append('text')
-                        .text(function(d){ 
-                            console.log(d.name); 
-                            return d.name })
+                        .text(function (d) {
+                            return d.name
+                        })
                         .attr('color', 'black')
-                        .attr('font-size', 15);
+                        .attr('font-size', 8);
 
 
                     forceSimulation = d3.forceSimulation()
@@ -121,7 +147,7 @@ define([
                     }
                     function dragged(d) {
                         console.log('drag');
-                        /* bubbles.attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y); */
+                        //bubbles.attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y); 
                         d.fx = d3.event.x
                         d.fy = d3.event.y
                     }
