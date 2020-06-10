@@ -49,6 +49,15 @@ TODO:
 *   [ ] migrate components to single files
 
 
+# Development
+
+**Using grunt**
+
+* `grunt plugin-build` transpiles all js code
+* `grunt plugin-check` run js linter
+* (`grunt plugin-css` bundles and minifies css files )
+* `grunt plugin-all` handles both tasks mentioned above
+
 
 ##  Conversion: socket- in place of imap functions  ##
 
