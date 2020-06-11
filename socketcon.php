@@ -531,7 +531,7 @@ function nntp_search($nntp, $groupname, $param)
         "subject" => $header->subject,
         "from" => $header->name,
         "messageid" => $header->id,
-        "uid" => $header->number,
+        "messagenum" => $header->number,
         "sender" => addcslashes(str_replace('\\', '', $header->from), "\""),
         "date" => $header->displaydate,
       ];

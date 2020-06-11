@@ -10,13 +10,13 @@
 
 define([
     'jquery',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min',
+    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js',
+    M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min.js',
     M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderMessageBody.js',
     M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderPostContainer.js',
     M.cfg.wwwroot + '/mod/newsmod/amd/src/VizBubble.js',
 ], function ($, Vue, axios, MessageBodyContainer, PostContainer, BubbleChart) {
-
+    
     /**
      * Plot a timeline
      * @param d3 (Object) Data Driven Documents
@@ -30,7 +30,9 @@ define([
     */
 
     var Reader = function (Log, courseid, messageid) {
-
+        console.log(PostContainer);
+        
+        console.log("here2");
         var app = new Vue({
             el: 'newsmod-container',
             data: function () {
@@ -56,7 +58,9 @@ define([
                     isreading: false,
                     isanswering: false,
                     iscreatingtopic: false,
-                    markedpost: -1
+                    markedpost: -1,
+                    courseid: courseid,
+                    hideloadingicon: true
                 };
             },
 
@@ -77,23 +81,29 @@ define([
                     Log.add('toc_entry_open', { level: 'h3', target: $(this).attr('href') });
                 });
 
-            },
+            },   
             mounted: function () {
                 const h = messageid; // !!??
                 const f = courseid;
                 const g = 0;
                 let _this = this;
                 let id = 0;
-
+                             
+                //returned data is already js object (axios automaticly converts json to js obj)
                 axios
                     .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
                     .then(function (response) {
                         _this.treedata = response.data.children;
                         _this.info = response;
                         _this.tree_data = response.data;
-                        _this.buildtree(response.data);
+                        _this.buildtree(response.data, 1);
+                        _this.hideloadingicon = true;
                         return 1;
                     });
+                //this.$nextTick(function(){
+                  //  this.$refs.postcont.setcourseid(courseid);
+            //    });
+                
             },
             computed: {
 
@@ -169,6 +179,9 @@ define([
 
                     msgid = this.post_list[arraypos].messageid;
 
+                    let modpost = this.findinarr(msgid, this.post_list);                // Set next message to visible if it was hidden
+                    modpost.hidden = false;
+                    Vue.set(this.post_list, arraypos, modpost);
 
                     console.log(arraypos);
                     console.log(msgid);
@@ -186,7 +199,8 @@ define([
 
 
                     let post = this.findinarr(msgid, this.post_list);
-
+        
+                    console.log(post.arraypos);
                     let arraypos = post.arraypos;
 
                     arraypos += 1;
@@ -195,6 +209,9 @@ define([
 
                     msgid = this.post_list[arraypos].messageid;
 
+                    let modpost = this.findinarr(msgid, this.post_list);                // Set next message to visible if it was hidden
+                    modpost.hidden = false;
+                    Vue.set(this.post_list, arraypos, modpost);
 
                     console.log(arraypos);
                     console.log(msgid);
@@ -226,6 +243,7 @@ define([
                 },
 
                 buildtree: function (tree_data, margin) {
+
                     //var data = tree_data_children;
 
                     tree_data.children.forEach(val => {
@@ -278,23 +296,48 @@ define([
                         //var fontpictures = '<i class="marked ' + marked + ' fa-star favorite" style="margin-left:4" /><i class="toggle fas fa-xs fa-arrow-down ' + childornot + '"/>';
                         //var enddiv = '</div>';
                         //app.tree_built += treeli + licontainer + jdenticonstring + fontpictures + enddiv + subject + timestamp + enddiv + enddiv;
+                        var family;
+                        if (val.children) {
+                            family = this.getfamily(val);
+                        }
 
                         var content = {
                             marked: marked, unread: unread, markedhtml: marked,
                             picturestatus: val.picturestatus, personal: val.personal, sender: val.sender,
                             user_id: val.user_id, margin: margin, sequence: this.sequence++, messageid: val.messageid,
                             date: val.date, subject: val.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
-                            isSelected: false, hidden: false
+                            isSelected: false, hidden: false, family: family
                         };
 
                         this.post_list.push(content);
                         // Vue.set(this.post_list, this.arraypos, content);
                         if (val.children) {
-                            app.buildtree(val, margin + 25);
+                            app.buildtree(val, margin + 15);    //original margin val: margin + 25
                         }
 
                     });
 
+                    //console.log(this.post_list);
+
+                },
+
+                getfamily: function(rootnode) {
+                    var children = []; 
+                    //console.log(rootnode);
+                    
+
+                    if (rootnode.children) {
+                        var childrenamount = rootnode.children.length;
+
+                        for (let i = 0; i < childrenamount; i++) {
+                            children.push(rootnode.children[i].messageid);
+                            if (rootnode.children[i].children) {
+                                children.push(app.getfamily(rootnode.children[i]));
+                            }
+                        }
+                    }
+                    return children;
+                 
                 },
 
                 newTopic: function () {
@@ -305,24 +348,46 @@ define([
                 },
 
                 search: function (options) {
+
+                    this.hideallposts();
+
+                    this.hideloadingicon = false;
+
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/search.php?id=" + courseid + "&searchparam=" + this.searchstring)
-                        .then(response => (this.displaysearchresult('', response.data)));
+                        .then(response => (this.displaysearchresult('', response.data)))
+                        .catch(error => (
+                            console.log(error)
+        ));
                 },
 
-                displaysearchresult: function (options, searchresult) {
+                hideallposts: function() {
                     for (let i = 0; i < this.post_list.length; i++) {
                         let modpost = this.post_list[i];
                         modpost.hidden = true;
                         Vue.set(this.post_list, i, modpost);
                     }
+                },
+
+                showallposts: function() {
+                    for (let i = 0; i < this.post_list.length; i++) {
+                        let modpost = this.post_list[i];
+                        modpost.hidden = false;
+                        Vue.set(this.post_list, i, modpost);
+                    }
+                },
+
+                displaysearchresult: function (options, searchresult) {
+                    
+                    this.hideallposts();
 
                     for (let i = 0; i < searchresult.length; i++) {
-                        this.hiddenposts.push(this.findinarr(searchresult[i].number, this.post_list));
-
+                        this.hiddenposts.push(this.findinarr(searchresult[i].messagenum, this.post_list));
                         let modpost = this.hiddenposts[i];
                         modpost.hidden = false;
                         Vue.set(this.post_list, modpost.arraypos, modpost);
+
+                        this.hideloadingicon = true;
                     }
                 },
 
@@ -330,11 +395,7 @@ define([
                     this.searchstring = '';
                     this.hiddenposts.splice(0);
 
-                    for (let i = 0; i < this.post_list.length; i++) {
-                        let modpost = this.post_list[i];
-                        modpost.hidden = false;
-                        Vue.set(this.post_list, i, modpost);
-                    }
+                    this.showallposts();
 
                 },
 
@@ -343,7 +404,7 @@ define([
 
             template: `
                 <div id="newsmod-container">
-                    <viz-bubble v-bind:treedata="treedata"></viz-bubble>
+                <viz-bubble v-bind:treedata="treedata"></viz-bubble>
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12">
@@ -372,11 +433,13 @@ define([
                             <div class="col-12 row" >
                                 
                                 <div class="col-xl-6 col-sm-10" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
-                                <post-container v-bind:postlist="post_list" v-bind:markedpost="markedpost"  v-on:displaymsg="ondisplaymsg"></post-container>
+                                <post-container v-bind:courseid = "courseid" v-bind:postlist="post_list" v-bind:markedpost="markedpost" 
+                                :showloadingicon = "hideloadingicon" v-on:displaymsg="ondisplaymsg">
+                                </post-container>
                                 
                                 </div>
                                 <div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
-                                    <messagebody-container v-bind:postdata="singlepostdata" :isused ="msgbodycontainerdisplay" 
+                                    <messagebody-container v-bind:courseid = "courseid" v-bind:postdata = "singlepostdata" :isused ="msgbodycontainerdisplay" 
                                     :isreading = "isreading" :isanswering = "isanswering" :iscreatingtopic = "iscreatingtopic" v-on:answeredmsg="onansweredmsg"
                                     v-on:prevmsg="onprevmsg" v-on:nextmsg="onnextmsg">
                                     
@@ -386,7 +449,6 @@ define([
                             </div>
                         </div>
                     </div>
-                    
                 </div>
             `,
         });

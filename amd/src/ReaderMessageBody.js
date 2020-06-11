@@ -1,11 +1,12 @@
 define([
     'jquery',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min'
-], function ($, Vue) {
+    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js',
+    M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min.js'
+], function ($, Vue, axios) {
 
     return Vue.component('messagebody-container',
         {
-            props: ['postdata', 'isused', 'isreading', 'isanswering', 'iscreatingtopic'],
+            props: ['postdata', 'isused', 'isreading', 'isanswering', 'iscreatingtopic', 'courseid'],
 
             data: function () {
                 return {
@@ -46,7 +47,7 @@ define([
                         // thats why the classic approach of urlsearchparams() is needed 
                         const params = new URLSearchParams();
                         params.append('userInput', this.textarea_usrinput);
-                        if (this.postdata.header === undefined){
+                        if (this.postdata.header === undefined) {
                             this.postdata.header = {subject:'', references:'', id:-1};
                         }
                         params.append('subject', this.postdata.header.subject);
@@ -54,7 +55,7 @@ define([
                         params.append('uid', this.postdata.header.id);
 
                         axios   //returned data is already js object (axios automaticly converts json to js obj)
-                            .post(M.cfg.wwwroot + "/mod/newsmod/posttest.php?id=" + courseid + "&msgnr=" + this.postdata.header.id,
+                            .post(M.cfg.wwwroot + "/mod/newsmod/posttest.php?id=" + this.courseid + "&msgnr=" + this.postdata.header.id,
                                 params)
                             .then(response => (this.value = response));
 
@@ -78,12 +79,12 @@ define([
 
                 createtopic: function () {
                     const params = new URLSearchParams();
-                    params.append('userInput', this.textareacontent);
+                    params.append('userInput', this.textarea_usrinput);
                     params.append('subject', this.usrinput_subject);
 
 
                     axios   //returned data is already js object (axios automaticly converts json to js obj)
-                        .post(M.cfg.wwwroot + "/mod/newsmod/posttest.php?id=" + courseid + "&msgnr=new",
+                        .post(M.cfg.wwwroot + "/mod/newsmod/posttest.php?id=" + this.courseid + "&msgnr=new",
                             params)
                         .then(response => (this.value = response));
 
@@ -129,10 +130,12 @@ define([
                                 <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>                        
                             </template>
                             <template v-else>
-                                <div v-if="postdata.header !== undefined">{{postdata.header.name}}
-                                </div>
-                                <div v-if="postdata.header !== undefined">{{postdata.header.subject}}
-                                </div>
+                            <div v-if="postdata.header !== undefined">
+                                {{postdata.header.name}}
+                            </div>
+                            <div v-if="postdata.header !== undefined">
+                                {{postdata.header.subject}}
+                            </div>
                             </template>
                         </div>
                     </div>

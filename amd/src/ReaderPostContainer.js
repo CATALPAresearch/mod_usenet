@@ -1,18 +1,19 @@
 define([
     'jquery',
     M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderPost.js',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min'
-], function($, Post, Vue) {
+    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js'
+], function ($, Post, Vue) {
 
-    
+
     return Vue.component('post-container',
             {
-                props: ['postlist', 'markedpost'],
+                props: ['postlist', 'markedpost', 'courseid', 'showloadingicon'],
 
 
                 data: function () {
                     return {
                         previouspost: -1
+                        
                     };
                 },
 
@@ -38,16 +39,23 @@ define([
                         }
                         this.previouspost = this.markedpost;   // current post is next previouspost
 
-                    }
+                    },
+
 
                 },
 
                 methods:
                 {
+                    /*
+                    setcourseid: function (id)
+                    {
+                        this.courseid = id;
+                        
+                    },
+                    */
                     // Function ongetmsg called by event getmsg, getmsg-event is emitted by 'post' (child component)
 
                     ongetmsg: function (msgid, arraypos) {
-
                         this.$emit('displaymsg', msgid);
 
                         // Mark the clicked post with blue bg-colour & unmark previous clicked post
@@ -74,9 +82,59 @@ define([
                         }
                         this.previouspost = arraypos;   // current post is next previouspost
 
-                    } // END event method ongetmsg
+                    }, // END event method ongetmsg
+
+                    onhidefamily: function(family) {
+
+                        var memberid = [];
+                        
+                        this.traversefamily(family, memberid);
+
+                        for (var i = 0; i < memberid.length; i++) {
+                            
+                            let inte = parseInt(memberid[i]);
+                            this.$refs[inte][0].hideself();
+                        }
+                    },
+
+                    onshowfamily: function(family) {
+                        var memberid = [];
+
+                        this.traversefamily(family, memberid);
+
+                        for (var i = 0; i < memberid.length; i++) {
+                            
+                            let inte = parseInt(memberid[i]);
+                            this.$refs[inte][0].showself();
+                        }
+                    },
+
+                    traversefamily: function(family, memberid) {
+                        
+                        for (var i = 0; i < family.length; i++) {
+                            if (Array.isArray(family[i])) {
+                                this.traversefamily(family[i], memberid);
+                            } else {
+                                memberid.push(family[i]);
+                            }
+                        }
+
+                    }
                 }, // END component methods
-                template: "<div class ='post-container'><post v-for='singlepost in postlist' v-bind:content='singlepost' v-bind:key = 'singlepost.messageid' v-on:getmsg='ongetmsg'></post></div>"
+                template: `<div class ='post-container'>
+                                <div :class = "{hidden: showloadingicon}">
+                                    <i class="fas fa-cog fa-spin fa-5x"/>
+                                </div>
+                                <post v-for='singlepost in postlist' 
+                                v-bind:content='singlepost' 
+                                v-bind:key = 'singlepost.messageid'
+                                :ref = 'singlepost.messageid'
+                                v-on:getmsg='ongetmsg'
+                                v-on:hidefamily='onhidefamily'
+                                v-on:showfamily='onshowfamily'
+                                v-bind:courseid = 'courseid'>
+                                </post>
+                            </div>`
             }); // END component post-container
 
         
