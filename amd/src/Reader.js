@@ -67,10 +67,20 @@ define([
             components: {
                 'messagebody-container': MessageBodyContainer,
                 'post-container': PostContainer,
-                'viz-bubble': BubbleChart
+                //'viz-bubble': BubbleChart
             },
 
             created: function () {
+
+                /**
+                 * Initialisation of variables with empty values
+                 * to prevent "undefined variable" error messages
+                 * 
+                 */
+               
+                this.singlepostdata.header = {name: '', subject: ''};
+                
+
                 Log.add('hello_world', { level: 'fun', target: 'vue is in place' });
 
                 // log interactions (example)
@@ -88,7 +98,8 @@ define([
                 const g = 0;
                 let _this = this;
                 let id = 0;
-                             
+
+                   
                 //returned data is already js object (axios automaticly converts json to js obj)
                 axios
                     .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
@@ -105,6 +116,7 @@ define([
             //    });
                 
             },
+            
             computed: {
 
             },
@@ -146,7 +158,7 @@ define([
                  * Notes:
                  * 
                  * When the page is first loaded, a json data structure is fetched
-                 * from the server (headers of postings) and gets processed into an array post_data in buildtree(), along with
+                 * from the server (headers of postings) and is processed into an array post_data in buildtree(), along with
                  * the corresponding position on the array
                  * 
                  * When user clicks on a post however, post data (header and body) is fetched from server,
@@ -230,15 +242,28 @@ define([
                  * Refresh post
                  */
                 onansweredmsg: function () {
+
+                    this.hideloadingicon = false;
+
                     app.post_list.splice(0);    //unset content array
                     this.arraypos = 0;          //reset index counter of content
                     this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
                     this.isanswering = false;
                     this.iscreatingtopic = false;
                     this.isreading = false;
-                    axios   //returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
-                        .then(response => (this.info = response, this.tree_data = response.data, this.buildtree(response.data, 1)));
+
+
+                    // Timeout of 2 seconds. Reason: After user posted a message, page gets refreshed with new data
+                    // but server might not have the new message available yet, depending on server load (?)
+                    setTimeout(function() {
+
+                        axios   //returned data is already js object (axios automaticly converts json to js obj)
+                        .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + app.courseid)
+                        .then(response => (app.info = response, app.tree_data = response.data, app.buildtree(response.data, 1)));
+                        app.hideloadingicon = true;
+
+                    }, (2 * 1000));
+
 
                 },
 
@@ -387,8 +412,9 @@ define([
                         modpost.hidden = false;
                         Vue.set(this.post_list, modpost.arraypos, modpost);
 
-                        this.hideloadingicon = true;
                     }
+                    this.hideloadingicon = true;
+
                 },
 
                 resetsearchstring: function () {
@@ -401,10 +427,10 @@ define([
 
 
             }, // END app methods
+//                <viz-bubble v-bind:treedata="treedata"></viz-bubble>
 
             template: `
                 <div id="newsmod-container">
-                <viz-bubble v-bind:treedata="treedata"></viz-bubble>
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12">

@@ -87,6 +87,8 @@ define([
                     onhidefamily: function(family) {
 
                         var memberid = [];
+                        console.log(family);
+                        console.log("ah");
                         
                         this.traversefamily(family, memberid);
 

@@ -130,10 +130,10 @@ define([
                                 <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>                        
                             </template>
                             <template v-else>
-                            <div v-if="postdata.header !== undefined">
+                            <div>
                                 {{postdata.header.name}}
                             </div>
-                            <div v-if="postdata.header !== undefined">
+                            <div>
                                 {{postdata.header.subject}}
                             </div>
                             </template>
