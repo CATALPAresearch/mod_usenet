@@ -30,9 +30,7 @@ define([
     */
 
     var Reader = function (Log, courseid, messageid) {
-        console.log(PostContainer);
         
-        console.log("here2");
         var app = new Vue({
             el: 'newsmod-container',
             data: function () {
@@ -67,7 +65,7 @@ define([
             components: {
                 'messagebody-container': MessageBodyContainer,
                 'post-container': PostContainer,
-                //'viz-bubble': BubbleChart
+                'viz-bubble': BubbleChart
             },
 
             created: function () {
@@ -427,8 +425,6 @@ define([
 
 
             }, // END app methods
-//                <viz-bubble v-bind:treedata="treedata"></viz-bubble>
-
             template: `
                 <div id="newsmod-container">
                     <div class="container-fluid">
@@ -475,6 +471,7 @@ define([
                             </div>
                         </div>
                     </div>
+                    <viz-bubble v-bind:treedata="treedata"></viz-bubble>
                 </div>
             `,
         });
