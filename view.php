@@ -53,7 +53,7 @@ $PAGE->set_url('/mod/newsmod/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
-$PAGE->requires->css( '/mod/newsmod/css/newsmod.css', true );
+$PAGE->requires->css( '/mod/newsmod/css/style.css', true );
 
 
 echo $OUTPUT->header();
