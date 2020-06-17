@@ -346,9 +346,7 @@ define([
 
                 getfamily: function(rootnode) {
                     var children = []; 
-                    //console.log(rootnode);
                     
-
                     if (rootnode.children) {
                         var childrenamount = rootnode.children.length;
 
@@ -360,7 +358,6 @@ define([
                         }
                     }
                     return children;
-                 
                 },
 
                 newTopic: function () {
@@ -435,8 +432,8 @@ define([
                                         Neues Thema
                                     </button>
 
-                                    <button :class="'btn btn-default fa fa-sync'" v-on:click="">
-                                         
+                                    <button class="btn btn-default" v-on:click="">
+                                         <i class="fa fa-sync"></i>
                                     </button>
 
                                     <input v-model="searchstring" placeholder="Suchen..." v-on:click="resetsearchstring">
