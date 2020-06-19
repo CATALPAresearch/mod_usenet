@@ -414,7 +414,6 @@ define([
 
                     }
                     this.hideloadingicon = true;
-
                 },
 
                 resetsearchstring: function () {
