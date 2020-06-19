@@ -92,8 +92,24 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         $treend =0;
         $last = "";
         $siblings = 0;
-
+       
+        /**
+         * This foreach-loop checks the threads for orphaned posts 
+         */
+        foreach ($threads as $header) {
         
+            if ($header->references)    // Is this post a child post ?
+            {
+                if (!$threads[$header->references[0]])  // Is the father post NOT in the array ?
+                {
+                    if (count($header->references) == 1)    // Is this child post are direct descendant of father post ?
+                    $header->isReply = false;                   // Change child post to father post by setting the flags
+                    unset($header->references);                 // Problem: a father post may have many direct descendants
+                }                                                   // so the structure of a thread may become unorganized and confusing
+            }
+        }
+
+    
     foreach ($threads as $header) {
         
       if (!$header->isReply && !$header->references)

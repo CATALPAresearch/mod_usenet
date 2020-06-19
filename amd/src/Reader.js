@@ -108,6 +108,7 @@ define([
                         _this.buildtree(response.data, 1);
                         _this.hideloadingicon = true;
                         return 1;
+
                     });
                 //this.$nextTick(function(){
                   //  this.$refs.postcont.setcourseid(courseid);
@@ -268,7 +269,6 @@ define([
                 buildtree: function (tree_data, margin) {
 
                     //var data = tree_data_children;
-
                     tree_data.children.forEach(val => {
 
 
@@ -403,6 +403,9 @@ define([
 
                     for (let i = 0; i < searchresult.length; i++) {
                         this.hiddenposts.push(this.findinarr(searchresult[i].messagenum, this.post_list));
+                        console.log(searchresult);
+                        console.log(this.hiddenposts);
+                        console.log(this.post_list);
                         let modpost = this.hiddenposts[i];
                         modpost.hidden = false;
                         Vue.set(this.post_list, modpost.arraypos, modpost);
