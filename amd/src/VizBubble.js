@@ -35,9 +35,7 @@ define([
                     let text;
 
                     let rawData = [];
-                    
 
-                    // 
                     d3.timeFormatDefaultLocale({
                         "decimal": ",",
                         "thousands": ".",
@@ -59,9 +57,10 @@ define([
                     for (var i in this.treedata) {
                         this.treedata[i].count = this.treedata[i].children === undefined ? 10 : this.treedata[i].children.length * 10;
                         this.treedata[i].time = parseTime(this.treedata[i].date) || parseTime2(this.treedata[i].date);
-                        if (this.treedata[i].time === null){
-                            console.log('warning: could not convert usenet date string into date object: ',this.treedata[i].date);
+                        if (this.treedata[i].time === null) {
+                            console.log('warning: could not convert usenet date string into date object: ', this.treedata[i].date);
                         }
+                        this.treedata[i].id = i;
                         rawData.push(this.treedata[i]);
                     }
                     console.log(rawData[1]);
@@ -86,6 +85,7 @@ define([
 
                     nodes = rawData.map(d => {
                         return {
+                            id: d.id,
                             name: d.name,
                             date: d.time,
                             radius: radiusScale(d.count),
@@ -111,14 +111,14 @@ define([
                         .data(nodes)
                         .enter()
                         .append('circle')
+                        .attr('id', d => { return "circle-" + d.id })
                         .attr('r', d => { return d.radius })
                         .attr('fill', d => 'salmon')
                         .attr('stroke', d => { return d3.rgb('salmon').darker() })
-                        .call(d3.drag()
-                            //.on('start', dragStarted)
-                            //.on('drag', dragged)
-                            //.on('end', dragEnded)
-                        );
+                        .on('mouseover', onMouseOver)
+                        .on('mouseout', onMouseOut)
+                        //.call(d3.drag().on('start', dragStarted).on('drag', dragged).on('end', dragEnded))
+                        ;
 
                     text = d3.select('#chart svg')
                         .selectAll('text')
@@ -140,7 +140,43 @@ define([
                         .force('y', d3.forceY().strength(forceStrength).y(height / 2))
                         .force("charge", d3.forceManyBody().strength(charge))
 
+                    /**
+                     * onMouseOver Event
+                     * @param {} d 
+                     * @todo
+                     * - Anzahl involvierter Personen, anzahl an Betreuern
+                     * - Anzahl Beiträge
+                     * - mittlere Textlänge
+                     * - Alter
+                     * - letzter Beitrag
+                     * - 
+                     */
+                    function onMouseOver(d, i) {
+                        d3.select("#circle-" + d.id)
+                            .attr('fill', 'red')
+                            .attr('r', d.radius * 1.5)
+                            ;
+                        return;
+                        // Specify where to put label of text
+                        bubbles.append("text").attr({
+                            id: "t" + d.x + "-" + d.y + "-" + i,  // Create an id for text so we can select it later for removing on mouseout
+                            x: function () { return xScale(d.x) - 30; },
+                            y: function () { return yScale(d.y) - 15; }
+                        })
+                            .text(function () {
+                                return [d.x, d.y];  // Value of the text
+                            });
 
+                    }
+
+                    function onMouseOut(d, i) {
+                        d3.select("#circle-" + d.id)
+                            .attr('fill', 'salmon')
+                            .attr('r', d.radius)
+                            ;
+                        return;
+                    }
+                    
                     function dragStarted(d) {
                         console.log('start');
                         forceSimulation.alphaTarget(0.3).restart()

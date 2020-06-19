@@ -2,7 +2,7 @@ define([
     'jquery',
     M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js',
     M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min.js'
-    ], function ($, Vue, axios) {
+], function ($, Vue, axios) {
 
     /**
      *  @param content created in buildtree(...) 
@@ -27,12 +27,11 @@ define([
 
             methods:
             {
-                setcourseid: function (id)
-                {
+                setcourseid: function (id) {
                     this.courseid = id;
                 },
-                
-                togglemarked: function() {
+
+                togglemarked: function () {
                     axios   //returned data is already js object (axios automaticly converts json to js obj)
                         .get([
                             M.cfg.wwwroot +
@@ -51,7 +50,7 @@ define([
                     }
                 },
 
-                hidefamily: function() {
+                hidefamily: function () {
                     console.log("ah");
                     if (this.hiddenfamily == false) {
                         this.hiddenfamily = true;
@@ -62,29 +61,29 @@ define([
                     }
                 },
 
-                hideself: function() {
+                hideself: function () {
                     this.content.hidden = true;
 
                 },
-                showself: function() {
+                showself: function () {
                     this.content.hidden = false;
                 }
 
             },
-/*
-            <template v-if="content.marked">
-            <i class="fas starmarked fa-star" />
-            </template>
-            <template v-else>
-            <i class="far fa-star" />
-            </template>
-
-            <template v-if="content.haschild">
-            <i class="fas fa-xs fa-arrow-down" />
-            </template>
-            <template v-else>
-            </template>
-*/
+            /*
+                        <template v-if="content.marked">
+                        <i class="fas starmarked fa-star" />
+                        </template>
+                        <template v-else>
+                        <i class="far fa-star" />
+                        </template>
+            
+                        <template v-if="content.haschild">
+                        <i class="fas fa-xs fa-arrow-down" />
+                        </template>
+                        <template v-else>
+                        </template>
+            */
             template: `
                 <div class = "post" :class="{hidden: content.hidden}">
                     <li class="node px-0" :column="content.margin" :class = "{'font-weight-bold': content.unread}">

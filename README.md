@@ -55,7 +55,7 @@ TODO:
 
 * `grunt plugin-build` transpiles all js code
 * `grunt plugin-check` run js linter
-* (`grunt plugin-css` bundles and minifies css files )
+* `grunt plugin-css` bundles and minifies css files
 * `grunt plugin-all` handles both tasks mentioned above
 
 

@@ -30,9 +30,7 @@ define([
     */
 
     var Reader = function (Log, courseid, messageid) {
-        console.log(PostContainer);
         
-        console.log("here2");
         var app = new Vue({
             el: 'newsmod-container',
             data: function () {
@@ -67,7 +65,7 @@ define([
             components: {
                 'messagebody-container': MessageBodyContainer,
                 'post-container': PostContainer,
-                //'viz-bubble': BubbleChart
+                'viz-bubble': BubbleChart
             },
 
             created: function () {
@@ -348,9 +346,7 @@ define([
 
                 getfamily: function(rootnode) {
                     var children = []; 
-                    //console.log(rootnode);
                     
-
                     if (rootnode.children) {
                         var childrenamount = rootnode.children.length;
 
@@ -362,7 +358,6 @@ define([
                         }
                     }
                     return children;
-                 
                 },
 
                 newTopic: function () {
@@ -426,8 +421,6 @@ define([
 
 
             }, // END app methods
-//                <viz-bubble v-bind:treedata="treedata"></viz-bubble>
-
             template: `
                 <div id="newsmod-container">
                     <div class="container-fluid">
@@ -438,8 +431,8 @@ define([
                                         Neues Thema
                                     </button>
 
-                                    <button :class="'btn btn-default fa fa-sync'" v-on:click="">
-                                         
+                                    <button class="btn btn-default" v-on:click="">
+                                         <i class="fa fa-sync"></i>
                                     </button>
 
                                     <input v-model="searchstring" placeholder="Suchen..." v-on:click="resetsearchstring">
@@ -474,6 +467,7 @@ define([
                             </div>
                         </div>
                     </div>
+                    <viz-bubble v-bind:treedata="treedata"></viz-bubble>
                 </div>
             `,
         });

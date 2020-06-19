@@ -93,6 +93,26 @@ module.exports = function (grunt) { // jshint ignore:line
                     }
                 }]
             }
+        },
+        cssmin: {
+            minify: {
+                files: [{
+                    expand: true,
+                    cwd: './css',
+                    src: ['**/*.css', '!**/*.min.css'],
+                    dest: './css/min',
+                    ext: '.min.css'
+                }]
+            },
+            options: {
+                shorthandCompacting: false,
+                roundingPrecision: -1
+            },
+            combine: {
+                files: {
+                    './styles.css': ['./css/min/*.css']
+                }
+            }
         }
     });
 
@@ -100,8 +120,10 @@ module.exports = function (grunt) { // jshint ignore:line
     grunt.loadNpmTasks("grunt-ts");
     grunt.loadNpmTasks('grunt-terser');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
 
     grunt.registerTask("plugin-build", ["terser"]);
     grunt.registerTask("plugin-check", ["jshint"]);
-    grunt.registerTask("plugin-all", ["terser"]); // not ready
+    grunt.registerTask("plugin-css", ["cssmin"]);
+    grunt.registerTask("plugin-all", ["terser", "cssmin"]); // not ready
 };
