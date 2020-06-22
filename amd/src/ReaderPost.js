@@ -96,10 +96,10 @@ define([
                                     <!-- TODO insert jdenticon -->
                                     
                                     <i class="far fa-star" :class = "{starmarked: content.marked, fas: content.marked }"
-                                    v-on:click="togglemarked" />
+                                    v-on:click="togglemarked" title = "Favoriten markieren"/>
 
                                     <i class="fas fa-xs" :class = "{'fa-arrow-down': content.haschild, 'fa-arrow-right': this.hiddenfamily}"
-                                    v-on:click="hidefamily" />
+                                    v-on:click="hidefamily" title = "Diskussion ein- oder ausklappen"/>
 
                                    
                                 </div>

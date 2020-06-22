@@ -148,10 +148,10 @@ define([
                             <button :class="'btn btn-primary'" v-on:click="onanswerbuttonclick">
                                 {{answerbuttontext}}
                             </button>
-                            <button :class="'btn btn-primary'" v-on:click="prevmsg">
+                            <button :class="'btn btn-outline-primary'" v-on:click="prevmsg">
                                 Vorherige Nachricht
                             </button>
-                            <button :class="'btn btn-primary'" v-on:click="nextmsg">
+                            <button :class="'btn btn-outline-primary'" v-on:click="nextmsg">
                                 Nächste Nachricht
                             </button>
                         </div>
