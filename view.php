@@ -53,10 +53,10 @@ $PAGE->set_url('/mod/newsmod/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
-$PAGE->requires->css( '/mod/newsmod/css/min/fontawesome.min.css', true );
+$PAGE->requires->css( '/mod/newsmod/styles.css', true );
 
 
-echo $OUTPUT->header("charset=utf-8");
+echo $OUTPUT->header();
 //header('X-Content-Type-Options: nosniff');
 /*      //this check is no longer needed
 if (extension_loaded('imap')) {

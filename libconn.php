@@ -155,7 +155,7 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
             $userinfo = @getUserIdByEmail($header->from);
 
             
-            $header->subject = addcslashes(utf8_encode($header->subject), "\"");
+            $header->subject = addcslashes($header->subject, "\"");
             $jsontree = $jsontree . '"name":"'.$header->subject.'",';
             $jsontree = $jsontree . '"messageid":"'.$header->number.'",';
             $jsontree = $jsontree . '"personal":"'.$header->name.'",';
@@ -205,7 +205,7 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
                 $userinfo = @getUserIdByEmail($header->from);
 
 
-                $header->subject = addcslashes(utf8_encode($header->subject), "\"");
+                $header->subject = addcslashes($header->subject, "\"");
                 $jsontree = $jsontree . '"name":"'.$header->subject.'",';
                 $jsontree = $jsontree . '"messageid":"'.$header->number.'",';
                 $jsontree = $jsontree . '"personal":"'.$header->name.'",';

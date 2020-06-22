@@ -62,6 +62,7 @@ $returnmsg = [
 ];
 
 //check out $header->fromaddress
+/*
 if (!$user = $DB->get_record('user', ['email' => $header->from])) {
     //echo "User Information not found";
     $user = new \stdClass();
@@ -69,6 +70,7 @@ if (!$user = $DB->get_record('user', ['email' => $header->from])) {
     $user->firstname = $header->name;
     $user->lastname = "";
 }
+*/
 //print_r($user);
 
 require_once($CFG->dirroot . '/mod/newsmod/libconn.php');

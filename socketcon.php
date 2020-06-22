@@ -253,7 +253,7 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
 
   function recode_charset($text,$source=false,$dest=false) {
         // website charset, "koi8-r" for example
-    $www_charset = "iso-8859-15";
+    $www_charset = "utf-8";
     // Use the iconv extension for improved charset conversions
     $iconv_enable=true;
     if($dest==false)
