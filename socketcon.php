@@ -148,7 +148,7 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
         //$subject=preg_replace('/\[doctalk\]/i','',headerDecode($over[$i+1]));
         //$article->isReply=splitSubject($subject);
         $article->isReply=splitSubject($over[$i+1]);
-        $article->subject=$over[$i+1];
+        $article->subject=headerdecode($over[$i+1]);
         //$article->subject=$subject;
       }
       if ($overviewfmt[$i]=="Date:") {
@@ -250,6 +250,26 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
       return($value);
     }
   }
+
+  function recode_charset($text,$source=false,$dest=false) {
+        // website charset, "koi8-r" for example
+    $www_charset = "iso-8859-15";
+    // Use the iconv extension for improved charset conversions
+    $iconv_enable=true;
+    if($dest==false)
+      $dest=$www_charset;
+    if(($iconv_enable) && ($source!=false)) {
+      $return=iconv($source,
+                   $dest."//TRANSLIT",$text);
+      if($return!="")
+        return $return;
+      else
+        return $text;
+    } else {
+      return $text;
+    }
+  }
+
   function thread_mycompare($a,$b) {
     $thread_sort_order=-1;
     $thread_sort_type="thread";
@@ -468,8 +488,10 @@ function nntp_headers($socket, $groupname)
           }
         }
     }
+    //var_dump(header_decode($headers[0]->subject));
     return $headers;
 }
+
 
 
 
