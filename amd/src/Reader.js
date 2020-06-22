@@ -426,39 +426,41 @@ define([
             }, // END app methods
             template: `
                 <div id="newsmod-container">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-inline float-sm-left">
-                                    <button :class="'btn btn-default'" v-on:click="newTopic">
+                    
+                        <div class="row control-bar">
+                    
+                                <div class="form-inline">
+                                    <button class="btn btn-outline-primary btn-sm" v-on:click="newTopic" title="Ein neues Thema erstellen">
+                                        <i class="fa fa-pen"></i>
                                         Neues Thema
                                     </button>
 
-                                    <button class="btn btn-default" v-on:click="">
+                                    <button class="btn btn-light btn-sm" v-on:click="" title="Neue Nachrichten abholen">
                                          <i class="fa fa-sync"></i>
                                     </button>
+                                    <div class="search">
+                                        <input class="form-control form-control-sm" v-model="searchstring" placeholder="Suchen..." v-on:click="resetsearchstring">
 
-                                    <input v-model="searchstring" placeholder="Suchen..." v-on:click="resetsearchstring">
-
-                                    <button :class="'btn btn-outline-success'" type="submit" v-on:click="search">
-                                        Suchen
-                                    </button>
+                                        <button class="btn btn-light btn-sm" type="submit" v-on:click="search" title="In allen Nachrichten suchen">
+                                            Suchen
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                    
                         </div>
-                    </div>
+                    
                     <div class="container-fluid px-0 ">
                         <div class="px-0">
                             <hr />
-                            <div class="col-12 row" >
+                            <div class="row" >
                                 
-                                <div class="col-xl-6 col-sm-10" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
                                 <post-container v-bind:courseid = "courseid" v-bind:postlist="post_list" v-bind:markedpost="markedpost" 
                                 :showloadingicon = "hideloadingicon" v-on:displaymsg="ondisplaymsg">
                                 </post-container>
                                 
                                 </div>
-                                <div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
                                     <messagebody-container v-bind:courseid = "courseid" v-bind:postdata = "singlepostdata" :isused ="msgbodycontainerdisplay" 
                                     :isreading = "isreading" :isanswering = "isanswering" :iscreatingtopic = "iscreatingtopic" v-on:answeredmsg="onansweredmsg"
                                     v-on:prevmsg="onprevmsg" v-on:nextmsg="onnextmsg">

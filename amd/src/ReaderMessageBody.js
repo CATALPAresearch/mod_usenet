@@ -118,7 +118,7 @@ define([
                                 <button :class="'btn btn-primary'" v-on:click="createtopic">
                                     Senden
                                 </button>
-                                <BR></BR>
+                                <br/>
                                 <label>
                                     Betreff:
                                 </label>
@@ -126,7 +126,7 @@ define([
                                 <label>
                                     Text:
                                 </label>
-                                <BR></BR>
+                                <br/>
                                 <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>                        
                             </template>
                             <template v-else>
@@ -140,23 +140,25 @@ define([
                         </div>
                     </div>
 
-                    <template v-if = "iscreatingtopic">
-                    </template>
+                    <template v-if="iscreatingtopic"></template>
 
                     <template v-else>
-                        <div class="row">
-                            <button :class="'btn btn-primary'" v-on:click="onanswerbuttonclick">
+                        <div class="row control-bar">
+                            <button class="btn btn-sm btn-outline-primary" v-on:click="onanswerbuttonclick" title="Beitrag beantworten">
+                                <i class="fa fa-reply"></i>
                                 {{answerbuttontext}}
                             </button>
-                            <button :class="'btn btn-outline-primary'" v-on:click="prevmsg">
+                            <button class="btn btn-sm btn-light" v-on:click="prevmsg" title="Die vorherige Nachricht anzeigen">
+                                <i class="fa fa-arrow-left"></i>
                                 Vorherige Nachricht
                             </button>
-                            <button :class="'btn btn-outline-primary'" v-on:click="nextmsg">
-                                Nächste Nachricht
+                            <button class="btn btn-sm btn-light" v-on:click="nextmsg" title="Die nächste Nachricht anzeigen">
+                                 Nächste Nachricht 
+                                 <i class="fa fa-arrow-right"></i>    
                             </button>
                         </div>
                         <template v-if="isreading">
-                            <div :class="'row-no-padding'" :style="{'overflow-y': 'scroll', height: '335.9px'}">
+                            <div class="row-no-padding" :style="{'overflow-y': 'scroll', height: '335.9px'}">
                                 <div>
                                     <!-- 'white-space': 'pre-line' is needed here because v-model automatically formats nl it seems -->
                                     <span :style="{'white-space': 'pre-line'}"> {{textareacontent}}</span>
@@ -164,7 +166,7 @@ define([
                             </div>
                         </template>
                         <template v-else>
-                            <div :class="'form-group'" :style="{'overflow-y': 'scroll', height: '335.9px'}">
+                            <div class="form-group" :style="{'overflow-y': 'scroll', height: '335.9px'}">
                                 <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>
                             </div>
                         </template>
