@@ -46,13 +46,7 @@ define([
 
                 methods:
                 {
-                    /*
-                    setcourseid: function (id)
-                    {
-                        this.courseid = id;
-                        
-                    },
-                    */
+                    
                     // Function ongetmsg called by event getmsg, getmsg-event is emitted by 'post' (child component)
 
                     ongetmsg: function (msgid, arraypos) {
@@ -126,13 +120,13 @@ define([
                                     <i class="fas fa-cog fa-spin fa-5x"/>
                                 </div>
                                 <post v-for='singlepost in postlist' 
-                                v-bind:content='singlepost' 
-                                v-bind:key = 'singlepost.messageid'
-                                :ref = 'singlepost.messageid'
-                                v-on:getmsg='ongetmsg'
-                                v-on:hidefamily='onhidefamily'
-                                v-on:showfamily='onshowfamily'
-                                v-bind:courseid = 'courseid'>
+                                    v-bind:content='singlepost' 
+                                    v-bind:key = 'singlepost.messageid'
+                                    :ref='singlepost.messageid'
+                                    v-on:getmsg='ongetmsg'
+                                    v-on:hidefamily='onhidefamily'
+                                    v-on:showfamily='onshowfamily'
+                                    v-bind:courseid = 'courseid'>
                                 </post>
                             </div>`
             }); // END component post-container

@@ -16,7 +16,7 @@ define([
     M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderPostContainer.js',
     M.cfg.wwwroot + '/mod/newsmod/amd/src/VizBubble.js',
 ], function ($, Vue, axios, MessageBodyContainer, PostContainer, BubbleChart) {
-    
+
     /**
      * Plot a timeline
      * @param d3 (Object) Data Driven Documents
@@ -30,7 +30,7 @@ define([
     */
 
     var Reader = function (Log, courseid, messageid) {
-        
+
         var app = new Vue({
             el: 'newsmod-container',
             data: function () {
@@ -75,9 +75,9 @@ define([
                  * to prevent "undefined variable" error messages
                  * 
                  */
-               
-                this.singlepostdata.header = {name: '', subject: ''};
-                
+
+                this.singlepostdata.header = { name: '', subject: '' };
+
 
                 Log.add('hello_world', { level: 'fun', target: 'vue is in place' });
 
@@ -89,7 +89,7 @@ define([
                     Log.add('toc_entry_open', { level: 'h3', target: $(this).attr('href') });
                 });
 
-            },   
+            },
             mounted: function () {
                 const h = messageid; // !!??
                 const f = courseid;
@@ -97,7 +97,7 @@ define([
                 let _this = this;
                 let id = 0;
 
-                   
+
                 //returned data is already js object (axios automaticly converts json to js obj)
                 axios
                     .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
@@ -111,11 +111,11 @@ define([
 
                     });
                 //this.$nextTick(function(){
-                  //  this.$refs.postcont.setcourseid(courseid);
-            //    });
-                
+                //  this.$refs.postcont.setcourseid(courseid);
+                //    });
+
             },
-            
+
             computed: {
 
             },
@@ -210,7 +210,7 @@ define([
 
 
                     let post = this.findinarr(msgid, this.post_list);
-        
+
                     console.log(post.arraypos);
                     let arraypos = post.arraypos;
 
@@ -254,11 +254,11 @@ define([
 
                     // Timeout of 2 seconds. Reason: After user posted a message, page gets refreshed with new data
                     // but server might not have the new message available yet, depending on server load (?)
-                    setTimeout(function() {
+                    setTimeout(function () {
 
                         axios   //returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + app.courseid)
-                        .then(response => (app.info = response, app.tree_data = response.data, app.buildtree(response.data, 1)));
+                            .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + app.courseid)
+                            .then(response => (app.info = response, app.tree_data = response.data, app.buildtree(response.data, 1)));
                         app.hideloadingicon = true;
 
                     }, (2 * 1000));
@@ -344,9 +344,9 @@ define([
 
                 },
 
-                getfamily: function(rootnode) {
-                    var children = []; 
-                    
+                getfamily: function (rootnode) {
+                    var children = [];
+
                     if (rootnode.children) {
                         var childrenamount = rootnode.children.length;
 
@@ -378,10 +378,10 @@ define([
                         .then(response => (this.displaysearchresult('', response.data)))
                         .catch(error => (
                             console.log(error)
-        ));
+                        ));
                 },
 
-                hideallposts: function() {
+                hideallposts: function () {
                     for (let i = 0; i < this.post_list.length; i++) {
                         let modpost = this.post_list[i];
                         modpost.hidden = true;
@@ -389,7 +389,7 @@ define([
                     }
                 },
 
-                showallposts: function() {
+                showallposts: function () {
                     for (let i = 0; i < this.post_list.length; i++) {
                         let modpost = this.post_list[i];
                         modpost.hidden = false;
@@ -398,7 +398,7 @@ define([
                 },
 
                 displaysearchresult: function (options, searchresult) {
-                    
+
                     this.hideallposts();
 
                     for (let i = 0; i < searchresult.length; i++) {
@@ -427,46 +427,51 @@ define([
             template: `
                 <div id="newsmod-container">
                     
-                        <div class="row control-bar">
-                    
-                                <div class="form-inline">
-                                    <button class="btn btn-outline-primary btn-sm" v-on:click="newTopic" title="Ein neues Thema erstellen">
-                                        <i class="fa fa-pen"></i>
-                                        Neues Thema
-                                    </button>
+                    <div class="row control-bar">
+                        <div class="form-inline">
+                            <button class="btn btn-outline-primary btn-sm" v-on:click="newTopic" title="Ein neues Thema erstellen">
+                                <i class="fa fa-pen"></i>
+                                Neues Thema
+                            </button>
 
-                                    <button class="btn btn-light btn-sm" v-on:click="" title="Neue Nachrichten abholen">
-                                         <i class="fa fa-sync"></i>
-                                    </button>
-                                    <div class="search">
-                                        <input class="form-control form-control-sm" v-model="searchstring" placeholder="Suchen..." v-on:click="resetsearchstring">
+                            <button class="btn btn-light btn-sm" v-on:click="" title="Neue Nachrichten abholen">
+                                    <i class="fa fa-sync"></i>
+                            </button>
+                            <div class="search">
+                                <input class="form-control form-control-sm" v-model="searchstring" placeholder="Suchen..." v-on:click="resetsearchstring">
 
-                                        <button class="btn btn-light btn-sm" type="submit" v-on:click="search" title="In allen Nachrichten suchen">
-                                            Suchen
-                                        </button>
-                                    </div>
-                                </div>
-                    
+                                <button class="btn btn-light btn-sm" type="submit" v-on:click="search" title="In allen Nachrichten suchen">
+                                    Suchen
+                                </button>
+                            </div>
                         </div>
+                    </div>
                     
                     <div class="container-fluid px-0 ">
                         <div class="px-0">
                             <hr />
                             <div class="row" >
-                                
                                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
-                                <post-container v-bind:courseid = "courseid" v-bind:postlist="post_list" v-bind:markedpost="markedpost" 
-                                :showloadingicon = "hideloadingicon" v-on:displaymsg="ondisplaymsg">
-                                </post-container>
-                                
+                                    <post-container 
+                                        v-bind:courseid="courseid" 
+                                        v-bind:postlist="post_list" 
+                                        v-bind:markedpost="markedpost" 
+                                        :showloadingicon="hideloadingicon" 
+                                        v-on:displaymsg="ondisplaymsg">
+                                    </post-container>
                                 </div>
                                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
-                                    <messagebody-container v-bind:courseid = "courseid" v-bind:postdata = "singlepostdata" :isused ="msgbodycontainerdisplay" 
-                                    :isreading = "isreading" :isanswering = "isanswering" :iscreatingtopic = "iscreatingtopic" v-on:answeredmsg="onansweredmsg"
-                                    v-on:prevmsg="onprevmsg" v-on:nextmsg="onnextmsg">
-                                    
+                                    <messagebody-container 
+                                        v-bind:courseid="courseid" 
+                                        v-bind:postdata="singlepostdata" 
+                                        :isused ="msgbodycontainerdisplay" 
+                                        :isreading="isreading" 
+                                        :isanswering="isanswering" 
+                                        :iscreatingtopic="iscreatingtopic" 
+                                        v-on:answeredmsg="onansweredmsg"
+                                        v-on:prevmsg="onprevmsg" 
+                                        v-on:nextmsg="onnextmsg">
                                     </messagebody-container>
-                                    
                                 </div>
                             </div>
                         </div>
