@@ -86,7 +86,7 @@ define([
             */
             template: `
                 <div class = "post" :class="{hidden: content.hidden}">
-                    <li class="node px-0" :column="content.margin" :class = "{'font-weight-bold': content.unread}">
+                    <div class="node px-0" :column="content.margin" :class = "{'font-weight-bold': content.unread}">
                         <div class ="container-fluid px-0">
                             <div class = "row px-0" v-bind:class="{'bg-info': content.isSelected}">
                                 
@@ -124,7 +124,7 @@ define([
 
                             </div>
                         </div>
-                    </li>
+                    </div>
                 </div>
                 `
         });

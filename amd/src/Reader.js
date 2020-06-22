@@ -444,7 +444,6 @@ define([
                                         Suchen
                                     </button>
                                 </div>
-                                <div class="text-danger" id="orr">Bitte drehen Sie Ihr Gerät!</div>
                             </div>
                         </div>
                     </div>
