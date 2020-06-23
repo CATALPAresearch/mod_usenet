@@ -18,7 +18,7 @@
  * Prints an instance of mod_newsmod.
  *
  * @package     mod_newsmod
- * @copyright   Rudolf Patzer <rpatzer@gmx.de>
+ * @copyright   Konstantin Friedrich 
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -47,7 +47,6 @@ require_login($course, true, $cm);
 
 $modulecontext = context_module::instance($cm->id);
 
-    
 
 $PAGE->set_url('/mod/newsmod/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($moduleinstance->name));
@@ -55,71 +54,9 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 $PAGE->requires->css( '/mod/newsmod/styles.css', true );
 
-
 echo $OUTPUT->header();
-//header('X-Content-Type-Options: nosniff');
-/*      //this check is no longer needed
-if (extension_loaded('imap')) {
-    $PAGE->requires->js_init_call('showtree', array('course'=>$cm->id, 'msgnr'=>$msgnr));
-} else {
-    $warnung = "PHP-IMAP Modul ist nicht installiert.";
-}
-*/
 
-//<div>Ich bin eine Variable aus der amd/src/Reader.js: {{ info }}</div>
-
-echo '<newsmod-container>   </newsmod-container>';
-
-/*
-echo'
-<div id="newsmod-container">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <form class="form-inline float-sm-left" action="" method="post">
-                    <button class="btn btn-default" type="button" id="createbutton" onclick="javascript: createButton();">Neues Thema</button>
-                    <button class="btn btn-default fa fa-sync" type="button" id="reloadbutton"></button>
-                    <input type="text" class="form-control" placeholder="Suchen...">
-                    <button class="btn btn-outline-success" type="submit">Suchen</button>
-                </form>
-                <div class="text-danger" id="orr">Bitte drehen Sie Ihr Gerät!</div>
-            </div>
-        </div>
-    </div>
-    <div class="container-fluid px-0 ">
-        <div class="px-0">
-            <hr />
-            <div class="col-12 row" >
-                
-                <div class="col-xl-6 col-sm-10" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
-                <post-container v-bind:postlist="post_list" v-bind:iterations="iterations"  v-on:displaymsg="ondisplaymsg"></post-container>
-                
-                </div>
-                <div class="col-xl-6 col-sm-10 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
-                    <messagebody-container v-bind:postdata = "singlepostdata" v-on:answeredmsg="onansweredmsg"></messagebody-container>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-';
-*/
-/*
-
-
-<div class=loading>
-                        <i class="fas fa-cog fa-spin fa-5x"></i>loading
-                    </div>
-
-
-
-
-*/
-
-//<div class='btn-toolbar mb-3' role='toolbar' aria-label='Controlbar for Plugins'>";
-//echo "<div class='btn-group' role='group' aria-label='First Group'>";
-//echo "<div id=contenttree><div id=tree1 class='col-6'></div><div id=treeinfo></div></div>";
+echo '<newsmod-container></newsmod-container>';
 
 $PAGE->requires->js_call_amd('mod_newsmod/newsmod', 'init', array('course'=>$cm->id, 'msgnr'=>$msgnr));
 
