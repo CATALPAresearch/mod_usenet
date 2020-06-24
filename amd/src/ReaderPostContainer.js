@@ -23,22 +23,24 @@ define([
 
                 watch: {
                     markedpost: function () {
-                        var modpost = this.postlist[this.markedpost];
-                        modpost.isSelected = true;
-                        modpost.unread = false;
-                        Vue.set(this.postlist, this.markedpost, modpost);
 
-                        if (this.previouspost != -1)    // was there a post previously selected ?
-                        {
-                            if (this.previouspost != this.markedpost)  // is the user not clicking on the same post ?
+                        if (this.markedpost != -1) {
+                            var modpost = this.postlist[this.markedpost];
+                            modpost.isSelected = true;
+                            modpost.unread = false;
+                            Vue.set(this.postlist, this.markedpost, modpost);
+
+                            if (this.previouspost != -1)    // was there a post previously selected ?
                             {
-                                modpost = this.postlist[this.previouspost];
-                                modpost.isSelected = false;
-                                Vue.set(this.postlist, this.previouspost, modpost);
+                                if (this.previouspost != this.markedpost)  // is the user not clicking on the same post ?
+                                {
+                                    modpost = this.postlist[this.previouspost];
+                                    modpost.isSelected = false;
+                                    Vue.set(this.postlist, this.previouspost, modpost);
+                                }
                             }
+                            this.previouspost = this.markedpost;   // current post is next previouspost
                         }
-                        this.previouspost = this.markedpost;   // current post is next previouspost
-
                     },
 
 

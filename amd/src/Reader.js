@@ -403,9 +403,6 @@ define([
 
                     for (let i = 0; i < searchresult.length; i++) {
                         this.hiddenposts.push(this.findinarr(searchresult[i].messagenum, this.post_list));
-                        console.log(searchresult);
-                        console.log(this.hiddenposts);
-                        console.log(this.post_list);
                         let modpost = this.hiddenposts[i];
                         modpost.hidden = false;
                         Vue.set(this.post_list, modpost.arraypos, modpost);
@@ -421,6 +418,31 @@ define([
                     this.showallposts();
 
                 },
+                // TODO: make sure all elements are reset, also look at onansweredmsg
+                refresh: function() {
+
+                    this.hideloadingicon = false;
+
+                    this.isreading = false;
+                    this.isanswering = false;
+                    this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
+                    this.markedpost = -1;
+                    this.arraypos = 0;
+
+                    this.post_list.splice(0);
+
+                    axios
+                    .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
+                    .then(function (response) {
+                        app.treedata = response.data.children;
+                        app.info = response;
+                        app.tree_data = response.data;
+                        app.buildtree(response.data, 1);
+                        app.hideloadingicon = true;
+                        return 1;
+
+                    });
+                }
 
 
             }, // END app methods
@@ -434,7 +456,7 @@ define([
                                 Neues Thema
                             </button>
 
-                            <button class="btn btn-light btn-sm" v-on:click="" title="Neue Nachrichten abholen">
+                            <button class="btn btn-light btn-sm" v-on:click="refresh" title="Neue Nachrichten abholen">
                                     <i class="fa fa-sync"></i>
                             </button>
                             <div class="search">

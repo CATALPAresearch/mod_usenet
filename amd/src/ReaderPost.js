@@ -51,7 +51,6 @@ define([
                 },
 
                 hidefamily: function () {
-                    console.log("ah");
                     if (this.hiddenfamily == false) {
                         this.hiddenfamily = true;
                         this.$emit('hidefamily', this.content.family);
