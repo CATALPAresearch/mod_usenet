@@ -11,3 +11,9 @@
 .newsmod-container .messagebody-container .control-bar {
     margin-left:10px
 }
+
+.postx{
+    cursor: pointer;
+    margin-left:30px;
+
+}

@@ -21,7 +21,11 @@ define([
             data: function () {
                 return {
                     isSelected: false,
-                    hiddenfamily: false
+                    hiddenfamily: false,
+
+                    poststyle: {
+                        cursor: 'pointer',
+                    }
                 };
             },
 
@@ -69,6 +73,15 @@ define([
                 }
 
             },
+
+            computed: {
+                poststylechild: function () {
+                    if (this.content.haschild) {
+                        return this.poststyle;
+                    }
+                    
+                }
+            },
             /*
                         <template v-if="content.marked">
                         <i class="fas starmarked fa-star" />
@@ -95,17 +108,17 @@ define([
                                     <!-- TODO insert jdenticon -->
                                     
                                     <i class="far fa-star" :class = "{starmarked: content.marked, fas: content.marked }"
-                                    v-on:click="togglemarked" title = "Favoriten markieren"/>
+                                    v-on:click="togglemarked" title = "Favoriten markieren" :style="poststyle"/>
 
                                     <i class="fas fa-xs" :class = "{'fa-arrow-down': content.haschild, 'fa-arrow-right': this.hiddenfamily}"
-                                    v-on:click="hidefamily" title = "Diskussion ein- oder ausklappen"/>
+                                    v-on:click="hidefamily" title = "Diskussion ein- oder ausklappen" :style="poststylechild"/>
 
                                    
                                 </div>
 
                                 <div class ="container-fluid px-0 col-sm-11 col-md-11 col-lg-11 col-xl-11">
 
-                                <div class = "row" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
+                                <div class = "row" v-on:click="$emit('getmsg', content.messageid, content.arraypos)" :style="poststyle">
                                     <div class = "col-sm-7 col-md-7 col-lg-7 col-xl-7 text-truncate" :style="{'text-indent': content.margin + 'px'}">
                                         {{content.subject}}
                                     </div>
