@@ -1,7 +1,7 @@
 define([
     'jquery',
     M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min.js'
+    M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min.js',
 ], function ($, Vue, axios) {
 
     /**
@@ -23,7 +23,7 @@ define([
                     isSelected: false,
                     hiddenfamily: false,
 
-                    poststyle: {
+                    poststylechild: {
                         cursor: 'pointer',
                     }
                 };
@@ -75,9 +75,9 @@ define([
             },
 
             computed: {
-                poststylechild: function () {
+                poststylechildcnd: function () {
                     if (this.content.haschild) {
-                        return this.poststyle;
+                        return this.poststylechild;
                     }
                     
                 }
@@ -107,18 +107,19 @@ define([
 
                                     <!-- TODO insert jdenticon -->
                                     
-                                    <i class="far fa-star" :class = "{starmarked: content.marked, fas: content.marked }"
-                                    v-on:click="togglemarked" title = "Favoriten markieren" :style="poststyle"/>
+                                    <i class="far fa-star poststyle" :class = "{starmarked: content.marked, fas: content.marked }"
+                                    v-on:click="togglemarked" title = "Favoriten markieren"/>
 
-                                    <i class="fas fa-xs" :class = "{'fa-arrow-down': content.haschild, 'fa-arrow-right': this.hiddenfamily}"
-                                    v-on:click="hidefamily" title = "Diskussion ein- oder ausklappen" :style="poststylechild"/>
+                                    <i class="fas fa-xs" :class = "{'fa-arrow-down': content.haschild,
+                                        'fa-arrow-right': this.hiddenfamily}" :style="poststylechildcnd"
+                                        v-on:click="hidefamily" title = "Diskussion ein- oder ausklappen"/>
 
                                    
                                 </div>
 
                                 <div class ="container-fluid px-0 col-sm-11 col-md-11 col-lg-11 col-xl-11">
 
-                                <div class = "row" v-on:click="$emit('getmsg', content.messageid, content.arraypos)" :style="poststyle">
+                                <div class = "row poststyle" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
                                     <div class = "col-sm-7 col-md-7 col-lg-7 col-xl-7 text-truncate" :style="{'text-indent': content.margin + 'px'}">
                                         {{content.subject}}
                                     </div>
