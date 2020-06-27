@@ -18,7 +18,10 @@
   ],
   "author": "niels seidel <niels.seidel@fernuni-hagen.de>",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "crypto-js": "^4.0.0",
+    "identicon": "^3.0.1"
+  },
   "devDependencies": {
     "grunt-contrib-cssmin": "^3.0.0",
     "grunt-contrib-jshint": "^2.1.0",

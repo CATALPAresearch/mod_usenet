@@ -22,6 +22,7 @@ define([
                 return {
                     isSelected: false,
                     hiddenfamily: false,
+                    identiconstring: "data:image/svg+xml;base64," + this.content.identicon,
 
                     poststylechild: {
                         cursor: 'pointer',
@@ -82,20 +83,7 @@ define([
                     
                 }
             },
-            /*
-                        <template v-if="content.marked">
-                        <i class="fas starmarked fa-star" />
-                        </template>
-                        <template v-else>
-                        <i class="far fa-star" />
-                        </template>
-            
-                        <template v-if="content.haschild">
-                        <i class="fas fa-xs fa-arrow-down" />
-                        </template>
-                        <template v-else>
-                        </template>
-            */
+          
             template: `
                 <div class = "post" :class="{hidden: content.hidden}">
                     <div class="node px-0" :column="content.margin" :class = "{'font-weight-bold': content.unread}">
@@ -103,21 +91,23 @@ define([
                             <div class = "row px-0" v-bind:class="{'bg-info': content.isSelected}">
                                 
                                 
-                                <div class = "px-0 col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                                <div class = "container-fluid col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                                    <div class = "row">
+                                        <!-- TODO insert jdenticon -->
+                                        <img width=20 height=20 :src="this.identiconstring"
+                                            title = "Identicon"/>
+                                        
+                                        <i class="far fa-star poststyle" :class = "{starmarked: content.marked, fas: content.marked }"
+                                        v-on:click="togglemarked" title = "Favoriten markieren"/>
 
-                                    <!-- TODO insert jdenticon -->
-                                    
-                                    <i class="far fa-star poststyle" :class = "{starmarked: content.marked, fas: content.marked }"
-                                    v-on:click="togglemarked" title = "Favoriten markieren"/>
+                                        <i class="fas fa-xs" :class = "{'fa-arrow-down': content.haschild,
+                                            'fa-arrow-right': this.hiddenfamily}" :style="poststylechildcnd"
+                                            v-on:click="hidefamily" title = "Diskussion ein- oder ausklappen"/>
+                                    </div>
 
-                                    <i class="fas fa-xs" :class = "{'fa-arrow-down': content.haschild,
-                                        'fa-arrow-right': this.hiddenfamily}" :style="poststylechildcnd"
-                                        v-on:click="hidefamily" title = "Diskussion ein- oder ausklappen"/>
-
-                                   
                                 </div>
 
-                                <div class ="container-fluid px-0 col-sm-11 col-md-11 col-lg-11 col-xl-11">
+                                <div class ="container-fluid col-sm-11 col-md-11 col-lg-11 col-xl-11">
 
                                 <div class = "row poststyle" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
                                     <div class = "col-sm-7 col-md-7 col-lg-7 col-xl-7 text-truncate" :style="{'text-indent': content.margin + 'px'}">

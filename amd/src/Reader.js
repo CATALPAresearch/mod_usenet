@@ -12,10 +12,11 @@ define([
     'jquery',
     M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js',
     M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min.js',
+    M.cfg.wwwroot + '/mod/newsmod/lib/build/identicon.min.js',
     M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderMessageBody.js',
     M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderPostContainer.js',
     M.cfg.wwwroot + '/mod/newsmod/amd/src/VizBubble.js',
-], function ($, Vue, axios, MessageBodyContainer, PostContainer, BubbleChart) {
+], function ($, Vue, axios, Identicon, MessageBodyContainer, PostContainer, BubbleChart) {
 
     /**
      * Plot a timeline
@@ -276,7 +277,7 @@ define([
                         var marked = val.markedstatus != '0' ? true : false;
                         //var read = val.messagestatus == '0' ? "font-weight-bold " : "";
                         var unread = val.messagestatus == '0' ? true : false;
-
+                        var identicondata;
                         var childpresent = false;
                         if (val.picturestatus > '0') {
                             var jdenticonstring = '<div class="control col-sm-3 col-xl-4"><img title="Name: ' + val.personal + '\r\nE-Mail-Adresse: ' + val.sender + '" src="' + M.cfg.wwwroot + '/user/pix.php/' + val.user_id + '/f1.jpg" width="20" height="20"></img></div>';
@@ -293,20 +294,25 @@ define([
                             + '\r\nE-Mail-Adresse: ' + val.sender + '">
                             <img width=19 height=20 src="data:image/svg+xml;base64,' + data + '"></div>'`;
                         }
+                        var options = {
+                            background: [255, 255, 255, 255], // rgba white
+                            margin: 0.05, // 20% margin
+                            size: 20, // 420px square
+                            format: 'svg' // use SVG instead of PNG
+                        };
+                        // TODO: fix feed
+                        identicondata = new Identicon(btoa(val.sender + "aaaaaaaaaaaaaaaaa"), options).toString();
+
                         if (val.children) {
                             childpresent = true;
                         }
                         else {
                             childpresent = false;
                         }
-
+                        
                         if (!val.children) {
                             var childornot = "hidden";
                         }
-                        //var treeli = '<li column="' + margin + '" sequence="' + this.sequence + '" marked="' + val.markedstatus + ' " class="node px-0 ' + unread + '" messageid="' + val.messageid + '" data-date="' + new Date(val.date) + '">';
-                        //var licontainer = '<div class="px-0 container-fluid"><div class="row px-0"><div class="px-0 col-sm-2 col-xl-2 offset-xl-0 row">';
-                        //var sender = '<div class="col-xl-3 px-0">' + val.sender + '</div>';
-                        //var subject = '<div  class="col-xl-5 subject col-sm-4 message" style="text-indent: ' + margin + 'px">' + val.name + '</div>';
                         var calctime = new Date(val.date);
                         var options = {
                             year: 'numeric',
@@ -316,9 +322,6 @@ define([
                         calctime = new Date(val.date).toLocaleDateString('de-DE', options) ? new Date(val.date).toLocaleDateString('de-DE', options) : "";
                         var absender = val.personal ? val.personal : val.sender;
                         //var timestamp = '<div class="sender elipse col-xl-3 col-sm-3"><a href="mailto:' + val.sender + '?subject=' + val.name + '">' + absender + '</a></div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">' + calctime + '</div>';
-                        //var fontpictures = '<i class="marked ' + marked + ' fa-star favorite" style="margin-left:4" /><i class="toggle fas fa-xs fa-arrow-down ' + childornot + '"/>';
-                        //var enddiv = '</div>';
-                        //app.tree_built += treeli + licontainer + jdenticonstring + fontpictures + enddiv + subject + timestamp + enddiv + enddiv;
                         var family;
                         if (val.children) {
                             family = this.getfamily(val);
@@ -329,7 +332,7 @@ define([
                             picturestatus: val.picturestatus, personal: val.personal, sender: val.sender,
                             user_id: val.user_id, margin: margin, sequence: this.sequence++, messageid: val.messageid,
                             date: val.date, subject: val.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
-                            isSelected: false, hidden: false, family: family
+                            isSelected: false, hidden: false, family: family, identicon: identicondata
                         };
 
                         this.post_list.push(content);
@@ -404,8 +407,14 @@ define([
                     for (let i = 0; i < searchresult.length; i++) {
                         this.hiddenposts.push(this.findinarr(searchresult[i].messagenum, this.post_list));
                         let modpost = this.hiddenposts[i];
-                        modpost.hidden = false;
-                        Vue.set(this.post_list, modpost.arraypos, modpost);
+                        if (typeof modpost.hidden !== 'undefined') {
+                            modpost.hidden = false;
+                            Vue.set(this.post_list, modpost.arraypos, modpost);
+                        }
+                        else {
+                            console.log("err displaysearchresult");
+                        }
+                       
 
                     }
                     this.hideloadingicon = true;
