@@ -131,14 +131,18 @@ define([
                                 <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>                        
                             </template>
                             <template v-else>
-
-                            <img width=20 height=20 :src="this.identiconstring"/>
-                            
-                            <div>
-                                {{postdata.header.name}}
-                            </div>
-                            <div>
-                                {{postdata.header.subject}}
+                            <div class = "container">
+                                <div class = "row">
+                                    <img width=40 height=40 :src="this.identiconstring"/>
+                                    <div>
+                                        <div>
+                                            {{postdata.header.name}}
+                                        </div>
+                                        <div>
+                                            {{postdata.header.subject}}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             </template>
                         </div>
