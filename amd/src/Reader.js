@@ -59,7 +59,8 @@ define([
                     iscreatingtopic: false,
                     markedpost: -1,
                     courseid: courseid,
-                    hideloadingicon: true
+                    hideloadingicon: true,
+                    identiconstring: ""
                 };
             },
 
@@ -135,7 +136,8 @@ define([
                 ondisplaymsg: function (msgid) {
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" + msgid)
-                        .then(response => (this.singlepostdata = response.data, this.iterations = 999));
+                        .then(response => (this.singlepostdata = response.data,
+                            this.identiconstring = this.getidenticon(this.singlepostdata.header.from + this.singlepostdata.header.name)));
                     this.msgbodycontainerdisplay = '';      // Set display to "visible"
                     this.iscreatingtopic = false;
                     this.isreading = true;
@@ -145,6 +147,8 @@ define([
 
                     let arraypos = post.arraypos;
                     this.markedpost = arraypos;
+
+
 
                 },
 
@@ -200,11 +204,14 @@ define([
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" + msgid)
-                        .then(response => (this.singlepostdata = response.data, this.iterations = 999));
+                        .then(response => (this.singlepostdata = response.data, 
+                            this.identiconstring = this.getidenticon(this.singlepostdata.header.from + this.singlepostdata.header.name)));
                     this.msgbodycontainerdisplay = '';      // Set display to "visible"
                     this.iscreatingtopic = false;
                     this.isreading = true;
                     this.isanswering = false;
+
+
                 },
 
                 onnextmsg: function (msgid) {
@@ -232,11 +239,14 @@ define([
                     //msgid = parseInt(msgid);
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" + msgid)
-                        .then(response => (this.singlepostdata = response.data, this.iterations = 999));
+                        .then(response => (this.singlepostdata = response.data, 
+                            this.identiconstring = this.getidenticon(this.singlepostdata.header.from + this.singlepostdata.header.name)));
                     this.msgbodycontainerdisplay = '';      // Set display to "visible"
                     this.iscreatingtopic = false;
                     this.isreading = true;
                     this.isanswering = false;
+                    
+                    
                 },
                 /**
                  * Refresh post
@@ -277,7 +287,7 @@ define([
                         var marked = val.markedstatus != '0' ? true : false;
                         //var read = val.messagestatus == '0' ? "font-weight-bold " : "";
                         var unread = val.messagestatus == '0' ? true : false;
-                        var identicondata;
+                        var identiconstring;
                         var childpresent = false;
                         if (val.picturestatus > '0') {
                             var jdenticonstring = '<div class="control col-sm-3 col-xl-4"><img title="Name: ' + val.personal + '\r\nE-Mail-Adresse: ' + val.sender + '" src="' + M.cfg.wwwroot + '/user/pix.php/' + val.user_id + '/f1.jpg" width="20" height="20"></img></div>';
@@ -299,9 +309,10 @@ define([
                             margin: 0.05, // 20% margin
                             size: 20, // 420px square
                             format: 'svg' // use SVG instead of PNG
-                        };
-                        // TODO: fix feed
-                        identicondata = new Identicon(btoa(val.sender + "aaaaaaaaaaaaaaaaa"), options).toString();
+                        };                       
+
+                        
+                        identiconstring = this.getidenticon(val.sender + val.personal);
 
                         if (val.children) {
                             childpresent = true;
@@ -332,7 +343,7 @@ define([
                             picturestatus: val.picturestatus, personal: val.personal, sender: val.sender,
                             user_id: val.user_id, margin: margin, sequence: this.sequence++, messageid: val.messageid,
                             date: val.date, subject: val.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
-                            isSelected: false, hidden: false, family: family, identicon: identicondata
+                            isSelected: false, hidden: false, family: family, identicon: identiconstring
                         };
 
                         this.post_list.push(content);
@@ -451,8 +462,57 @@ define([
                         return 1;
 
                     });
-                }
+                },
 
+                getidenticon: function (input) {
+                    var options = {
+                        background: [255, 255, 255, 255], // rgba white
+                        margin: 0.05, // 20% margin
+                        size: 20, // 420px square
+                        format: 'svg' // use SVG instead of PNG
+                    };
+                    // TODO: fix feed
+                    
+
+                    var identiconhash = this.hash64(input, true); 
+                    var identicondata = new Identicon(identiconhash, options).toString();
+                    return "data:image/svg+xml;base64," + identicondata;
+                },
+                /**
+                 * Calculate a 32 bit FNV-1a hash
+                 * Found here: https://gist.github.com/vaiorabbit/5657561
+                 * Ref.: http://isthe.com/chongo/tech/comp/fnv/
+                 *
+                 * @param {string} str the input value
+                 * @param {boolean} [asString=false] set to true to return the hash value as 
+                 *     8-digit hex string instead of an integer
+                 * @param {integer} [seed] optionally pass the hash of the previous chunk
+                 * @returns {integer | string}
+                 */
+                hash32: function(str, asString, seed) {
+                    /*jshint bitwise:false */
+                    var i, l,
+                        hval = (seed === undefined) ? 0x811c9dc5 : seed;
+
+                    for (i = 0, l = str.length; i < l; i++) {
+                        hval ^= str.charCodeAt(i);
+                        hval += (hval << 1) + (hval << 4) + (hval << 7) + (hval << 8) + (hval << 24);
+                    }
+                    if( asString ){
+                        // Convert to 8 digit hex string
+                        return ("0000000" + (hval >>> 0).toString(16)).substr(-8);
+                    }
+                    return hval >>> 0;
+                },
+
+                hash64: function(str, asString) {
+                    var h1 = this.hash32(str, asString);  // returns 32 bit (as 8 byte hex string)
+                    return h1 + this.hash32(h1 + str, asString);  // 64 bit (as 16 byte hex string)
+                },
+
+
+                
+                      
 
             }, // END app methods
             template: `
@@ -494,7 +554,8 @@ define([
                                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
                                     <messagebody-container 
                                         v-bind:courseid="courseid" 
-                                        v-bind:postdata="singlepostdata" 
+                                        v-bind:postdata="singlepostdata"
+                                        :identiconstring = "identiconstring"
                                         :isused ="msgbodycontainerdisplay" 
                                         :isreading="isreading" 
                                         :isanswering="isanswering" 

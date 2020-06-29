@@ -6,7 +6,8 @@ define([
 
     return Vue.component('messagebody-container',
         {
-            props: ['postdata', 'isused', 'isreading', 'isanswering', 'iscreatingtopic', 'courseid'],
+            props: ['postdata', 'isused', 'isreading', 'isanswering', 'iscreatingtopic', 'courseid',
+                    'identiconstring'],
 
             data: function () {
                 return {
@@ -130,6 +131,9 @@ define([
                                 <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>                        
                             </template>
                             <template v-else>
+
+                            <img width=20 height=20 :src="this.identiconstring"/>
+                            
                             <div>
                                 {{postdata.header.name}}
                             </div>

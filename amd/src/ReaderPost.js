@@ -93,9 +93,8 @@ define([
                                 
                                 <div class = "container-fluid col-sm-1 col-md-1 col-lg-1 col-xl-1">
                                     <div class = "row">
-                                        <!-- TODO insert jdenticon -->
-                                        <img width=20 height=20 :src="this.identiconstring"
-                                            title = "Identicon"/>
+                                        <img width=20 height=20 :src="this.content.identicon"
+                                            :title = "this.content.personal"/>
                                         
                                         <i class="far fa-star poststyle" :class = "{starmarked: content.marked, fas: content.marked }"
                                         v-on:click="togglemarked" title = "Favoriten markieren"/>
