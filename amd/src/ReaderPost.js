@@ -88,10 +88,10 @@ define([
                 <div class = "post" :class="{hidden: content.hidden}">
                     <div class="node px-0" :column="content.margin" :class = "{'font-weight-bold': content.unread}">
                         <div class ="container-fluid px-0">
-                            <div class = "row px-0" v-bind:class="{'bg-info': content.isSelected}">
+                            <div class = "row px-0">
                                 
                                 
-                                <div class = "container-fluid col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                                <div class = "col-sm-1 col-md-1 col-lg-1 col-xl-1">
                                     <div class = "row">
                                         <img width=20 height=20 :src="this.content.identicon"
                                             :title = "this.content.personal"/>
@@ -106,7 +106,7 @@ define([
 
                                 </div>
 
-                                <div class ="container-fluid col-sm-11 col-md-11 col-lg-11 col-xl-11">
+                                <div class ="col-sm-11 col-md-11 col-lg-11 col-xl-11 px-1" v-bind:class="{'bg-info': content.isSelected}">
 
                                 <div class = "row poststyle" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
                                     <div class = "col-sm-7 col-md-7 col-lg-7 col-xl-7 text-truncate" :style="{'text-indent': content.margin + 'px'}">
