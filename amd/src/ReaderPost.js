@@ -54,7 +54,6 @@ define([
                         this.content.marked = true;
                     }
                 },
-
                 hidefamily: function () {
                     if (this.hiddenfamily == false) {
                         this.hiddenfamily = true;
@@ -63,8 +62,10 @@ define([
                         this.hiddenfamily = false;
                         this.$emit('showfamily', this.content.family);
                     }
+                    this.$emit('setSelected', this.content.arraypos);
                 },
 
+                // Called by container 'ReaderPostContainer'
                 hideself: function () {
                     this.content.hidden = true;
 
@@ -91,7 +92,7 @@ define([
                             <div class = "row px-0">
                                 
                                 
-                                <div class = "col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                                <div class = "col-2 col-sm-1 col-md-1 col-lg-1 col-xl-1">
                                     <div class = "row">
                                         <img width=20 height=20 :src="this.content.identicon"
                                             :title = "this.content.personal"/>
@@ -106,18 +107,19 @@ define([
 
                                 </div>
 
-                                <div class ="col-sm-11 col-md-11 col-lg-11 col-xl-11 px-1" v-bind:class="{'bg-info': content.isSelected}">
+                                <div class ="col-10 col-sm-11 col-md-11 col-lg-11 col-xl-11 px-1" v-bind:class="{'bg-info': content.isSelected}">
 
                                 <div class = "row poststyle" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
-                                    <div class = "col-sm-7 col-md-7 col-lg-7 col-xl-7 text-truncate" :style="{'text-indent': content.margin + 'px'}">
+                                    <div class = "col-12 col-sm-7 col-md-7 col-lg-7 col-xl-7 
+                                    order-last order-sm-first order-md-first order-lg-first order-xl-first text-truncate" :style="{'text-indent': content.margin + 'px'}">
                                         {{content.subject}}
                                     </div>
 
-                                    <div class = "col-sm-3 col-md-3 col-lg-3 col-xl-3 text-truncate">
+                                    <div class = "col-8 col-sm-3 col-md-3 col-lg-3 col-xl-3 text-truncate">
                                         {{content.personal}}
                                     </div>
 
-                                    <div class="datetime message col-sm-2 col-md-2 col-lg-2 col-xl-2" data-date-format="DD.MM.YYYY">
+                                    <div class="col-4 col-sm-2 col-md-2 col-lg-2 col-xl-2" data-date-format="DD.MM.YYYY">
                                         {{content.calctime}}
                                     </div>
                                 </div>

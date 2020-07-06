@@ -80,6 +80,7 @@ define([
 
                     }, // END event method ongetmsg
 
+                    // This function calls function of child members
                     onhidefamily: function(family) {
 
                         var memberid = [];
@@ -115,6 +116,10 @@ define([
                             }
                         }
 
+                    },
+
+                    setSelectedUP: function(arraypos) {
+                        this.$emit('setSelected', arraypos);
                     }
                 }, // END component methods
                 template: `<div class ='post-container'>
@@ -128,6 +133,7 @@ define([
                                     v-on:getmsg='ongetmsg'
                                     v-on:hidefamily='onhidefamily'
                                     v-on:showfamily='onshowfamily'
+                                    v-on:setSelected='setSelectedUP'
                                     v-bind:courseid = 'courseid'>
                                 </post>
                             </div>`

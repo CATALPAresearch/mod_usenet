@@ -149,7 +149,10 @@ define([
                     this.markedpost = arraypos;
 
 
+                },
 
+                setSelected: function(arraypos) {
+                    this.markedpost = arraypos;
                 },
 
                 /**
@@ -548,7 +551,8 @@ define([
                                         v-bind:postlist="post_list" 
                                         v-bind:markedpost="markedpost" 
                                         :showloadingicon="hideloadingicon" 
-                                        v-on:displaymsg="ondisplaymsg">
+                                        v-on:displaymsg="ondisplaymsg"
+                                        v-on:setSelected="setSelected">
                                     </post-container>
                                 </div>
                                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
