@@ -293,30 +293,18 @@ define([
                         var identiconstring;
                         var childpresent = false;
                         if (val.picturestatus > '0') {
-                            var jdenticonstring = '<div class="control col-sm-3 col-xl-4"><img title="Name: ' + val.personal + '\r\nE-Mail-Adresse: ' + val.sender + '" src="' + M.cfg.wwwroot + '/user/pix.php/' + val.user_id + '/f1.jpg" width="20" height="20"></img></div>';
-                        }
-                        else {
+                            identiconstring = M.cfg.wwwroot + '/user/pix.php/' + val.user_id + '/f1.jpg';
+                        } else {
                             var options = {
                                 background: [255, 255, 255, 255], // rgba white
                                 margin: 0.05, // 20% margin
                                 size: 20, // 420px square
                                 format: 'svg' // use SVG instead of PNG
                             };
-                            var jdenticonstring = '';
-                            jdenticonstring = jdenticonstring + `'<div class="control col-sm-3 col-xl-4" title="Name: ' + val.personal 
-                            + '\r\nE-Mail-Adresse: ' + val.sender + '">
-                            <img width=19 height=20 src="data:image/svg+xml;base64,' + data + '"></div>'`;
+                            identiconstring = this.getidenticon(val.sender + val.personal);
+
                         }
-                        var options = {
-                            background: [255, 255, 255, 255], // rgba white
-                            margin: 0.05, // 20% margin
-                            size: 20, // 420px square
-                            format: 'svg' // use SVG instead of PNG
-                        };                       
-
                         
-                        identiconstring = this.getidenticon(val.sender + val.personal);
-
                         if (val.children) {
                             childpresent = true;
                         }
