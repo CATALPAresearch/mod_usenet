@@ -52,6 +52,9 @@ define([
                     // Function ongetmsg called by event getmsg, getmsg-event is emitted by 'post' (child component)
 
                     ongetmsg: function (msgid, arraypos) {
+
+                        console.log(document.documentElement.clientWidth);
+                        console.log(window.innerWidth);
                         this.$emit('displaymsg', msgid);
 
                         // Mark the clicked post with blue bg-colour & unmark previous clicked post
@@ -117,7 +120,9 @@ define([
                         }
 
                     },
-
+                    // When a post is clicked, set the background of post to 'blue' (visual feedback to user)
+                        // Event is triggered by click on a post in ReaderPost.js and is bubbled up to
+                        // Reader.js, where processing takes place
                     setSelectedUP: function(arraypos) {
                         this.$emit('setSelected', arraypos);
                     }

@@ -26,12 +26,39 @@ define([
 
                     poststylechild: {
                         cursor: 'pointer',
-                    }
+                    },
+
+                    postpadding: '0px',         // postpadding is a reactive var used :style = "{'padding-bottom': this.postpadding}"
+                                                    // and '0px' is just the initial value for padding
+                    paddingSVPval: '5px',       // paddingSmallViewPortval
+                    paddingOVPval: '0px'        // paddingOtherViewPortval
                 };
+            },
+
+            created() {
+                window.addEventListener("resize", this.Windowresizehandler);
+                // if the viewport is smaller than 576px (which is breakpoint for col-[number] class)
+                    // then insert a small bottom padding to posts
+                if ( Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
+                    this.postpadding = this.paddingSVPval;
+                }
+            },
+
+            destroyed() {
+                window.removeEventListener("resize", this.Windowresizehandler);
             },
 
             methods:
             {
+                Windowresizehandler: function() {
+                    if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
+                        this.postpadding = this.paddingSVPval;
+                    }
+                    else {
+                        this.postpadding = this.paddingOVPval;
+                    }
+                },
+
                 setcourseid: function (id) {
                     this.courseid = id;
                 },
@@ -82,11 +109,21 @@ define([
                         return this.poststylechild;
                     }
                     
+                },
+                // PostStyleSmallViewPortConditional
+                // if the viewport is smaller than 576px (which is breakpoint for col-[number] class)
+                    // then insert a small bottom padding to posts (see this.poststylesvp)
+                poststylesvpcnd: function() {
+                    // const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+
+                    if ( Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
+                        return this.poststylesvp;
+                    }
                 }
             },
           
             template: `
-                <div class = "post" :class="{hidden: content.hidden}">
+                <div class = "post" :class="{hidden: content.hidden}" :style = "{'padding-bottom': this.postpadding}">
                     <div class="node px-0" :column="content.margin" :class = "{'font-weight-bold': content.unread}">
                         <div class ="container-fluid px-0">
                             <div class = "row px-0">
