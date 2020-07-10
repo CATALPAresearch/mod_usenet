@@ -53,8 +53,6 @@ define([
 
                     ongetmsg: function (msgid, arraypos) {
 
-                        console.log(document.documentElement.clientWidth);
-                        console.log(window.innerWidth);
                         this.$emit('displaymsg', msgid);
 
                         // Mark the clicked post with blue bg-colour & unmark previous clicked post

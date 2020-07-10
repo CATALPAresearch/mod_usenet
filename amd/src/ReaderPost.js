@@ -28,6 +28,14 @@ define([
                         cursor: 'pointer',
                     },
 
+                    // TODO recode these 2 styles
+                    borderstyle: {
+                        'border-left': 'solid black 0px' 
+                    },
+                    textindent: {
+                        'text-indent': this.content.margin + 'px'
+                    },
+
                     postpadding: '0px',         // postpadding is a reactive var used :style = "{'padding-bottom': this.postpadding}"
                                                     // and '0px' is just the initial value for padding
                     paddingSVPval: '5px',       // paddingSmallViewPortval
@@ -37,11 +45,22 @@ define([
 
             created() {
                 window.addEventListener("resize", this.Windowresizehandler);
+                var borderwidth = 0;
                 // if the viewport is smaller than 576px (which is breakpoint for col-[number] class)
                     // then insert a small bottom padding to posts
                 if ( Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
                     this.postpadding = this.paddingSVPval;
+                    this.textindent = 'text-indent: 0px';
+
+                    if (this.content.family) {
+                        borderwidth = this.flatten(this.content.family).length;
+                    }
+                    this.borderstyle = 'border-left: solid black ' + borderwidth + 'px'; 
                 }
+
+                
+                
+
             },
 
             destroyed() {
@@ -50,12 +69,26 @@ define([
 
             methods:
             {
+                flatten: function(value) {
+                    return Object.prototype.toString.call(value) === '[object Array]' ?
+                      [].concat.apply([], value.map(this.flatten)) :
+                      value;
+                },
+
                 Windowresizehandler: function() {
                     if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
                         this.postpadding = this.paddingSVPval;
+                        this.textindent = 'text-indent: 0px';
+                        let borderwidth = 0;
+                        if (this.content.family) {
+                            borderwidth = this.flatten(this.content.family).length;
+                        }
+                        this.borderstyle = 'border-left: solid black ' + borderwidth + 'px'; 
                     }
                     else {
                         this.postpadding = this.paddingOVPval;
+                        this.textindent = 'text-indent: ' + this.content.margin + 'px';
+                        this.borderstyle = 'border-left: solid black 0px'; 
                     }
                 },
 
@@ -110,16 +143,6 @@ define([
                     }
                     
                 },
-                // PostStyleSmallViewPortConditional
-                // if the viewport is smaller than 576px (which is breakpoint for col-[number] class)
-                    // then insert a small bottom padding to posts (see this.poststylesvp)
-                poststylesvpcnd: function() {
-                    // const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-
-                    if ( Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
-                        return this.poststylesvp;
-                    }
-                }
             },
           
             template: `
@@ -144,11 +167,11 @@ define([
 
                                 </div>
 
-                                <div class ="col-10 col-sm-11 col-md-11 col-lg-11 col-xl-11 px-1" v-bind:class="{'bg-info': content.isSelected}">
+                                <div class ="col-10 col-sm-11 col-md-11 col-lg-11 col-xl-11 px-1" v-bind:class="{'bg-info': content.isSelected}" :style = "borderstyle">
 
                                 <div class = "row poststyle" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
                                     <div class = "col-12 col-sm-7 col-md-7 col-lg-7 col-xl-7 
-                                    order-last order-sm-first order-md-first order-lg-first order-xl-first text-truncate" :style="{'text-indent': content.margin + 'px'}">
+                                    order-last order-sm-first order-md-first order-lg-first order-xl-first text-truncate" :style="textindent">
                                         {{content.subject}}
                                     </div>
 
