@@ -60,7 +60,8 @@ define([
                     markedpost: -1,
                     courseid: courseid,
                     hideloadingicon: true,
-                    identiconstring: ""
+                    identiconstring: "",
+                    viewportsize: 'none'
                 };
             },
 
@@ -91,7 +92,23 @@ define([
                     Log.add('toc_entry_open', { level: 'h3', target: $(this).attr('href') });
                 });
 
+
+                window.addEventListener("resize", this.Windowresizehandler);
+
+                if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
+                    this.viewportsize = 'mobile';
+                }
+                else {
+                    this.viewportsize = 'other';
+                }
+
             },
+
+            destroyed() {
+                window.removeEventListener("resize", this.Windowresizehandler);
+            },
+
+
             mounted: function () {
                 const h = messageid; // !!??
                 const f = courseid;
@@ -122,6 +139,16 @@ define([
 
             },
             methods: {
+                Windowresizehandler: function() {
+                    if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
+                        this.viewportsize = 'mobile';
+                    }
+                    else {
+                        this.viewportsize = 'other';
+                    }
+                },
+
+
                 getMessageTree: function () {
                     return this.tree_data.children;
                 },
@@ -538,7 +565,8 @@ define([
                                         v-bind:courseid="courseid" 
                                         v-bind:postlist="post_list" 
                                         v-bind:markedpost="markedpost" 
-                                        :showloadingicon="hideloadingicon" 
+                                        :showloadingicon="hideloadingicon"
+                                        :viewportsize = "viewportsize"
                                         v-on:displaymsg="ondisplaymsg"
                                         v-on:setSelected="setSelected">
                                     </post-container>
@@ -551,7 +579,8 @@ define([
                                         :isused ="msgbodycontainerdisplay" 
                                         :isreading="isreading" 
                                         :isanswering="isanswering" 
-                                        :iscreatingtopic="iscreatingtopic" 
+                                        :iscreatingtopic="iscreatingtopic"
+                                        :viewportsize = "viewportsize"
                                         v-on:answeredmsg="onansweredmsg"
                                         v-on:prevmsg="onprevmsg" 
                                         v-on:nextmsg="onnextmsg">

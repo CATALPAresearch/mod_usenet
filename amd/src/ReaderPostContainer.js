@@ -7,7 +7,7 @@ define([
 
     return Vue.component('post-container',
             {
-                props: ['postlist', 'markedpost', 'courseid', 'showloadingicon'],
+                props: ['postlist', 'markedpost', 'courseid', 'showloadingicon', 'viewportsize'],
 
 
                 data: function () {
@@ -132,6 +132,7 @@ define([
                                 <post v-for='singlepost in postlist' 
                                     v-bind:content='singlepost' 
                                     v-bind:key = 'singlepost.messageid'
+                                    :viewportsize = 'viewportsize'
                                     :ref='singlepost.messageid'
                                     v-on:getmsg='ongetmsg'
                                     v-on:hidefamily='onhidefamily'

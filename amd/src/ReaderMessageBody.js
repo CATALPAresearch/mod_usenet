@@ -7,7 +7,7 @@ define([
     return Vue.component('messagebody-container',
         {
             props: ['postdata', 'isused', 'isreading', 'isanswering', 'iscreatingtopic', 'courseid',
-                    'identiconstring'],
+                    'identiconstring', 'viewportsize'],
 
             data: function () {
                 return {
@@ -108,6 +108,14 @@ define([
                         this.textarea_usrinput = '';
                     }
 
+                },
+                viewportsize: function() {
+                    if (this.viewportsize == 'mobile') {
+                        console.log('win');
+                    }
+                    else {
+                        console.log('also win');
+                    }
                 },
             },
 

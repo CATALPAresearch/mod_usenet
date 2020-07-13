@@ -16,7 +16,7 @@ define([
 
     return Vue.component('post',
         {
-            props: ['content', 'courseid'],
+            props: ['content', 'courseid', 'viewportsize'],
 
             data: function () {
                 return {
@@ -36,7 +36,7 @@ define([
                         'text-indent': this.content.margin + 'px'
                     },
 
-                    postpadding: '0px',         // postpadding is a reactive var used :style = "{'padding-bottom': this.postpadding}"
+                    postpadding: '0px',         // postpadding is a reactive var used in :style = "{'padding-bottom': this.postpadding}"
                                                     // and '0px' is just the initial value for padding
                     paddingSVPval: '5px',       // paddingSmallViewPortval
                     paddingOVPval: '0px'        // paddingOtherViewPortval
@@ -44,38 +44,64 @@ define([
             },
 
             created() {
-                window.addEventListener("resize", this.Windowresizehandler);
+                //window.addEventListener("resize", this.Windowresizehandler);
                 var borderwidth = 0;
-                // if the viewport is smaller than 576px (which is breakpoint for col-[number] class)
+
+                // If the viewport is smaller than 576px (which is breakpoint for col-[number] class, very small screens)
                     // then insert a small bottom padding to posts
-                if ( Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
+                    // also, do a bunch of other stuff for mobile users
+                if (this.viewportsize == 'mobile') {
                     this.postpadding = this.paddingSVPval;
                     this.textindent = 'text-indent: 0px';
-
+                    let borderwidth = 0;
                     if (this.content.family) {
                         borderwidth = this.flatten(this.content.family).length;
                     }
-                    this.borderstyle = 'border-left: solid black ' + borderwidth + 'px'; 
+                    this.borderstyle = 'border-left: solid black ' + borderwidth + 'px';
                 }
-
-                
-                
+                else {
+                    this.postpadding = this.paddingOVPval;
+                    this.textindent = 'text-indent: ' + this.content.margin + 'px';
+                    this.borderstyle = 'border-left: solid black 0px'; 
+                }               
 
             },
-
+/*
             destroyed() {
                 window.removeEventListener("resize", this.Windowresizehandler);
+            },
+*/
+
+            watch: {
+                viewportsize: function() {
+                    if (this.viewportsize == 'mobile') {
+                        this.postpadding = this.paddingSVPval;
+                        this.textindent = 'text-indent: 0px';
+                        let borderwidth = 0;
+                        if (this.content.family) {
+                            borderwidth = this.flatten(this.content.family).length;
+                        }
+                        this.borderstyle = 'border-left: solid black ' + borderwidth + 'px';
+                    }
+                    else {
+                        this.postpadding = this.paddingOVPval;
+                        this.textindent = 'text-indent: ' + this.content.margin + 'px';
+                        this.borderstyle = 'border-left: solid black 0px'; 
+                    }
+                }
             },
 
             methods:
             {
-                flatten: function(value) {
+                // Converts nested arrays to 1d array, so the total amount of children can be retrieved with .length
+                //  this function is used to determine border width at left side of posts, representing amount of children posts
+                flatten: function(value) {  
                     return Object.prototype.toString.call(value) === '[object Array]' ?
                       [].concat.apply([], value.map(this.flatten)) :
                       value;
                 },
 
-                Windowresizehandler: function() {
+               /*  Windowresizehandler: function() {
                     if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
                         this.postpadding = this.paddingSVPval;
                         this.textindent = 'text-indent: 0px';
@@ -83,14 +109,16 @@ define([
                         if (this.content.family) {
                             borderwidth = this.flatten(this.content.family).length;
                         }
-                        this.borderstyle = 'border-left: solid black ' + borderwidth + 'px'; 
+                        this.borderstyle = 'border-left: solid black ' + borderwidth + 'px';
+                        this.SVP = true;
                     }
                     else {
                         this.postpadding = this.paddingOVPval;
                         this.textindent = 'text-indent: ' + this.content.margin + 'px';
                         this.borderstyle = 'border-left: solid black 0px'; 
+                        this.SVP = false;
                     }
-                },
+                }, */
 
                 setcourseid: function (id) {
                     this.courseid = id;
