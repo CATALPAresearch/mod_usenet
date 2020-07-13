@@ -110,7 +110,7 @@ define([
                     }
 
                 },
-                viewportsize: function() {
+                /* viewportsize: function() {
                     if (this.viewportsize == 'mobile') {
                         this.showmodal = true;
                         this.modal.style.display = "block";
@@ -119,7 +119,7 @@ define([
                         this.showmodal = false;       
                         this.modal.style.display = "none";             
                     }
-                },
+                }, */
             },
 
             template: `

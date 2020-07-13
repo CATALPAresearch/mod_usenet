@@ -178,9 +178,10 @@ define([
 
                     let arraypos = post.arraypos;
                     this.markedpost = arraypos;
-
-                    this.showmodal = true;
-
+                    
+                    if (this.viewportsize == 'mobile') {
+                        this.showmodal = true;
+                    }
 
 
                 },
