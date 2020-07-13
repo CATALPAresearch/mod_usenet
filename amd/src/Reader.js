@@ -61,7 +61,8 @@ define([
                     courseid: courseid,
                     hideloadingicon: true,
                     identiconstring: "",
-                    viewportsize: 'none'
+                    viewportsize: 'none',
+                    showmodal: false
                 };
             },
 
@@ -142,9 +143,12 @@ define([
                 Windowresizehandler: function() {
                     if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
                         this.viewportsize = 'mobile';
+                        //this.modal.style.display = "block";
+                        
                     }
                     else {
                         this.viewportsize = 'other';
+                        //this.modal.style.display = "none";
                     }
                 },
 
@@ -174,6 +178,9 @@ define([
 
                     let arraypos = post.arraypos;
                     this.markedpost = arraypos;
+
+                    this.showmodal = true;
+
 
 
                 },
@@ -571,8 +578,8 @@ define([
                                         v-on:setSelected="setSelected">
                                     </post-container>
                                 </div>
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 row-no-padding" id="treeinfo" style="padding-right:0px; height:500px">
-                                    <messagebody-container 
+                                <div :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12', 'row-no-padding', {modal: showmodal}]" id="treeinfo" style="padding-right:0px; height:500px">
+                                    <messagebody-container
                                         v-bind:courseid="courseid" 
                                         v-bind:postdata="singlepostdata"
                                         :identiconstring = "identiconstring"

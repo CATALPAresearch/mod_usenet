@@ -15,7 +15,8 @@ define([
                     textareacontent: '',
                     value: '',
                     usrinput_subject: '',
-                    textarea_usrinput: ''
+                    textarea_usrinput: '',
+                    showmodal: false
                 };
             },
 
@@ -111,16 +112,18 @@ define([
                 },
                 viewportsize: function() {
                     if (this.viewportsize == 'mobile') {
-                        console.log('win');
+                        this.showmodal = true;
+                        this.modal.style.display = "block";
                     }
                     else {
-                        console.log('also win');
+                        this.showmodal = false;       
+                        this.modal.style.display = "none";             
                     }
                 },
             },
 
             template: `
-                <div class = "messagebody-container" :style = "{display: isused}">
+                <div :class = "{'messagebody-container': true}" :style = "{display: isused}">
                     <div class="row-no-padding" style="padding-right:0px">
                         <div class="col-xl">
                             <template v-if = "iscreatingtopic">
