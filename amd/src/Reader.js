@@ -95,6 +95,7 @@ define([
 
 
                 window.addEventListener("resize", this.Windowresizehandler);
+                
 
                 if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
                     this.viewportsize = 'mobile';
@@ -313,6 +314,10 @@ define([
                     }, (2 * 1000));
 
 
+                },
+
+                closemodal: function() {
+                    this.showmodal = false;
                 },
 
                 buildtree: function (tree_data, margin) {
@@ -591,7 +596,8 @@ define([
                                         :viewportsize = "viewportsize"
                                         v-on:answeredmsg="onansweredmsg"
                                         v-on:prevmsg="onprevmsg" 
-                                        v-on:nextmsg="onnextmsg">
+                                        v-on:nextmsg="onnextmsg"
+                                        v-on:closemodal="closemodal">
                                     </messagebody-container>
                                 </div>
                             </div>

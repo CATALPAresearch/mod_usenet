@@ -20,6 +20,15 @@ define([
                 };
             },
 
+            created: function() {
+                if (this.viewportsize == 'mobile') {
+                    this.showmodal = true;
+                }
+                else {
+                    this.showmodal = false;       
+                }
+            },
+
             methods: {
 
                 onanswerbuttonclick: function () {
@@ -78,6 +87,10 @@ define([
                     this.$emit('nextmsg', this.postdata.header !== undefined ? this.postdata.header.number : 0);
                 },
 
+                closemodal: function() {
+                    this.$emit('closemodal');
+                },
+
 
                 createtopic: function () {
                     const params = new URLSearchParams();
@@ -110,16 +123,14 @@ define([
                     }
 
                 },
-                /* viewportsize: function() {
+                viewportsize: function() {
                     if (this.viewportsize == 'mobile') {
                         this.showmodal = true;
-                        this.modal.style.display = "block";
                     }
                     else {
                         this.showmodal = false;       
-                        this.modal.style.display = "none";             
                     }
-                }, */
+                },
             },
 
             template: `
@@ -175,6 +186,9 @@ define([
                                  Nächste Nachricht 
                                  <i class="fa fa-arrow-right"></i>    
                             </button>
+                            <template v-if="showmodal">
+                                <button class = "fas fa-times" v-on:click = "closemodal"></button>
+                            </template>
                         </div>
                         <template v-if="isreading">
                             <div class="row-no-padding" :style="{'overflow-y': 'scroll', height: '335.9px'}">
