@@ -5,7 +5,9 @@ Newsmod is a moodle plugin for reading and writing newsgroup messages.
 **TODO**
 
 * [x] replace imap by low level socket communication
-* [ ] migrate to vue.js
+* [x] migrate to vue.js
+* [x] integrate into production
+* [ ] redesign for mobile use
 * [ ] support usage by advanced message visualizations and NLP methods 
 
 ## Installation
