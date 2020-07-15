@@ -16,6 +16,7 @@ define([
                     value: '',
                     usrinput_subject: '',
                     textarea_usrinput: '',
+                    ismobile: false,
                     showmodal: false
                 };
             },
@@ -125,10 +126,10 @@ define([
                 },
                 viewportsize: function() {
                     if (this.viewportsize == 'mobile') {
-                        this.showmodal = true;
+                        this.ismobile = true;
                     }
                     else {
-                        this.showmodal = false;       
+                        this.ismobile = false;       
                     }
                 },
             },
@@ -191,7 +192,7 @@ define([
                             </template>
                         </div>
                         <template v-if="isreading">
-                            <div class="row-no-padding" :style="{'overflow-y': 'scroll', height: '335.9px'}">
+                            <div class="row-no-padding" :style="{'overflow-y': 'scroll', height: '100%'}">
                                 <div>
                                     <!-- 'white-space': 'pre-line' is needed here because v-model automatically formats nl it seems -->
                                     <span :style="{'white-space': 'pre-line'}"> {{textareacontent}}</span>
@@ -199,7 +200,7 @@ define([
                             </div>
                         </template>
                         <template v-else>
-                            <div class="form-group" :style="{'overflow-y': 'scroll', height: '335.9px'}">
+                            <div class="form-group" :style="{'overflow-y': 'scroll', height: '100%'}">
                                 <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>
                             </div>
                         </template>

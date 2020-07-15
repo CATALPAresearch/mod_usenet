@@ -318,6 +318,7 @@ define([
 
                 closemodal: function() {
                     this.showmodal = false;
+                    this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
                 },
 
                 buildtree: function (tree_data, margin) {
@@ -584,7 +585,7 @@ define([
                                         v-on:setSelected="setSelected">
                                     </post-container>
                                 </div>
-                                <div :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12', 'row-no-padding', {modal: showmodal}]" id="treeinfo" style="padding-right:0px; height:500px">
+                                <div :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12', 'row-no-padding', {modal: showmodal}]" id="treeinfo" style="padding-right:0px; height:100%">
                                     <messagebody-container
                                         v-bind:courseid="courseid" 
                                         v-bind:postdata="singlepostdata"
