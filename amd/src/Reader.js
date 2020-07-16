@@ -126,15 +126,14 @@ define([
                         _this.treedata = response.data.children;
                         _this.info = response;
                         _this.tree_data = response.data;
+                        _this.check_if_empty(response.data);
                         _this.buildtree(response.data, 1);
                         _this.hideloadingicon = true;
                         return 1;
 
+                    }).catch(function (error) {
+                        console.log(error);
                     });
-                //this.$nextTick(function(){
-                //  this.$refs.postcont.setcourseid(courseid);
-                //    });
-
             },
 
             computed: {
@@ -144,12 +143,11 @@ define([
                 Windowresizehandler: function() {
                     if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
                         this.viewportsize = 'mobile';
-                        //this.modal.style.display = "block";
-                        
+                        this.showmodal = true;
                     }
                     else {
                         this.viewportsize = 'other';
-                        //this.modal.style.display = "none";
+                        this.showmodal = false;
                     }
                 },
 
@@ -321,16 +319,27 @@ define([
                     this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
                 },
 
-                buildtree: function (tree_data, margin) {
+                check_if_empty: function(tree_data) {
+                    if (!('user_id' in tree_data.children[0])) {
+                        var content = {
+                            marked: false, unread: true,
+                            personal: "System message", sender: "noname@none.com",
+                            user_id: -99, margin: 0, sequence: 0, messageid: 1,
+                            date: "01.01.2020", subject: "No postings", absender: "noname@none.com", arraypos: this.arraypos++,
+                            isSelected: false, hidden: false
+                        };
+                        this.post_list.push(content);
+                    }
+                },
 
-                    //var data = tree_data_children;
+                buildtree: function (tree_data, margin) {
+                
                     tree_data.children.forEach(val => {
 
 
-                        //var marked = val.markedstatus != '0' ? "fas starmarked " : "far ";
                         var marked = val.markedstatus != '0' ? true : false;
-                        //var read = val.messagestatus == '0' ? "font-weight-bold " : "";
                         var unread = val.messagestatus == '0' ? true : false;
+
                         var identiconstring;
                         var childpresent = false;
                         if (val.picturestatus > '0') {
@@ -385,7 +394,7 @@ define([
                         }
 
                     });
-
+                
                     //console.log(this.post_list);
 
                 },

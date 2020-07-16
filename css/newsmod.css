@@ -16,7 +16,7 @@
 .modal {
     display: block; /* Hidden by default */
     position: fixed; /* Stay in place */
-   /* z-index: 5; /* Sit on top */
+    z-index: 1; /* Sit on top */
     left: 0;
     top: auto;
     width: 100%; /* Full width */

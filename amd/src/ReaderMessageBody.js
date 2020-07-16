@@ -17,16 +17,15 @@ define([
                     usrinput_subject: '',
                     textarea_usrinput: '',
                     ismobile: false,
-                    showmodal: false
                 };
             },
 
             created: function() {
                 if (this.viewportsize == 'mobile') {
-                    this.showmodal = true;
+                    this.ismobile = true;
                 }
                 else {
-                    this.showmodal = false;       
+                    this.ismobile = false;       
                 }
             },
 
@@ -165,6 +164,10 @@ define([
                                             {{postdata.header.subject}}
                                         </div>
                                     </div>
+                                    <template v-if="ismobile">
+                                        <button class = "fas fa-times ml-auto align-self-center" v-on:click = "closemodal">
+                                        </button>
+                                    </template>
                                 </div>
                             </div>
                             </template>
@@ -187,9 +190,6 @@ define([
                                  Nächste Nachricht 
                                  <i class="fa fa-arrow-right"></i>    
                             </button>
-                            <template v-if="showmodal">
-                                <button class = "fas fa-times" v-on:click = "closemodal"></button>
-                            </template>
                         </div>
                         <template v-if="isreading">
                             <div class="row-no-padding" :style="{'overflow-y': 'scroll', height: '100%'}">
