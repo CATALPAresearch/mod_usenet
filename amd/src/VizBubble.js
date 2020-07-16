@@ -58,12 +58,14 @@ define([
                         this.treedata[i].count = this.treedata[i].children === undefined ? 10 : this.treedata[i].children.length * 10;
                         this.treedata[i].time = parseTime(this.treedata[i].date) || parseTime2(this.treedata[i].date);
                         if (this.treedata[i].time === null) {
-                            console.log('warning: could not convert usenet date string into date object: ', this.treedata[i].date);
+                            console.log('warning: could not convert usenet date string into date object: ', this.treedata[i].date, this.treedata[i]);
+                            continue;
+                        }else{
+                            this.treedata[i].id = i;
+                            rawData.push(this.treedata[i]);
                         }
-                        this.treedata[i].id = i;
-                        rawData.push(this.treedata[i]);
                     }
-                    console.log(rawData[1]);
+                    
                     let forceSimulation;
 
                     let radiusScale;

@@ -604,7 +604,7 @@ define([
                             </div>
                         </div>
                     </div>
-                    <viz-bubble v-bind:treedata="treedata"></viz-bubble>
+                    <!--<viz-bubble v-bind:treedata="treedata"></viz-bubble>-->
                 </div>
             `,
         });
