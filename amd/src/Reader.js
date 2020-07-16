@@ -558,7 +558,14 @@ define([
             }, // END app methods
             template: `
                 <div id="newsmod-container">
-                    
+                    <ul class="nav nav-pills">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="pill" href="#home">Liste</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="#menu1">Bubbles</a>
+                        </li>
+                    </ul>
                     <div class="row control-bar">
                         <div class="form-inline">
                             <button class="btn btn-outline-primary btn-sm" v-on:click="newTopic" title="Ein neues Thema erstellen">
@@ -578,42 +585,43 @@ define([
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="container-fluid px-0 ">
-                        <div class="px-0">
-                            <hr />
-                            <div class="row" >
-                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
-                                    <post-container 
-                                        v-bind:courseid="courseid" 
-                                        v-bind:postlist="post_list" 
-                                        v-bind:markedpost="markedpost" 
-                                        :showloadingicon="hideloadingicon"
-                                        :viewportsize = "viewportsize"
-                                        v-on:displaymsg="ondisplaymsg"
-                                        v-on:setSelected="setSelected">
-                                    </post-container>
-                                </div>
-                                <div :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12', 'row-no-padding', {modal: showmodal}]" id="treeinfo" style="padding-right:0px; height:100%">
-                                    <messagebody-container
-                                        v-bind:courseid="courseid" 
-                                        v-bind:postdata="singlepostdata"
-                                        :identiconstring = "identiconstring"
-                                        :isused ="msgbodycontainerdisplay" 
-                                        :isreading="isreading" 
-                                        :isanswering="isanswering" 
-                                        :iscreatingtopic="iscreatingtopic"
-                                        :viewportsize = "viewportsize"
-                                        v-on:answeredmsg="onansweredmsg"
-                                        v-on:prevmsg="onprevmsg" 
-                                        v-on:nextmsg="onnextmsg"
-                                        v-on:closemodal="closemodal">
-                                    </messagebody-container>
+                    <div class = "tab-content">
+                        <div class="container-fluid px-0 tab-pane active" id="home">
+                            <div class="px-0">
+                                <hr />
+                                <div class="row" >
+                                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
+                                        <post-container 
+                                            v-bind:courseid="courseid" 
+                                            v-bind:postlist="post_list" 
+                                            v-bind:markedpost="markedpost" 
+                                            :showloadingicon="hideloadingicon"
+                                            :viewportsize = "viewportsize"
+                                            v-on:displaymsg="ondisplaymsg"
+                                            v-on:setSelected="setSelected">
+                                        </post-container>
+                                    </div>
+                                    <div :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12', 'row-no-padding', {modal: showmodal}]" id="treeinfo" style="padding-right:0px; height:100%">
+                                        <messagebody-container
+                                            v-bind:courseid="courseid" 
+                                            v-bind:postdata="singlepostdata"
+                                            :identiconstring = "identiconstring"
+                                            :isused ="msgbodycontainerdisplay" 
+                                            :isreading="isreading" 
+                                            :isanswering="isanswering" 
+                                            :iscreatingtopic="iscreatingtopic"
+                                            :viewportsize = "viewportsize"
+                                            v-on:answeredmsg="onansweredmsg"
+                                            v-on:prevmsg="onprevmsg" 
+                                            v-on:nextmsg="onnextmsg"
+                                            v-on:closemodal="closemodal">
+                                        </messagebody-container>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <viz-bubble v-bind:treedata="treedata" class="tab-pane fade" id="menu1"></viz-bubble>
                     </div>
-                    <!--<viz-bubble v-bind:treedata="treedata"></viz-bubble>-->
                 </div>
             `,
         });

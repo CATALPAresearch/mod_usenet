@@ -12,6 +12,10 @@
     margin-left:10px
 }
 
+.poststyle {
+  cursor: pointer;
+}
+
 /* The Modal (background) */
 .modal {
     display: block; /* Hidden by default */
