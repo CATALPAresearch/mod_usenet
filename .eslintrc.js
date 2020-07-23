@@ -5,6 +5,9 @@ module.exports = {
         'max-len': 'off',
         'no-trailing-spaces': 'off',
         'no-tabs': 'off',
-        'no-return-assign': 'off'
+        'no-return-assign': 'off',
+        'camelcase': 'off',
+        'promise/always-return': 'off',
+        'promise/catch-or-return': 'off'
     }
 };

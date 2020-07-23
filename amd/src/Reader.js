@@ -60,9 +60,11 @@ define([
                     markedpost: -1,
                     courseid: courseid,
                     hideloadingicon: true,
+                    hideloadingiconRMB: true,       // hideloadingiconReaderMessageBody
                     identiconstring: "",
                     viewportsize: 'none',
-                    showmodal: false
+                    showmodal: false,
+                    displayerrormsg: false,
                 };
             },
 
@@ -115,24 +117,30 @@ define([
                 const h = messageid; // !!??
                 const f = courseid;
                 const g = 0;
-                let _this = this;
                 let id = 0;
 
+                this.hideloadingicon = false;
 
                 //returned data is already js object (axios automaticly converts json to js obj)
                 axios
                     .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
                     .then(function (response) {
-                        _this.treedata = response.data.children;
-                        _this.info = response;
-                        _this.tree_data = response.data;
-                        _this.check_if_empty(response.data);
-                        _this.buildtree(response.data, 1);
-                        _this.hideloadingicon = true;
-                        return 1;
+                        if (app.check_for_error(response.data)) {
+                            app.post_list.push(app.prepare_postdata(response.data));
+            
+                        } else {
+                        app.treedata = response.data.children;
+                        app.info = response;
+                        app.tree_data = response.data;
+                        app.check_if_empty(response.data);
+                        app.buildtree(response.data, 1);
+                        }
 
                     }).catch(function (error) {
                         console.log(error);
+                    })
+                    .then(function() {
+                        app.hideloadingicon = true;
                     });
             },
 
@@ -164,10 +172,26 @@ define([
                 },
 
                 ondisplaymsg: function (msgid) {
+
+                    this.hideloadingiconRMB = false;
+
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" + msgid)
-                        .then(response => (this.singlepostdata = response.data,
-                            this.identiconstring = this.getidenticon(this.singlepostdata.header.from + this.singlepostdata.header.name)));
+                        .then(function(response) {
+                            if (app.check_for_error(response.data)) {
+                                app.post_list.push(app.prepare_postdata(response.data));
+                
+                            } else {
+                                app.singlepostdata = response.data;
+                                app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                            }
+                        }).catch(function(error) {
+                            console.log(error);
+                        }).then(function() {
+                            app.hideloadingiconRMB = true;
+                        });
+
+                      
                     this.msgbodycontainerdisplay = '';      // Set display to "visible"
                     this.iscreatingtopic = false;
                     this.isreading = true;
@@ -222,6 +246,8 @@ define([
                  */
                 onprevmsg: function (msgid) {
 
+                    this.hideloadingiconRMB = false;
+
                     let post = this.findinarr(msgid, this.post_list);
 
                     let arraypos = post.arraypos;
@@ -241,8 +267,19 @@ define([
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" + msgid)
-                        .then(response => (this.singlepostdata = response.data, 
-                            this.identiconstring = this.getidenticon(this.singlepostdata.header.from + this.singlepostdata.header.name)));
+                        .then(function(response) {
+                            if (app.check_for_error(response.data)) {
+                                app.post_list.push(app.prepare_postdata(response.data));
+                
+                            } else {
+                                app.singlepostdata = response.data;
+                                app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                            }
+                        }).catch(function(error) {
+                            console.log(error);
+                        }).then(function() {
+                            app.hideloadingiconRMB = true;
+                        });
                     this.msgbodycontainerdisplay = '';      // Set display to "visible"
                     this.iscreatingtopic = false;
                     this.isreading = true;
@@ -253,6 +290,7 @@ define([
 
                 onnextmsg: function (msgid) {
 
+                    this.hideloadingiconRMB = false;
 
                     let post = this.findinarr(msgid, this.post_list);
 
@@ -276,8 +314,20 @@ define([
                     //msgid = parseInt(msgid);
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" + msgid)
-                        .then(response => (this.singlepostdata = response.data, 
-                            this.identiconstring = this.getidenticon(this.singlepostdata.header.from + this.singlepostdata.header.name)));
+                        .then(function(response) {
+                            if (app.check_for_error(response.data)) {
+                                app.post_list.push(app.prepare_postdata(response.data));
+                
+                            } else {
+                                app.singlepostdata = response.data;
+                                app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                            }
+                        }).catch(function(error) {
+                            console.log(error);
+                        }).then(function() {
+                            app.hideloadingiconRMB = true;
+                        });
+
                     this.msgbodycontainerdisplay = '';      // Set display to "visible"
                     this.iscreatingtopic = false;
                     this.isreading = true;
@@ -306,12 +356,24 @@ define([
 
                         axios   //returned data is already js object (axios automaticly converts json to js obj)
                             .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + app.courseid)
-                            .then(response => (app.info = response, app.tree_data = response.data, app.buildtree(response.data, 1)));
-                        app.hideloadingicon = true;
+                            .then(function(response) {
+                                if (app.check_for_error(response.data)) {
+                                    app.post_list.push(app.prepare_postdata(response.data));
+                    
+                                } else {
+                                    app.info = response;
+                                    app.tree_data = response.data;
+                                    app.buildtree(response.data, 1);
+                                }
+                            }).catch(function(error) {
+                                console.log(error);
+                            }).then(function() {
+                                app.hideloadingicon = true;
+                            });
 
                     }, (2 * 1000));
 
-
+                    
                 },
 
                 closemodal: function() {
@@ -332,71 +394,73 @@ define([
                     }
                 },
 
+                prepare_postdata: function(postdata_raw, margin = 1) {
+
+                    var marked = postdata_raw.markedstatus != '0' ? true : false;
+                    var unread = postdata_raw.messagestatus == '0' ? true : false;
+
+                    var identiconstring;
+                    var childpresent = false;
+                    if (postdata_raw.picturestatus > '0') {
+                        identiconstring = M.cfg.wwwroot + '/user/pix.php/' + postdata_raw.user_id + '/f1.jpg';
+                    } else {
+                        var options = {
+                            background: [255, 255, 255, 255], // rgba white
+                            margin: 0.05, // 20% margin
+                            size: 20, // 420px square
+                            format: 'svg' // use SVG instead of PNG
+                        };
+                        identiconstring = this.getidenticon(postdata_raw.sender + postdata_raw.personal);
+
+                    }
+                    
+                    if (postdata_raw.children) {
+                        childpresent = true;
+                    }
+                    else {
+                        childpresent = false;
+                    }
+                    
+                    if (!postdata_raw.children) {
+                        var childornot = "hidden";
+                    }
+                    var calctime = new Date(postdata_raw.date);
+                    var options = {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    };
+                    calctime = new Date(postdata_raw.date).toLocaleDateString('de-DE', options) ? new Date(postdata_raw.date).toLocaleDateString('de-DE', options) : "";
+                    var absender = postdata_raw.personal ? postdata_raw.personal : postdata_raw.sender;
+                    //var timestamp = '<div class="sender elipse col-xl-3 col-sm-3"><a href="mailto:' + postdata_raw.sender + '?subject=' + postdata_raw.name + '">' + absender + '</a></div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">' + calctime + '</div>';
+                    var family;
+                    if (postdata_raw.children) {
+                        family = this.getfamily(postdata_raw);
+                    }
+
+                    var content = {
+                        marked: marked, unread: unread, markedhtml: marked,
+                        picturestatus: postdata_raw.picturestatus, personal: postdata_raw.personal, sender: postdata_raw.sender,
+                        user_id: postdata_raw.user_id, margin: margin, sequence: this.sequence++, messageid: postdata_raw.messageid,
+                        date: postdata_raw.date, subject: postdata_raw.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
+                        isSelected: false, hidden: false, family: family, identicon: identiconstring
+                    };
+
+                    return content;
+                },
+
                 buildtree: function (tree_data, margin) {
                 
                     tree_data.children.forEach(val => {
 
-
-                        var marked = val.markedstatus != '0' ? true : false;
-                        var unread = val.messagestatus == '0' ? true : false;
-
-                        var identiconstring;
-                        var childpresent = false;
-                        if (val.picturestatus > '0') {
-                            identiconstring = M.cfg.wwwroot + '/user/pix.php/' + val.user_id + '/f1.jpg';
-                        } else {
-                            var options = {
-                                background: [255, 255, 255, 255], // rgba white
-                                margin: 0.05, // 20% margin
-                                size: 20, // 420px square
-                                format: 'svg' // use SVG instead of PNG
-                            };
-                            identiconstring = this.getidenticon(val.sender + val.personal);
-
-                        }
-                        
-                        if (val.children) {
-                            childpresent = true;
-                        }
-                        else {
-                            childpresent = false;
-                        }
-                        
-                        if (!val.children) {
-                            var childornot = "hidden";
-                        }
-                        var calctime = new Date(val.date);
-                        var options = {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit'
-                        };
-                        calctime = new Date(val.date).toLocaleDateString('de-DE', options) ? new Date(val.date).toLocaleDateString('de-DE', options) : "";
-                        var absender = val.personal ? val.personal : val.sender;
-                        //var timestamp = '<div class="sender elipse col-xl-3 col-sm-3"><a href="mailto:' + val.sender + '?subject=' + val.name + '">' + absender + '</a></div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">' + calctime + '</div>';
-                        var family;
-                        if (val.children) {
-                            family = this.getfamily(val);
-                        }
-
-                        var content = {
-                            marked: marked, unread: unread, markedhtml: marked,
-                            picturestatus: val.picturestatus, personal: val.personal, sender: val.sender,
-                            user_id: val.user_id, margin: margin, sequence: this.sequence++, messageid: val.messageid,
-                            date: val.date, subject: val.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
-                            isSelected: false, hidden: false, family: family, identicon: identiconstring
-                        };
+                        let content = this.prepare_postdata(val, margin);
 
                         this.post_list.push(content);
-                        // Vue.set(this.post_list, this.arraypos, content);
                         if (val.children) {
                             app.buildtree(val, margin + 15);    //original margin val: margin + 25
                         }
 
                     });
-                
-                    //console.log(this.post_list);
-
                 },
 
                 getfamily: function (rootnode) {
@@ -430,10 +494,20 @@ define([
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/search.php?id=" + courseid + "&searchparam=" + this.searchstring)
-                        .then(response => (this.displaysearchresult('', response.data)))
+                        .then(function (response) {
+                            if (app.check_for_error(response.data)) {
+                                app.post_list.push(app.prepare_postdata(response.data));
+                                app.displayerrormsg = true;
+                            } else {
+                                app.displaysearchresult('', response.data);
+                            }
+                        })
                         .catch(error => (
                             console.log(error)
-                        ));
+                        ))
+                        .then(function() {
+                            app.hideloadingicon = true;
+                        });
                 },
 
                 hideallposts: function () {
@@ -469,12 +543,18 @@ define([
                        
 
                     }
-                    this.hideloadingicon = true;
+                    //this.hideloadingicon = true;
                 },
 
                 resetsearchstring: function () {
                     this.searchstring = '';
                     this.hiddenposts.splice(0);
+
+                    if (this.displayerrormsg) {
+                        this.post_list.pop();
+                        this.arraypos--;
+                        this.displayerrormsg = false;
+                    }
 
                     this.showallposts();
 
@@ -495,14 +575,24 @@ define([
                     axios
                     .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
                     .then(function (response) {
+                        if (app.check_for_error(response.data)) {
+                            app.post_list.push(app.prepare_postdata(response.data));
+            
+                        } else {
                         app.treedata = response.data.children;
                         app.info = response;
                         app.tree_data = response.data;
+                        app.check_if_empty(response.data);
                         app.buildtree(response.data, 1);
-                        app.hideloadingicon = true;
-                        return 1;
+                        }
 
+                    }).catch(function (error) {
+                        console.log(error);
+                    })
+                    .then(function() {
+                        app.hideloadingicon = true;
                     });
+                    
                 },
 
                 getidenticon: function (input) {
@@ -549,6 +639,15 @@ define([
                 hash64: function(str, asString) {
                     var h1 = this.hash32(str, asString);  // returns 32 bit (as 8 byte hex string)
                     return h1 + this.hash32(h1 + str, asString);  // 64 bit (as 16 byte hex string)
+                },
+
+                check_for_error: function(serverreturn) {
+                    if (typeof serverreturn.is_error !== 'undefined') {
+                        return true;
+
+                    } else {
+                        return false;
+                    }
                 },
 
 
@@ -611,6 +710,7 @@ define([
                                             :isanswering="isanswering" 
                                             :iscreatingtopic="iscreatingtopic"
                                             :viewportsize = "viewportsize"
+                                            :hideloadingicon = "hideloadingiconRMB"
                                             v-on:answeredmsg="onansweredmsg"
                                             v-on:prevmsg="onprevmsg" 
                                             v-on:nextmsg="onnextmsg"

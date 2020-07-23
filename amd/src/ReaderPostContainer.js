@@ -34,9 +34,11 @@ define([
                             {
                                 if (this.previouspost != this.markedpost)  // is the user not clicking on the same post ?
                                 {
-                                    modpost = this.postlist[this.previouspost];
-                                    modpost.isSelected = false;
-                                    Vue.set(this.postlist, this.previouspost, modpost);
+                                    if (typeof this.postlist[this.previouspost] !== 'undefined') {
+                                        modpost = this.postlist[this.previouspost];
+                                        modpost.isSelected = false;
+                                        Vue.set(this.postlist, this.previouspost, modpost);
+                                    }
                                 }
                             }
                             this.previouspost = this.markedpost;   // current post is next previouspost
@@ -72,9 +74,11 @@ define([
                         {
                             if (this.previouspost != arraypos)  // is the user not clicking on the same post ?
                             {
-                                modpost = this.postlist[this.previouspost];
-                                modpost.isSelected = false;
-                                Vue.set(this.postlist, this.previouspost, modpost);
+                                if (typeof this.postlist[this.previouspost] !== 'undefined') {
+                                    modpost = this.postlist[this.previouspost];
+                                    modpost.isSelected = false;
+                                    Vue.set(this.postlist, this.previouspost, modpost);
+                                }
                             }
                         }
                         this.previouspost = arraypos;   // current post is next previouspost

@@ -7,7 +7,7 @@ define([
     return Vue.component('messagebody-container',
         {
             props: ['postdata', 'isused', 'isreading', 'isanswering', 'iscreatingtopic', 'courseid',
-                    'identiconstring', 'viewportsize'],
+                    'identiconstring', 'viewportsize', 'hideloadingicon'],
 
             data: function () {
                 return {
@@ -131,6 +131,15 @@ define([
                         this.ismobile = false;       
                     }
                 },
+                /**
+                 * When user requests a new message to display in textarea of ReaderMessageBody,
+                 * then show the loading icon and delete previous content
+                 */
+                hideloadingicon: function () {                  
+                    if (this.hideloadingicon == false) {
+                        this.textareacontent = "";                  
+                    }
+                }
             },
 
             template: `
@@ -177,7 +186,7 @@ define([
                     <template v-if="iscreatingtopic"></template>
 
                     <template v-else>
-                        <div class="row control-bar">
+                        <div class="row control-bar" :class = "{hidden: postdata.header.is_error}">
                             <button class="btn btn-sm btn-outline-primary" v-on:click="onanswerbuttonclick" title="Beitrag beantworten">
                                 <i class="fa fa-reply"></i>
                                 {{answerbuttontext}}
@@ -192,6 +201,9 @@ define([
                             </button>
                         </div>
                         <template v-if="isreading">
+                            <div :class = "{hidden: hideloadingicon}">
+                                <i class="fas fa-cog fa-spin fa-5x"/>
+                            </div>
                             <div class="row-no-padding" :style="{'overflow-y': 'scroll', height: '100%'}">
                                 <div>
                                     <!-- 'white-space': 'pre-line' is needed here because v-model automatically formats nl it seems -->

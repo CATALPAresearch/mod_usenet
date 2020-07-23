@@ -6,7 +6,66 @@
         ///php sockets: https://www.php.net/manual/en/function.socket-recv.php
 */
 
-error_reporting(E_ERROR);
+//error_reporting(E_ALL);
+
+$error_catalogue = [
+  404 => [
+    0 => 'No results found',
+    1 => -404,
+    2 => 'No search result was found'
+  ],
+  481 => [
+    0 => 'Username/Password not recognized',
+    1 => -481,
+    2 => 'The username or password you entered in the settings are not recognized'
+  ],
+  400 => [
+    0 => 'Service temporarily unavailable',
+    1 => -400,
+    2 => 'No connection could be established. Check internet connection'
+  ],
+  502 => [
+    0 => 'Service permamently unavailable',
+    1 => -502,
+    2 => 'This service is disabled'
+  ],
+  411 => [
+    0 => 'No such newsgroup',
+    1 => -411,
+    2 => 'No newsgroup with this name found'
+  ],
+  412 => [
+    0 => 'No newsgroup selected',
+    1 => -412,
+    2 => 'No newsgroup with this name found'
+  ],
+  420 => [
+    0 => 'No article with that number',
+    1 => -420,
+    2 => 'Article not found'
+  ],
+  423 => [
+    0 => 'No article(s) with that number',
+    1 => -423,
+    2 => 'Article not found'
+  ],
+  430 => [
+    0 => 'No article with that message-id',
+    1 => -430,
+    2 => 'Article not found'
+  ],
+  440 => [
+    0 => 'Posting not permitted',
+    1 => -440,
+    2 => 'Posting not permitted'
+  ],
+  441 => [
+    0 => 'Posting failed',
+    1 => -441,
+    2 => 'Posting has failed'
+  ]
+
+];
 
 function debug2c($data) {
   $output = $data;
@@ -292,7 +351,7 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
     if (substr($groupinfo[0],0,1) != 2) {
       //echo "<p>".$text_error["error:"]."</p>";
       //echo "<p>".$text_thread["no_such_group"]."</p>";
-      flush();
+      return error_handler(substr($groupinfo[0],0,3));
     } else {
       
         
@@ -321,6 +380,8 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
             $line=line_read($ns);
           }
         
+        } else {
+          return error_handler(substr($tmp,0,3));
         }
 
         if ((isset($headers)) && (count($headers)>0)) {
@@ -382,18 +443,26 @@ function nntp_open($host, $user, $pass, $port = 119)
 
     $sock = fsockopen($ipaddress, $port);
 
-    line_read($sock);       //throw away server welcome message        
+    $tmp = line_read($sock);   
 
-    fputs($sock, $user_msg);
-    fputs($sock, $pass_msg);
-    
-    //$line_del = flush_buf($sock);
+    if (substr($tmp,0,1) == "2") {
+
+      fputs($sock, $user_msg);
+      fputs($sock, $pass_msg);
+
+    } else {
+      return error_handler(substr($tmp,0,3));
+    }
 
     line_read($sock); 
-    line_read($sock);
+    $tmp = line_read($sock);
 
+    if (substr($tmp,0,3) == "281") {
+      return $sock;
 
-    return $sock;
+    } else {
+      return error_handler(substr($tmp,0,3));
+    }
 }
 
 function nntp_header($socket, $groupname, $msgno)
@@ -406,6 +475,7 @@ function nntp_header($socket, $groupname, $msgno)
     {
       //echo "<p>".$text_error["error:"]."</p>";
       //echo "<p>".$text_thread["no_such_group"]."</p>";
+      return error_handler(substr($groupinfo[0],0,3));
       flush();
     } 
     else 
@@ -436,7 +506,9 @@ function nntp_header($socket, $groupname, $msgno)
             
             // read the next line from the newsserver
             line_read($socket);
-          }
+        } else {
+          return error_handler(substr($tmp,0,3));
+        }
         
     }
     return $header;
@@ -452,6 +524,7 @@ function nntp_headers($socket, $groupname)
     {
       //echo "<p>".$text_error["error:"]."</p>";
       //echo "<p>".$text_thread["no_such_group"]."</p>";
+      return error_handler(substr($groupinfo[0],0,1));
       flush();
     } 
     else 
@@ -486,6 +559,8 @@ function nntp_headers($socket, $groupname)
             // read the next line from the newsserver
             $line=line_read($socket);
           }
+        } else {
+          return error_handler(substr($tmp,0,3));
         }
     }
     //var_dump(header_decode($headers[0]->subject));
@@ -506,6 +581,7 @@ function nntp_fetchbody($socket, $groupname, $msgno)
     {
       //echo "<p>".$text_error["error:"]."</p>";
       //echo "<p>".$text_thread["no_such_group"]."</p>";
+      return error_handler(substr($groupinfo[0],0,3));
       flush();
     } 
     else
@@ -514,7 +590,7 @@ function nntp_fetchbody($socket, $groupname, $msgno)
         $line=line_read($socket);
         if (substr($line,0,3) != "222") {
           //debug2c("error fetchbody");
-          return "error_fetchbody";
+          return error_handler(substr($line,0,3));
         }
         else
         {
@@ -558,6 +634,7 @@ function nntp_search($nntp, $groupname, $param)
         "date" => $header->displaydate,
       ];
       $matches[] = $headerdata;
+
     }
   }
 
@@ -568,7 +645,7 @@ function nntp_search($nntp, $groupname, $param)
   }
   else
   {
-      return error_feedback(current($headers));
+      return error_handler(404);
   }
 }
 
@@ -576,33 +653,86 @@ function nntp_search($nntp, $groupname, $param)
 // this message can then be displayed by frontend 
 // param
 
-function error_feedback($header)
+function error_handler($err_num)
 {
-  /*
+  global $error_catalogue;
+  /* switch ($err_num){
+
+    case -404:
+      $error_display = 'No results found';
+      $feedback_num = -404;
+      break;
+
+    case 481:
+      $error_display = 'Username/Password not recognized';
+      $feedback_num = -481;
+      break;
+
+    case 400:
+      $error_display = 'Service temporarily unavailable';
+      $feedback_num = -400;
+      break;
+
+    case 502:
+      $error_display = 'Service permamently unavailable';
+      $feedback_num = -502;
+      break;
+
+    case 411:
+      $error_display = 'No such newsgroup';
+      $feedback_num = -4;
+      break;
+
+    case 430:
+      $error_display = 'No article with that message-id';
+      $feedback_num = -5;
+      break;
+
+    case 412:
+      $error_display = 'No newsgroup selected';
+      $feedback_num = -6;
+      break;
+
+    case 423:
+      $error_display = 'No article(s) with that number';
+      $feedback_num = -7;
+      break;
+
+    case 440:
+      $error_display = 'Posting not permitted';
+      $feedback_num = -8;
+      break;
+
+    case 441:
+      $error_display = 'posting failed';
+      $feedback_num = -9;
+      break;
+  }
+ */
+//debug2c($err_num);
+
+  $error_display = $error_catalogue[$err_num][0];
+  $feedback_num = $error_catalogue[$err_num][1];
+
+
   $headerdata = [
-    "subject" => $header->subject,
-        "from" => $header->name,
-        "messageid" => $header->id,
-        "uid" => $header->number,
-        "sender" => addcslashes(str_replace('\\', '', $header->from), "\""),
-        "date" => $header->displaydate,
-  ];
-*/
-  $headerdata = [
-        "feedback" => '1',
-        "subject" => 'Suchbegriff nicht gefunden',
-        "from" => 'System',
-        "messageid" => 10,
-        "uid" => $header->number,
-        "sender" => 'Nobody',
-        "date" => NULL
+        "name" => $error_display,
+        "messageid" => $feedback_num,
+        "personal" => 'SystemMessage',
+        "sender" => 'system@client',
+        "messagestatus" => '0',
+        "markedstatus" => '0',
+        "picturestatus" => '0',
+        "user_id" => -99,
+        "date" => time(),
+        "is_error" => true
   ];
 
-  $returnval[] = $headerdata;
+  //$returnval[] = $headerdata;
 
 
-  return $returnval;
-
+  //return $returnval;
+  return $headerdata;
 }
 
 ?>

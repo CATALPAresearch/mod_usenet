@@ -42,24 +42,48 @@ $localconfig = get_config('newsmod');
 
 
 require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
-//$nntp = imap_open("{". $localconfig->newsgroupserver . "/nntp}".$journal->newsgroup, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
-//$header = imap_header($nntp, imap_msgno($nntp, $msgnr));
-//print_r($header);
-//$message = imap_fetchbody($nntp, $msgnr, '1', FT_UID);
-//$message = nl2br($message);
-//print_r($header);
 
-$nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
-$header = nntp_header($nntp, $journal->newsgroup, $msgnr);
+if ($msgnr < 0) {       //if msgnr is negative, then an error message is requested, else its just a normal request
+    $returnmsg = [
+        "header" => error_handler(($msgnr * -1)),
+        "messagebody" => $error_catalogue[($msgnr * -1)][2]
+    ];
+}
+else {
 
-$messagebody = nntp_fetchbody($nntp, $journal->newsgroup, $msgnr);
+    $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
 
-//$messagebody = nl2br($messagebody);
 
-$returnmsg = [
-    "header" => $header,
-    "messagebody" => $messagebody
-];
+    if (array_key_exists('is_error',$nntp)) {    //error detected, theres error_feedback data structure here!
+        $returnmsg = $nntp;
+    }
+    else {
+        $header = nntp_header($nntp, $journal->newsgroup, $msgnr);
+        if (array_key_exists('is_error', $header)) {
+            $returnmsg = $header;
+        }
+        else {
+            $messagebody = nntp_fetchbody($nntp, $journal->newsgroup, $msgnr);
+            if (array_key_exists('is_error', $messagebody)) {
+                $returnmsg = $body;
+            }
+            else {
+                $returnmsg = [
+                    "header" => $header,
+                    "messagebody" => $messagebody
+                ];
+            
+                require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
+                markMessageRead($msgnr);
+            }
+        }
+    }
+}
+header('Content-Type: application/json');
+echo json_encode($returnmsg);
+
+
+//      LEGACY CODE
 
 //check out $header->fromaddress
 /*
@@ -73,13 +97,10 @@ if (!$user = $DB->get_record('user', ['email' => $header->from])) {
 */
 //print_r($user);
 
-require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
 //require_once($CFG->dirroot . '/mod/newsmod/src/image-master/src/Intervention/Image/autoload.php');
-markMessageRead($msgnr);
 //var itendi = new Identicon(btoa("'.$header->from[0]->mailbox."@".$header->from[0]->host .'"),options).toString();
 
-header('Content-Type: application/json');
-echo json_encode($returnmsg);
+
 /*
 echo '<div class="container row-no-padding" style="padding-right:0px"><hr>
 	<div class="container row-no-padding row" style="padding-right:0px">

@@ -82,11 +82,19 @@ require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
         global $CFG;
         $localconfig = get_config('newsmod');
         $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+
+        if (array_key_exists('is_error',$nntp)) {    //error detected, theres error_feedback data structure here!
+            return json_encode($nntp);
+        }
+
         //$cacheddata = loadCachedData($journal);
+
         
         $threads = thread_load_newsserver($nntp, $journal->newsgroup);
         
-       
+        if (array_key_exists('is_error',$threads)) {    //error detected, theres error_feedback data structure here!
+            return json_encode($threads);
+        }
 
         $jsontree = '{"name":"'. $journal->newsgroup. '/Aktivitätslog", "moodleurl":"'. new moodle_url("/") .'","children":[{';
         $treend =0;
