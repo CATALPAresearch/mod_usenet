@@ -13,7 +13,8 @@ Newsmod is a moodle plugin for reading and writing newsgroup messages.
 ## Installation
 
 * git clone ... to <your-local-moodle-path>/mod/newsmod  
-* Follow the install instruction 
+* Follow the install instruction at moodle
+* change usenet username and password at ´http://<your-moodle-path>/admin/settings.php?section=modsettingnewsmod´ 
 
 After installation:
 add connection informations to plugin settings in your moodle
