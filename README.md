@@ -5,13 +5,16 @@ Newsmod is a moodle plugin for reading and writing newsgroup messages.
 **TODO**
 
 * [x] replace imap by low level socket communication
-* [ ] migrate to vue.js
+* [x] migrate to vue.js
+* [x] integrate into production
+* [ ] redesign for mobile use
 * [ ] support usage by advanced message visualizations and NLP methods 
 
 ## Installation
 
 * git clone ... to <your-local-moodle-path>/mod/newsmod  
-* Follow the install instruction 
+* Follow the install instruction at moodle
+* change usenet username and password at ´http://<your-moodle-path>/admin/settings.php?section=modsettingnewsmod´ 
 
 After installation:
 add connection informations to plugin settings in your moodle
@@ -31,11 +34,32 @@ feunews.fernuni-hagen.de
 Newsgroups tested with
 1.  misc.test
 2.  feu.cafe
-3.  feu.informatik.kurs.1678
+3.  feu.informatik.kurs.1801
 
 
 resolution >1440x900 is optimal for now
 time to send summary to e-mail can be changed under task options in moodle ui
+
+##  Vue migration:
+
+TODO:
+
+*   [ ] Window "Post-container" (left side window)
+    *   [ ] scrolldown and highlight post after commiting it
+    *   [ ] user feedback on viewing empty newsgroup
+*   [ ] newsgroup selector (design TBD, maybe dropdown list)
+*   [ ] user feedback on loading and errors
+*   [ ] migrate components to single files
+
+
+# Development
+
+**Using grunt**
+
+* `grunt plugin-build` transpiles all js code
+* `grunt plugin-check` run js linter
+* `grunt plugin-css` bundles and minifies css files
+* `grunt plugin-all` handles css and build tasks mentioned above
 
 
 ##  Conversion: socket- in place of imap functions  ##
