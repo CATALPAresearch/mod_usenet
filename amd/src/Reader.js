@@ -132,7 +132,7 @@ define([
                         app.treedata = response.data.children;
                         app.info = response;
                         app.tree_data = response.data;
-                        app.check_if_empty(response.data);
+                        //app.check_if_empty(response.data);
                         app.buildtree(response.data, 1);
                         }
 
@@ -151,7 +151,10 @@ define([
                 Windowresizehandler: function() {
                     if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
                         this.viewportsize = 'mobile';
-                        this.showmodal = true;
+                        if (this.msgbodycontainerdisplay == '') {       // msgbodycontainer is used (its set to 'hide' if not used)
+                            this.showmodal = true;
+                        }
+                        
                     }
                     else {
                         this.viewportsize = 'other';
@@ -665,7 +668,7 @@ define([
                             <a class="nav-link" data-toggle="pill" href="#menu1">Bubbles</a>
                         </li>
                     </ul>
-                    <div class="row control-bar">
+                    <div>
                         <div class="form-inline">
                             <button class="btn btn-outline-primary btn-sm" v-on:click="newTopic" title="Ein neues Thema erstellen">
                                 <i class="fa fa-pen"></i>
@@ -685,11 +688,11 @@ define([
                         </div>
                     </div>
                     <div class = "tab-content">
-                        <div class="container-fluid px-0 tab-pane active" id="home">
+                        <div class="container-fluid px-0 tab-pane active" id="home" style = "height:auto;">
                             <div class="px-0">
                                 <hr />
                                 <div class="row" >
-                                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="tree" style="overflow:scroll; height:500px; margin-bottom:3px" >
+                                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="tree" style="overflow:scroll; margin-bottom:3px; height: 500px;" >
                                         <post-container 
                                             v-bind:courseid="courseid" 
                                             v-bind:postlist="post_list" 
@@ -700,7 +703,8 @@ define([
                                             v-on:setSelected="setSelected">
                                         </post-container>
                                     </div>
-                                    <div :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12', 'row-no-padding', {modal: showmodal}]" id="treeinfo" style="padding-right:0px; height:100%">
+                                    <div :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12', {modal: showmodal}]" id="treeinfo" 
+                                    style="padding-right:0px;">
                                         <messagebody-container
                                             v-bind:courseid="courseid" 
                                             v-bind:postdata="singlepostdata"

@@ -204,15 +204,13 @@ define([
                             <div :class = "{hidden: hideloadingicon}">
                                 <i class="fas fa-cog fa-spin fa-5x"/>
                             </div>
-                            <div class="row-no-padding" :style="{'overflow-y': 'scroll', height: '100%'}">
-                                <div>
-                                    <!-- 'white-space': 'pre-line' is needed here because v-model automatically formats nl it seems -->
-                                    <span :style="{'white-space': 'pre-line'}"> {{textareacontent}}</span>
-                                </div>
+                            <div>
+                                <!-- 'white-space': 'pre-line' is needed here because v-model automatically formats nl it seems -->
+                                <p :style="{'white-space': 'pre-line', 'overflow': 'auto', 'height': '400px'}"> {{textareacontent}}</p>
                             </div>
                         </template>
                         <template v-else>
-                            <div class="form-group" :style="{'overflow-y': 'scroll', height: '100%'}">
+                            <div class="form-group">
                                 <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>
                             </div>
                         </template>

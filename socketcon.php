@@ -9,10 +9,15 @@
 //error_reporting(E_ALL);
 
 $error_catalogue = [
-  404 => [
+  600 => [
     0 => 'No results found',
-    1 => -404,
+    1 => -600,
     2 => 'No search result was found'
+  ],
+  601 => [
+    0 => 'No posts in newsgroup',
+    1 => -601,
+    2 => 'The newsgroup you selected contains no posts from other users'
   ],
   481 => [
     0 => 'Username/Password not recognized',
@@ -422,9 +427,13 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
             uasort($headers,'thread_mycompare');
 
         }
-      if(isset($headers))
+      if(isset($headers)) {
         return $headers;
-      return false;
+      } else {
+        return error_handler(601);
+      }
+        
+      
       //return((isset($headers)) ? $headers : false);
     }
   }  
@@ -645,7 +654,7 @@ function nntp_search($nntp, $groupname, $param)
   }
   else
   {
-      return error_handler(404);
+      return error_handler(600);
   }
 }
 
@@ -656,60 +665,6 @@ function nntp_search($nntp, $groupname, $param)
 function error_handler($err_num)
 {
   global $error_catalogue;
-  /* switch ($err_num){
-
-    case -404:
-      $error_display = 'No results found';
-      $feedback_num = -404;
-      break;
-
-    case 481:
-      $error_display = 'Username/Password not recognized';
-      $feedback_num = -481;
-      break;
-
-    case 400:
-      $error_display = 'Service temporarily unavailable';
-      $feedback_num = -400;
-      break;
-
-    case 502:
-      $error_display = 'Service permamently unavailable';
-      $feedback_num = -502;
-      break;
-
-    case 411:
-      $error_display = 'No such newsgroup';
-      $feedback_num = -4;
-      break;
-
-    case 430:
-      $error_display = 'No article with that message-id';
-      $feedback_num = -5;
-      break;
-
-    case 412:
-      $error_display = 'No newsgroup selected';
-      $feedback_num = -6;
-      break;
-
-    case 423:
-      $error_display = 'No article(s) with that number';
-      $feedback_num = -7;
-      break;
-
-    case 440:
-      $error_display = 'Posting not permitted';
-      $feedback_num = -8;
-      break;
-
-    case 441:
-      $error_display = 'posting failed';
-      $feedback_num = -9;
-      break;
-  }
- */
-//debug2c($err_num);
 
   $error_display = $error_catalogue[$err_num][0];
   $feedback_num = $error_catalogue[$err_num][1];
@@ -728,10 +683,6 @@ function error_handler($err_num)
         "is_error" => true
   ];
 
-  //$returnval[] = $headerdata;
-
-
-  //return $returnval;
   return $headerdata;
 }
 

@@ -80,70 +80,74 @@ function compose_mail($form, $msgnr)
   if ($ns != false) {
     fputs($ns,"POST\r\n");
     $weg=line_read($ns);
-    fputs($ns,'Subject: '.quoted_printable_encode($subject)."\r\n");
-    fputs($ns,'From: '.$from."\r\n");
-    fputs($ns,'Newsgroups: '.$newsgroups."\r\n");
-    fputs($ns,"Mime-Version: 1.0\r\n");
-    fputs($ns,"Content-Type: text/plain; charset=UTF-8; format=flowed\r\n");
-    fputs($ns,"Content-Transfer-Encoding: 8bit\r\n");
-    fputs($ns,"User-Agent: NewsgroupReader\r\n");
+    if (substr($weg,0,3) != "440") {
+      fputs($ns,'Subject: '.quoted_printable_encode($subject)."\r\n");
+      fputs($ns,'From: '.$from."\r\n");
+      fputs($ns,'Newsgroups: '.$newsgroups."\r\n");
+      fputs($ns,"Mime-Version: 1.0\r\n");
+      fputs($ns,"Content-Type: text/plain; charset=UTF-8; format=flowed\r\n");
+      fputs($ns,"Content-Transfer-Encoding: 8bit\r\n");
+      fputs($ns,"User-Agent: NewsgroupReader\r\n");
 
-    //if ($send_poster_host)
-      //@fputs($ns,'X-HTTP-Posting-Host: '.gethostbyaddr(getenv("REMOTE_ADDR"))."\r\n");
+      //if ($send_poster_host)
+        //@fputs($ns,'X-HTTP-Posting-Host: '.gethostbyaddr(getenv("REMOTE_ADDR"))."\r\n");
 
-      /*
-    if (($ref!=false) && (count($ref)>0)) {
-      // strip references
-      if(strlen(implode(" ",$ref))>900) {
-        $ref_first=array_shift($ref);
-        do {
-          $ref=array_slice($ref,1);
-        } while(strlen(implode(" ",$ref))>800);
-        array_unshift($ref,$ref_first);
-      }
-    } 
-    */
-      if ($msgnr!="new") {
-        //	echo "wo kommt das hin" . isset($msgnr);
-        fputs($ns,'References: '.$uid."\r\n");
-    }
-      //fputs($ns,'References: '.implode(" ",$ref)."\r\n");
-    
-    if (isset($organization))
-      fputs($ns,'Organization: '.quoted_printable_encode($organization)."\r\n");
-
-      /*
-    if ((isset($file_footer)) && ($file_footer!="")) {
-      $footerfile=fopen($file_footer,"r");
-      $body.="\n".fread($footerfile,filesize($file_footer));
-      fclose($footerfile);
-    }
-    */
-    /*
-    if($msgid=generate_msgid(
-                 $subject.",".$from.",".$newsgroups.",".$ref.",".$body))
-      fputs($ns,'Message-ID: '.$msgid."\r\n");
+        /*
+      if (($ref!=false) && (count($ref)>0)) {
+        // strip references
+        if(strlen(implode(" ",$ref))>900) {
+          $ref_first=array_shift($ref);
+          do {
+            $ref=array_slice($ref,1);
+          } while(strlen(implode(" ",$ref))>800);
+          array_unshift($ref,$ref_first);
+        }
+      } 
       */
-
-      /*
-    $body=str_replace("\n.\r","\n..\r",$body);
-    $body=str_replace("\r",'',$body);
-    $b=preg_split("\n",$body);
-    $body="";
-    for ($i=0; $i<count($b); $i++) {
-      if ((strpos(substr($b[$i],0,strpos($b[$i]," ")),">") != false) | (strcmp(substr($b[$i],0,1),">") == 0)) {
-        $body .= textwrap(stripSlashes($b[$i]),78," \r\n")."\r\n";
-      } else {
-        $body .= textwrap(stripSlashes($b[$i]),74," \r\n")."\r\n";
+        if ($msgnr!="new") {
+          //	echo "wo kommt das hin" . isset($msgnr);
+          fputs($ns,'References: '.$uid."\r\n");
       }
-    }
-    */
-    fputs($ns,"\r\n".$body."\r\n.\r\n");
-    //fputs($ns,"\r\nits me\r\n.\r\n");
+        //fputs($ns,'References: '.implode(" ",$ref)."\r\n");
+      
+      if (isset($organization))
+        fputs($ns,'Organization: '.quoted_printable_encode($organization)."\r\n");
 
-    $message=line_read($ns);
-    //nntp_close($ns);
-    echo ($subject);
+        /*
+      if ((isset($file_footer)) && ($file_footer!="")) {
+        $footerfile=fopen($file_footer,"r");
+        $body.="\n".fread($footerfile,filesize($file_footer));
+        fclose($footerfile);
+      }
+      */
+      /*
+      if($msgid=generate_msgid(
+                  $subject.",".$from.",".$newsgroups.",".$ref.",".$body))
+        fputs($ns,'Message-ID: '.$msgid."\r\n");
+        */
+
+        /*
+      $body=str_replace("\n.\r","\n..\r",$body);
+      $body=str_replace("\r",'',$body);
+      $b=preg_split("\n",$body);
+      $body="";
+      for ($i=0; $i<count($b); $i++) {
+        if ((strpos(substr($b[$i],0,strpos($b[$i]," ")),">") != false) | (strcmp(substr($b[$i],0,1),">") == 0)) {
+          $body .= textwrap(stripSlashes($b[$i]),78," \r\n")."\r\n";
+        } else {
+          $body .= textwrap(stripSlashes($b[$i]),74," \r\n")."\r\n";
+        }
+      }
+      */
+      fputs($ns,"\r\n".$body."\r\n.\r\n");
+      //fputs($ns,"\r\nits me\r\n.\r\n");
+
+      $message=line_read($ns);
+      //nntp_close($ns);
+      echo ($subject);
+    } else {
+      echo 'fail';
+    }
   } else {
     echo 'fail';
     
