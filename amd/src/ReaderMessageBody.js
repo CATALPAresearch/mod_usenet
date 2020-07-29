@@ -144,12 +144,19 @@ define([
 
             template: `
                 <div :class = "{'messagebody-container': true}" :style = "{display: isused}">
-                    <div class="row-no-padding" style="padding-right:0px">
-                        <div class="col-xl">
+                    <div class="" style="padding-right:0px">
+                        <div class="container">
                             <template v-if = "iscreatingtopic">
-                                <button :class="'btn btn-primary'" v-on:click="createtopic">
-                                    Senden
-                                </button>
+                                <div class ="row">
+                                    <button :class="'btn btn-primary'" v-on:click="createtopic">
+                                        Senden
+                                    </button>
+                                    <template v-if="ismobile">
+                                        <button class = "fas fa-times ml-auto align-self-center" v-on:click = "closemodal"
+                                        style = "margin-right: 30px">
+                                        </button>
+                                    </template>
+                                </div>
                                 <br/>
                                 <label>
                                     Betreff:

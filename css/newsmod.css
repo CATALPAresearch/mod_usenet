@@ -19,12 +19,12 @@
 /* The Modal (background) */
 .modal {
     display: block; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    position: absolute; /* Stay in place */
+    z-index: 10; /* Sit on top */
     left: 0;
     top: auto;
     width: 100%; /* Full width */
-   /* height: 100%; /* Full height */
+    height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(255, 255, 255); /* Fallback color */
     background-color: rgb(233, 233, 233); /* Black w/ opacity */
