@@ -216,14 +216,15 @@ function thread_overview_interpret($line, $overviewformat, $groupname)
   //  $over=split("\t",$line,count($overviewfmt)-1);
     $over=explode("\t", $line);
     //$article=new headerType;
+    $article = new \stdClass;
     for ($i=0; $i<count($overviewfmt)-1; $i++) {
         if ($overviewfmt[$i]=="Subject:") {
             //todo preg_replace
           
             //$subject=preg_replace('/\[doctalk\]/i','',headerDecode($over[$i+1]));
             //$article->isReply=splitSubject($subject);
-            $article->isReply=splitSubject($over[$i+1]);
-            $article->subject=headerdecode($over[$i+1]);
+                $article->isReply=splitSubject($over[$i+1]);
+                $article->subject=headerdecode($over[$i+1]);
             //$article->subject=$subject;
         }
         if ($overviewfmt[$i]=="Date:") {
