@@ -131,7 +131,6 @@ define([
                         app.treedata_viz = response.data.children;
                         app.info = response;
                         app.tree_data = response.data;
-                        //app.check_if_empty(response.data);
                         app.buildtree(response.data, 1);
                         }
 
@@ -404,19 +403,6 @@ define([
                     this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
                 },
 
-                check_if_empty: function(tree_data) {
-                    if (!('user_id' in tree_data.children[0])) {
-                        var content = {
-                            marked: false, unread: true,
-                            personal: "System message", sender: "noname@none.com",
-                            user_id: -99, margin: 0, sequence: 0, messageid: 1,
-                            date: "01.01.2020", subject: "No postings", absender: "noname@none.com", arraypos: this.arraypos++,
-                            isSelected: false, hidden: false
-                        };
-                        this.post_list.push(content);
-                    }
-                },
-
                 prepare_postdata: function(postdata_raw, margin = 1) {
 
                     var marked = postdata_raw.markedstatus != '0' ? true : false;
@@ -605,7 +591,6 @@ define([
                         app.treedata_viz = response.data.children;
                         app.info = response;
                         app.tree_data = response.data;
-                        app.check_if_empty(response.data);
                         app.buildtree(response.data, 1);
                         }
 
