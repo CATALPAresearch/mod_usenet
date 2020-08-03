@@ -445,7 +445,9 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
     }
   }  
 
+function gettree($journal, $start, $end) {
 
+}
 
 
 //todo: error handling

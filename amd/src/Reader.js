@@ -62,6 +62,7 @@ define([
                     displayerrormsg: false,
                     newsgroup_name: '',
                     newsgroup_postquantity: 0,
+                    fetch_postquantity: 50,         // Quantity to load and display in one go
                 };
             },
 
@@ -371,6 +372,9 @@ define([
                     this.iscreatingtopic = false;
                     this.isreading = false;
 
+                    if (this.viewportsize == 'mobile') {
+                        this.showmodal = false;
+                    }
 
                     // Timeout of 2 seconds. Reason: After user posted a message, page gets refreshed with new data
                     // but server might not have the new message available yet, depending on server load (?)
@@ -580,6 +584,10 @@ define([
                     this.arraypos = 0;
 
                     this.post_list.splice(0);
+
+                    if (this.viewportsize == 'mobile') {
+                        this.showmodal = false;
+                    }
 
                     axios
                     .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + courseid)
