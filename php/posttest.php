@@ -2,11 +2,11 @@
 
 error_reporting(E_ALL);
 
-require_once("../../config.php");
+require_once("../../../config.php");
 //require_once('./conn_lib.php');
 //require_once('./edit_form.php');
 
-require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
+require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
 
 
 $id = required_param('id', PARAM_INT);

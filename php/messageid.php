@@ -1,6 +1,6 @@
 <?php
 
-require_once("../../config.php");
+require_once("../../../config.php");
 //require_once('./conn_lib.php');
 //require_once('./edit_form.php');
 
@@ -41,7 +41,7 @@ $data = new stdClass();
 $localconfig = get_config('newsmod');
 
 
-require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
+require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
 
 if ($msgnr < 0) {       //if msgnr is negative, then an error message is requested, else its just a normal request
     $returnmsg = [
@@ -73,7 +73,7 @@ else {
                     "messagebody" => $messagebody
                 ];
             
-                require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
+                require_once($CFG->dirroot . '/mod/newsmod/php/nntp/libconn.php');
                 markMessageRead($msgnr);
             }
         }

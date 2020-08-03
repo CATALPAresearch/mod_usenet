@@ -66,7 +66,7 @@ define([
                         params.append('uid', this.postdata.header.id);
 
                         axios   //returned data is already js object (axios automaticly converts json to js obj)
-                            .post(M.cfg.wwwroot + "/mod/newsmod/posttest.php?id=" + this.courseid + "&msgnr=" + this.postdata.header.id,
+                            .post(M.cfg.wwwroot + "/mod/newsmod/php/posttest.php?id=" + this.courseid + "&msgnr=" + this.postdata.header.id,
                                 params)
                             .then(response => (this.value = response));
 
@@ -99,7 +99,7 @@ define([
 
 
                     axios   //returned data is already js object (axios automaticly converts json to js obj)
-                        .post(M.cfg.wwwroot + "/mod/newsmod/posttest.php?id=" + this.courseid + "&msgnr=new",
+                        .post(M.cfg.wwwroot + "/mod/newsmod/php/posttest.php?id=" + this.courseid + "&msgnr=new",
                             params)
                         .then(response => (this.value = response));
 
@@ -107,8 +107,6 @@ define([
                 },
 
             },
-
-
 
             watch: {
                 postdata: function () {      // when postdata changes (user clicks on a different post), reset stuff

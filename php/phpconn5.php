@@ -1,5 +1,5 @@
 <?php
-require_once("../../config.php");
+require_once("../../../config.php");
 //require_once('./conn_lib.php');
 //require_once('./edit_form.php');
 
@@ -21,7 +21,7 @@ if (! $journal = $DB->get_record("newsmod", array("id" => $cm->instance))) {
     print_error("Course module is incorrect");
 }
 $localconfig = get_config('newsmod');
-require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
+require_once($CFG->dirroot . '/mod/newsmod/php/nntp/libconn.php');
 $jsontree = generateJsonFromNews($journal);
 header('Content-Type: application/json');
 

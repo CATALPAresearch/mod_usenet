@@ -36,20 +36,15 @@ define([
             el: 'newsmod-container',
             data: function () {
                 return {
-                    message: '',
                     searchstring: '',
                     searchresult: [],
                     hiddenposts: [],        // Stores array pos of searchresult items in array post_list
                     filter_assessment: true,
                     filter_text: true,
                     content: [],
-                    info: 'Hallo, ich warte auf Daten vom usenet Server ...',
-                    tree_json: '',
                     tree_data: '',
-                    treedata: {},
-                    tree_built: 0,
+                    treedata_viz: {},           // data just for viz_bubble
                     sequence: 1,
-                    iterations: 0,
                     arraypos: 0,
                     post_list: [],
                     singlepostdata: [],
@@ -65,6 +60,8 @@ define([
                     viewportsize: 'none',
                     showmodal: false,
                     displayerrormsg: false,
+                    newsgroup_name: '',
+                    newsgroup_postquantity: 0,
                 };
             },
 
@@ -119,17 +116,19 @@ define([
                 const g = 0;
                 let id = 0;
 
+                this.getgroupinfo();
+
                 this.hideloadingicon = false;
 
                 //returned data is already js object (axios automaticly converts json to js obj)
                 axios
-                    .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
+                    .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + courseid)
                     .then(function (response) {
                         if (app.check_for_error(response.data)) {
                             app.post_list.push(app.prepare_postdata(response.data));
             
                         } else {
-                        app.treedata = response.data.children;
+                        app.treedata_viz = response.data.children;
                         app.info = response;
                         app.tree_data = response.data;
                         //app.check_if_empty(response.data);
@@ -162,6 +161,27 @@ define([
                     }
                 },
 
+                getgroupinfo: function() {
+                    axios
+                    .get(M.cfg.wwwroot + "/mod/newsmod/php/groupinfo.php?id=" + courseid)
+                    .then(function (response) {
+                        if (app.check_for_error(response.data)) {
+                            app.post_list.push(app.prepare_postdata(response.data));
+            
+                        } else {
+                            app.processgroupinfo(response.data);
+                        }
+
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                },
+
+                processgroupinfo: function(groupinfo) {
+                    app.newsgroup_name = groupinfo.groupname;
+                    app.newsgroup_postquantity = groupinfo.lastarticle - groupinfo.firstarticle + 1;
+                },
+
 
                 getMessageTree: function () {
                     return this.tree_data.children;
@@ -179,7 +199,7 @@ define([
                     this.hideloadingiconRMB = false;
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" + msgid)
+                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
                         .then(function(response) {
                             if (app.check_for_error(response.data)) {
                                 app.post_list.push(app.prepare_postdata(response.data));
@@ -269,7 +289,7 @@ define([
                     console.log(msgid);
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" + msgid)
+                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
                         .then(function(response) {
                             if (app.check_for_error(response.data)) {
                                 app.post_list.push(app.prepare_postdata(response.data));
@@ -316,7 +336,7 @@ define([
 
                     //msgid = parseInt(msgid);
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/messageid.php?id=" + courseid + "&msgnr=" + msgid)
+                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
                         .then(function(response) {
                             if (app.check_for_error(response.data)) {
                                 app.post_list.push(app.prepare_postdata(response.data));
@@ -358,7 +378,7 @@ define([
                     setTimeout(function () {
 
                         axios   //returned data is already js object (axios automaticly converts json to js obj)
-                            .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + app.courseid)
+                            .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + app.courseid)
                             .then(function(response) {
                                 if (app.check_for_error(response.data)) {
                                     app.post_list.push(app.prepare_postdata(response.data));
@@ -496,7 +516,7 @@ define([
                     this.hideloadingicon = false;
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/search.php?id=" + courseid + "&searchparam=" + this.searchstring)
+                        .get(M.cfg.wwwroot + "/mod/newsmod/php/search.php?id=" + courseid + "&searchparam=" + this.searchstring)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 app.post_list.push(app.prepare_postdata(response.data));
@@ -576,13 +596,13 @@ define([
                     this.post_list.splice(0);
 
                     axios
-                    .get(M.cfg.wwwroot + "/mod/newsmod/phpconn5.php?id=" + courseid)
+                    .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + courseid)
                     .then(function (response) {
                         if (app.check_for_error(response.data)) {
                             app.post_list.push(app.prepare_postdata(response.data));
             
                         } else {
-                        app.treedata = response.data.children;
+                        app.treedata_viz = response.data.children;
                         app.info = response;
                         app.tree_data = response.data;
                         app.check_if_empty(response.data);
@@ -724,7 +744,7 @@ define([
                                 </div>
                             </div>
                         </div>
-                        <viz-bubble v-bind:treedata="treedata" class="tab-pane fade" id="menu1"></viz-bubble>
+                        <viz-bubble v-bind:treedata="treedata_viz" class="tab-pane fade" id="menu1"></viz-bubble>
                     </div>
                 </div>
             `,

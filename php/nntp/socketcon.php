@@ -68,8 +68,12 @@ $error_catalogue = [
     0 => 'Posting failed',
     1 => -441,
     2 => 'Posting has failed'
+  ],
+  501 => [
+    0 => 'Unknown command',
+    1 => -501,
+    2 => 'Newsserver recieved unknown command from client'
   ]
-
 ];
 
 function debug2c($data) {
@@ -388,7 +392,7 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
         } else {
           return error_handler(substr($tmp,0,3));
         }
-
+        // make function of code below
         if ((isset($headers)) && (count($headers)>0)) {
           foreach($headers as $c) {
             if (($c->isAnswer == false) &&
@@ -399,6 +403,9 @@ function thread_overview_interpret($line,$overviewformat,$groupname) {
               foreach ($c->references as $reference) {
                 if(isset($headers[$reference])) {
                   $refmatch=$reference;
+                }
+                else {
+                  //load missing header, restart procedure
                 }
               }
               // have we found an article, to which this article is an answer?
@@ -472,6 +479,36 @@ function nntp_open($host, $user, $pass, $port = 119)
     } else {
       return error_handler(substr($tmp,0,3));
     }
+}
+
+function getgroupinfo($journal) {
+
+  $localconfig = get_config('newsmod');
+  $groupname = $journal->newsgroup;
+  $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+
+
+  if (array_key_exists('is_error',$nntp)) {    //error detected, theres error_feedback data structure here!
+      return $nntp;
+  }
+
+  $overviewformat=thread_overview_read($nntp);
+  fputs($nntp,"GROUP $groupname\r\n");   // select a group
+  $groupinfo=explode(" ",line_read($nntp));
+  if (substr($groupinfo[0],0,1) != 2)     // error: no such group
+  {
+    return error_handler(substr($groupinfo[0],0,3));  // error_handler returns error_feedback "data structure", also used on $nntp check at beginning
+  }
+
+
+  $returnmsg = [
+    "quantity"      => $groupinfo[1],
+    "firstarticle"  => $groupinfo[2],
+    "lastarticle"   => $groupinfo[3],
+    "groupname"     => $groupinfo[4]
+  ];
+
+  return $returnmsg;
 }
 
 function nntp_header($socket, $groupname, $msgno)
@@ -669,6 +706,9 @@ function error_handler($err_num)
   $error_display = $error_catalogue[$err_num][0];
   $feedback_num = $error_catalogue[$err_num][1];
 
+  if (!isset($error_display)) {
+    $error_display = $err_num;
+  }
 
   $headerdata = [
         "name" => $error_display,

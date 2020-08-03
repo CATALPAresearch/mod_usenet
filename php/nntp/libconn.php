@@ -3,7 +3,7 @@ defined('MOODLE_INTERNAL')|| die;
 
 //error_reporting(E_ALL);
 
-require_once($CFG->dirroot . '/mod/newsmod/socketcon.php');
+require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
 
     function summary($journal, $timetosearch)
     {

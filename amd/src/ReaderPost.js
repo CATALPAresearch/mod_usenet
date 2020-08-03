@@ -128,7 +128,7 @@ define([
                     axios   //returned data is already js object (axios automaticly converts json to js obj)
                         .get([
                             M.cfg.wwwroot +
-                            "/mod/newsmod/statuschange.php?id=" +
+                            "/mod/newsmod/php/statuschange.php?id=" +
                             this.courseid +
                             "&msgnr=" +
                             this.content.messageid

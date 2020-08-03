@@ -1,6 +1,6 @@
 <?php
 
-require_once("../../config.php");
+require_once("../../../config.php");
 //require_once('./conn_lib.php');
 //require_once('./edit_form.php');
 
@@ -46,7 +46,7 @@ if (!$user = $DB->get_record('user', ['email' => $sender])) {
     $user->firstname = $sender;
     $user->lastname = "";
 }
-require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
+require_once($CFG->dirroot . '/mod/newsmod/php/nntp/libconn.php');
 
 $searchresult = msgSearch($journal, $searchparam);
 
