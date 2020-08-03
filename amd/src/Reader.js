@@ -463,7 +463,9 @@ define([
                 },
 
                 buildtree: function (tree_data, margin) {
-                
+                    if (tree_data.children === undefined){
+                        console.error("tree_data.children not defined", tree_data);
+                    }
                     tree_data.children.forEach(val => {
 
                         let content = this.prepare_postdata(val, margin);
