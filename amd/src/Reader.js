@@ -95,7 +95,7 @@ define([
 
 
                 window.addEventListener("resize", this.Windowresizehandler);
-                
+
 
                 if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
                     this.viewportsize = 'mobile';
@@ -127,18 +127,18 @@ define([
                     .then(function (response) {
                         if (app.check_for_error(response.data)) {
                             app.post_list.push(app.prepare_postdata(response.data));
-            
+
                         } else {
-                        app.treedata_viz = response.data.children;
-                        app.info = response;
-                        app.tree_data = response.data;
-                        app.buildtree(response.data, 1);
+                            app.treedata_viz = response.data.children;
+                            app.info = response;
+                            app.tree_data = response.data;
+                            app.buildtree(response.data, 1);
                         }
 
                     }).catch(function (error) {
                         console.log(error);
                     })
-                    .then(function() {
+                    .then(function () {
                         app.hideloadingicon = true;
                     });
             },
@@ -147,13 +147,13 @@ define([
 
             },
             methods: {
-                Windowresizehandler: function() {
+                Windowresizehandler: function () {
                     if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
                         this.viewportsize = 'mobile';
                         if (this.msgbodycontainerdisplay == '') {       // msgbodycontainer is used (its set to 'hide' if not used)
                             this.showmodal = true;
                         }
-                        
+
                     }
                     else {
                         this.viewportsize = 'other';
@@ -161,23 +161,23 @@ define([
                     }
                 },
 
-                getgroupinfo: function() {
+                getgroupinfo: function () {
                     axios
-                    .get(M.cfg.wwwroot + "/mod/newsmod/php/groupinfo.php?id=" + courseid)
-                    .then(function (response) {
-                        if (app.check_for_error(response.data)) {
-                            app.post_list.push(app.prepare_postdata(response.data));
-            
-                        } else {
-                            app.processgroupinfo(response.data);
-                        }
+                        .get(M.cfg.wwwroot + "/mod/newsmod/php/groupinfo.php?id=" + courseid)
+                        .then(function (response) {
+                            if (app.check_for_error(response.data)) {
+                                app.post_list.push(app.prepare_postdata(response.data));
 
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
+                            } else {
+                                app.processgroupinfo(response.data);
+                            }
+
+                        }).catch(function (error) {
+                            console.log(error);
+                        });
                 },
 
-                processgroupinfo: function(groupinfo) {
+                processgroupinfo: function (groupinfo) {
                     app.newsgroup_name = groupinfo.groupname;
                     app.newsgroup_postquantity = groupinfo.lastarticle - groupinfo.firstarticle + 1;
                 },
@@ -200,21 +200,21 @@ define([
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
-                        .then(function(response) {
+                        .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 app.post_list.push(app.prepare_postdata(response.data));
-                
+
                             } else {
                                 app.singlepostdata = response.data;
                                 app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
                             }
-                        }).catch(function(error) {
+                        }).catch(function (error) {
                             console.log(error);
-                        }).then(function() {
+                        }).then(function () {
                             app.hideloadingiconRMB = true;
                         });
 
-                      
+
                     this.msgbodycontainerdisplay = '';      // Set display to "visible"
                     this.iscreatingtopic = false;
                     this.isreading = true;
@@ -224,7 +224,7 @@ define([
 
                     let arraypos = post.arraypos;
                     this.markedpost = arraypos;
-                    
+
                     if (this.viewportsize == 'mobile') {
                         this.showmodal = true;
                     }
@@ -232,7 +232,7 @@ define([
 
                 },
 
-                setSelected: function(arraypos) {
+                setSelected: function (arraypos) {
                     this.markedpost = arraypos;
                 },
 
@@ -290,17 +290,17 @@ define([
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
-                        .then(function(response) {
+                        .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 app.post_list.push(app.prepare_postdata(response.data));
-                
+
                             } else {
                                 app.singlepostdata = response.data;
                                 app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
                             }
-                        }).catch(function(error) {
+                        }).catch(function (error) {
                             console.log(error);
-                        }).then(function() {
+                        }).then(function () {
                             app.hideloadingiconRMB = true;
                         });
                     this.msgbodycontainerdisplay = '';      // Set display to "visible"
@@ -337,17 +337,17 @@ define([
                     //msgid = parseInt(msgid);
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
-                        .then(function(response) {
+                        .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 app.post_list.push(app.prepare_postdata(response.data));
-                
+
                             } else {
                                 app.singlepostdata = response.data;
                                 app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
                             }
-                        }).catch(function(error) {
+                        }).catch(function (error) {
                             console.log(error);
-                        }).then(function() {
+                        }).then(function () {
                             app.hideloadingiconRMB = true;
                         });
 
@@ -355,8 +355,8 @@ define([
                     this.iscreatingtopic = false;
                     this.isreading = true;
                     this.isanswering = false;
-                    
-                    
+
+
                 },
                 /**
                  * Refresh post
@@ -382,32 +382,32 @@ define([
 
                         axios   //returned data is already js object (axios automaticly converts json to js obj)
                             .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + app.courseid)
-                            .then(function(response) {
+                            .then(function (response) {
                                 if (app.check_for_error(response.data)) {
                                     app.post_list.push(app.prepare_postdata(response.data));
-                    
+
                                 } else {
                                     app.info = response;
                                     app.tree_data = response.data;
                                     app.buildtree(response.data, 1);
                                 }
-                            }).catch(function(error) {
+                            }).catch(function (error) {
                                 console.log(error);
-                            }).then(function() {
+                            }).then(function () {
                                 app.hideloadingicon = true;
                             });
 
                     }, (2 * 1000));
 
-                    
+
                 },
 
-                closemodal: function() {
+                closemodal: function () {
                     this.showmodal = false;
                     this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
                 },
 
-                prepare_postdata: function(postdata_raw, margin = 1) {
+                prepare_postdata: function (postdata_raw, margin = 1) {
 
                     var marked = postdata_raw.markedstatus != '0' ? true : false;
                     var unread = postdata_raw.messagestatus == '0' ? true : false;
@@ -426,14 +426,14 @@ define([
                         identiconstring = this.getidenticon(postdata_raw.sender + postdata_raw.personal);
 
                     }
-                    
+
                     if (postdata_raw.children) {
                         childpresent = true;
                     }
                     else {
                         childpresent = false;
                     }
-                    
+
                     if (!postdata_raw.children) {
                         var childornot = "hidden";
                     }
@@ -463,7 +463,7 @@ define([
                 },
 
                 buildtree: function (tree_data, margin) {
-                    if (tree_data.children === undefined){
+                    if (tree_data.children === undefined) {
                         console.error("tree_data.children not defined", tree_data);
                     }
                     tree_data.children.forEach(val => {
@@ -520,7 +520,7 @@ define([
                         .catch(error => (
                             console.log(error)
                         ))
-                        .then(function() {
+                        .then(function () {
                             app.hideloadingicon = true;
                         });
                 },
@@ -555,7 +555,7 @@ define([
                         else {
                             console.log("err displaysearchresult");
                         }
-                       
+
 
                     }
                     //this.hideloadingicon = true;
@@ -575,7 +575,7 @@ define([
 
                 },
                 // TODO: make sure all elements are reset, also look at onansweredmsg
-                refresh: function() {
+                refresh: function () {
 
                     this.hideloadingicon = false;
 
@@ -592,38 +592,38 @@ define([
                     }
 
                     axios
-                    .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + courseid)
-                    .then(function (response) {
-                        if (app.check_for_error(response.data)) {
-                            app.post_list.push(app.prepare_postdata(response.data));
-            
-                        } else {
-                        app.treedata_viz = response.data.children;
-                        app.info = response;
-                        app.tree_data = response.data;
-                        app.buildtree(response.data, 1);
-                        }
+                        .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + courseid)
+                        .then(function (response) {
+                            if (app.check_for_error(response.data)) {
+                                app.post_list.push(app.prepare_postdata(response.data));
 
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                    .then(function() {
-                        app.hideloadingicon = true;
-                    });
-                    
+                            } else {
+                                app.treedata_viz = response.data.children;
+                                app.info = response;
+                                app.tree_data = response.data;
+                                app.buildtree(response.data, 1);
+                            }
+
+                        }).catch(function (error) {
+                            console.log(error);
+                        })
+                        .then(function () {
+                            app.hideloadingicon = true;
+                        });
+
                 },
 
                 getidenticon: function (input) {
                     var options = {
-                        background: [255, 255, 255, 255], // rgba white
+                        background: [255, 255, 255, 0], // rgba white/transparent background
                         margin: 0.05, // 20% margin
                         size: 20, // 420px square
                         format: 'svg' // use SVG instead of PNG
                     };
                     // TODO: fix feed
-                    
 
-                    var identiconhash = this.hash64(input, true); 
+
+                    var identiconhash = this.hash64(input, true);
                     var identicondata = new Identicon(identiconhash, options).toString();
                     return "data:image/svg+xml;base64," + identicondata;
                 },
@@ -638,7 +638,7 @@ define([
                  * @param {integer} [seed] optionally pass the hash of the previous chunk
                  * @returns {integer | string}
                  */
-                hash32: function(str, asString, seed) {
+                hash32: function (str, asString, seed) {
                     /*jshint bitwise:false */
                     var i, l,
                         hval = (seed === undefined) ? 0x811c9dc5 : seed;
@@ -647,45 +647,37 @@ define([
                         hval ^= str.charCodeAt(i);
                         hval += (hval << 1) + (hval << 4) + (hval << 7) + (hval << 8) + (hval << 24);
                     }
-                    if( asString ){
+                    if (asString) {
                         // Convert to 8 digit hex string
                         return ("0000000" + (hval >>> 0).toString(16)).substr(-8);
                     }
                     return hval >>> 0;
                 },
 
-                hash64: function(str, asString) {
+                hash64: function (str, asString) {
                     var h1 = this.hash32(str, asString);  // returns 32 bit (as 8 byte hex string)
                     return h1 + this.hash32(h1 + str, asString);  // 64 bit (as 16 byte hex string)
                 },
 
-                check_for_error: function(serverreturn) {
+                check_for_error: function (serverreturn) {
                     if (typeof serverreturn.is_error !== 'undefined') {
                         return true;
-
                     } else {
                         return false;
                     }
                 },
 
 
-                
-                      
+
+
 
             }, // END app methods
             template: `
                 <div id="newsmod-container">
-                    <ul class="nav nav-pills">
-                        <li class="nav-item">
-                            <a class="nav-link active" data-toggle="pill" href="#home">Liste</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="pill" href="#menu1">Bubbles</a>
-                        </li>
-                    </ul>
-                    <div>
-                        <div class="form-inline">
-                            <button class="btn btn-outline-primary btn-sm" v-on:click="newTopic" title="Ein neues Thema erstellen">
+                    <h3 class="mb-4"><img style="width:30px; height:30px;" src="pix/icon.svg"> Newsgroup</h3>
+                    <div class="d-flex">
+                        <div class="d-flex mr-auto">
+                            <button class="btn btn-primary btn-sm" v-on:click="newTopic" title="Ein neues Thema erstellen">
                                 <i class="fa fa-pen"></i>
                                 Neues Thema
                             </button>
@@ -693,21 +685,33 @@ define([
                             <button class="btn btn-light btn-sm" v-on:click="refresh" title="Neue Nachrichten abholen">
                                     <i class="fa fa-sync"></i>
                             </button>
-                            <div class="search">
-                                <input class="form-control form-control-sm" v-model="searchstring" placeholder="Suchen..." v-on:click="resetsearchstring">
-
-                                <button class="btn btn-light btn-sm" type="submit" v-on:click="search" title="In allen Nachrichten suchen">
-                                    Suchen
-                                </button>
-                            </div>
                         </div>
+                        <div class="search d-flex">
+                            <input class="form-control form-control-sm" v-model="searchstring" placeholder="Suchen..." v-on:click="resetsearchstring">
+
+                            <button class="btn btn-light btn-sm" type="submit" v-on:click="search" title="In allen Nachrichten suchen">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                        
                     </div>
-                    <div class = "tab-content">
-                        <div class="container-fluid px-0 tab-pane active" id="home" style = "height:auto;">
-                            <div class="px-0">
-                                <hr />
+                    <ul class="nav nav-tabs mt-3">
+                        <li class="nav-item pt-0">
+                            <a class="nav-link  pt-0 pb-0 active" data-toggle="pill" href="#viewlist">
+                                <i class="fa fa-list"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item  pt-0">
+                            <a class="nav-link pt-0  pb-0" data-toggle="pill" href="#viewbubbles">
+                                <i class="fa fa-spinner"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="container-fluid border-left tab-pane active" id="viewlist">
+                            <div class="pt-4 pl-2">
                                 <div class="row" >
-                                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="tree" style="overflow:scroll; margin-bottom:3px; height: 500px;" >
+                                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 border-right" id="tree" style="overflow-y:auto; overflow-x:hidden; margin-bottom:3px; height: auto" >
                                         <post-container 
                                             v-bind:courseid="courseid" 
                                             v-bind:postlist="post_list" 
@@ -739,7 +743,7 @@ define([
                                 </div>
                             </div>
                         </div>
-                        <viz-bubble v-bind:treedata="treedata_viz" class="tab-pane fade" id="menu1"></viz-bubble>
+                        <viz-bubble v-bind:treedata="treedata_viz" class="tab-pane fade" id="viewbubbles"></viz-bubble>
                     </div>
                 </div>
             `,
