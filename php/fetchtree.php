@@ -28,6 +28,6 @@ $jsontree = generateJsonFromNews($journal);
 
 require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
 $jsontree = gettree($journal, $start, $end);
-header('Content-Type: application/json');
+//header('Content-Type: application/json');
 
 echo $jsontree;
