@@ -253,6 +253,7 @@ function thread_overview_interpret($line, $overviewformat, $groupname)
         }
     }
     $article->number=$over[0];
+    $article->threadsize = 0;
     $article->isAnswer=false;
     return($article);
 }
@@ -446,9 +447,7 @@ function thread_overview_interpret($line, $overviewformat, $groupname)
                           do {
                               $d->threadsize+=$c->threadsize;
                               $d->date_thread=max($c->date, $d->date_thread);
-                          } while (($headers[$d->bestreference]) &&
-                          (isset($d->bestreference)) &&
-                          ($d =& $headers[$d->bestreference]));
+                          } while ((isset($d->bestreference)) && ($headers[$d->bestreference]) && ($d =& $headers[$d->bestreference]));
                       }
                   }
               }

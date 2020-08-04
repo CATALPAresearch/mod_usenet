@@ -14,7 +14,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
 
 $groupinfo = getgroupinfo($journal);
 
-//header('Content-Type: application/json');
+header('Content-Type: application/json');
 
 echo json_encode($groupinfo);
 

@@ -54,7 +54,7 @@ else {
     $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
 
 
-    if (array_key_exists('is_error',$nntp)) {    //error detected, theres error_feedback data structure here!
+    if (is_array($nntp) && array_key_exists('is_error',$nntp)) {    //error detected, theres error_feedback data structure here!
         $returnmsg = $nntp;
     }
     else {
@@ -64,7 +64,7 @@ else {
         }
         else {
             $messagebody = nntp_fetchbody($nntp, $journal->newsgroup, $msgnr);
-            if (array_key_exists('is_error', $messagebody)) {
+            if (is_array($messagebody) && array_key_exists('is_error', $messagebody)) {
                 $returnmsg = $body;
             }
             else {
@@ -79,7 +79,6 @@ else {
         }
     }
 }
-header('Content-Type: application/json');
 echo json_encode($returnmsg);
 
 

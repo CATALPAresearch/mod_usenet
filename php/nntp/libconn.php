@@ -62,6 +62,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
             $user->id = "-99";
             $user->firstname = $sender;
             $user->lastname = "";
+            $user->picture = 0;
         }
         return $user;
     }
@@ -106,21 +107,22 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
          */
         foreach ($threads as $header) {
         
-            if ($header->references)    // Is this post a child post ?
+            if (isset($header->references))    // Is this post a child post ?
             {
-                if (!$threads[$header->references[0]])  // Is the father post NOT in the array ?
-                {
-                    if (count($header->references) == 1)    // Is this child post a direct descendant of father post ?
-                    $header->isReply = false;                   // Change child post to father post by setting the flags
-                    unset($header->references);                 // Problem: a father post may have many direct descendants
-                }                                                   // so the structure of a thread may become unorganized and confusing
+                    if (!isset($threads[$header->references[0]]))  // Is the father post NOT in the array ?
+                    {
+                        if (count($header->references) == 1) {   // Is this child post a direct descendant of father post ?
+                        $header->isReply = false;                   // Change child post to father post by setting the flags
+                        unset($header->references);                 // Problem: a father post may have many direct descendants
+                        }                                           // so the structure of a thread may become unorganized and confusing
+                    }                                               
             }
         }
 
     
     foreach ($threads as $header) {
         
-      if (!$header->isReply && !$header->references)
+      if (!$header->isReply && !isset($header->references))
             {
               if ($siblings > 0)
             {
@@ -192,7 +194,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
     // recursion body
     function getchildren($headeri, $threads)
     {
-    
+        $siblings = 0;
         $jsontree = "";
     
     
@@ -234,11 +236,10 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
             } 
         }
     
-        if ($siblings > 0)
-        {
-         $jsontree = $jsontree . "}]";
-        }
-    
+            if ($siblings > 0)
+            {
+                $jsontree = $jsontree . "}]";
+            }
         
         
         return $jsontree;

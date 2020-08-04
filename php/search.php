@@ -52,7 +52,6 @@ $searchresult = msgSearch($journal, $searchparam);
 
 
 if ($searchresult) {
-    header('Content-Type: application/json');
     echo json_encode($searchresult);
 } else {
     header('HTTP/1.1 204 No Content', true, 204);
