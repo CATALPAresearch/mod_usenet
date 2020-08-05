@@ -217,7 +217,7 @@ define([
 
                     this.hideloadingiconRMB = false;
 
-                    axios   // Returned data is already js object (axios automaticly converts json to js obj)
+                    axios
                         .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
@@ -234,7 +234,7 @@ define([
                         });
 
 
-                    this.msgbodycontainerdisplay = '';      // Set display to "visible"
+                    this.msgbodycontainerdisplay = ''; // Set display to "visible"
                     this.iscreatingtopic = false;
                     this.isreading = true;
                     this.isanswering = false;
@@ -247,7 +247,6 @@ define([
                     if (this.viewportsize == 'mobile') {
                         this.showmodal = true;
                     }
-
 
                 },
 
@@ -418,7 +417,6 @@ define([
 
                     }, (2 * 1000));
 
-
                 },
 
                 closemodal: function () {
@@ -574,8 +572,6 @@ define([
                         else {
                             console.log("err displaysearchresult");
                         }
-
-
                     }
                     //this.hideloadingicon = true;
                 },
@@ -703,15 +699,16 @@ define([
 
                             <button class="btn btn-light btn-sm" v-on:click="refresh" title="Neue Nachrichten abholen">
                                     <i class="fa fa-sync"></i>
+                                    <span class="d-none d-md-inline">aktualisieren</span>
                             </button>
                         </div>
                         <div class="search d-flex">
                             <input 
-                                class="form-control form-control-sm" 
+                                class="form-control form-control-sm d-inline ml-2" 
                                 v-model="searchstring" 
                                 placeholder="Suchen..." 
                                 v-on:keyup.enter="search"
-                                :style="[ viewportsize==='mobile' ? {width:70+'px'} : {width:150+'px'} ]"
+                                :style="[ viewportsize==='mobile' ? {width:70+'%'} : {width:150+'px'} ]"
                                 >
 
                             <button class="btn btn-light btn-sm" type="submit" v-on:click="search" title="In allen Nachrichten suchen">

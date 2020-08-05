@@ -179,7 +179,7 @@ define([
                         <div class ="container-fluid px-0">
                             <div class="row px-0">
                                 
-                                <div class="px-0 col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                                <div class="px-0 col-1 col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
                                     <i class="fas fa-sm py-2 px-3" 
                                         :class="{'fa-caret-down': content.haschild, 'fa-caret-right': this.hiddenfamily}" 
                                         :style="poststylechildcnd"
@@ -189,26 +189,24 @@ define([
                                 </div>
 
                                 <div 
-                                    class="col-11 col-sm-11 col-md-11 col-lg-11 col-xl-11 px-0" 
+                                    class="px-0 col-11 col-xs-11 col-sm-11 col-md-11 col-lg-11 col-xl-11" 
                                     style="display:inline-block;"
                                     v-bind:class="{'bg-info': content.isSelected}" 
-                                    :style="borderstyle">
-                                    <div 
-                                        class="row poststyle" 
-                                        v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
+                                    >
+                                    <div class="row poststyle mb-xs-2" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
                                         
-                                        <div class="col-3 col-sm-3 col-md-3 col-lg-3 col-xl-3 text-truncate order-last order-sm-first order-md-first order-lg-first order-xl-first px-0">
+                                        <div class="col-3 order-1 order-sm-1 col-xs-8 col-sm-3 col-md-3 col-lg-3 col-xl-3 text-truncate px-0">
                                             <img class="" style="width:20px; height:20px;" :src="this.content.identicon" :title="this.content.personal"/>
                                             {{content.personal}}
                                         </div>
                                     
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-truncate px-0" :style="textindent">
+                                        <div class="col-6 order-3 order-md-2 col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-truncate px-0" :style="textindent" style="margin-left:24px;">
                                             {{content.subject}}
                                         </div>
 
-                                        <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 px-0" data-date-format="DD.MM.YYYY">
+                                        <div class="col-2 order-2 order-md-3 col-xs-4 col-sm-2 col-md-2 col-lg-2 col-xl-2 px-0" data-date-format="DD.MM.YYYY">
                                             <span style="font-size:0.9em">{{content.calctime}}</span>
-                                            <i class="far fa-star poststyle" :class="{starmarked: content.marked, fas: content.marked }"
+                                            <i class="far fa-star poststyle d-none d-xs-block" :class="{starmarked: content.marked, fas: content.marked }"
                                         v-on:click="togglemarked" title="Favoriten markieren"/>
                                         </div>
                                     </div>
