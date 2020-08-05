@@ -30,12 +30,13 @@ define([
     
     */
 
-    var Reader = function (Log, courseid, messageid) {
-
+        var Reader = function (Log, courseid, messageid, instanceName) {
+            console.log(instanceName)
         var app = new Vue({
             el: 'newsmod-container',
             data: function () {
                 return {
+                    instanceName: 'Newsgroup',
                     searchstring: '',
                     searchresult: [],
                     hiddenposts: [],        // Stores array pos of searchresult items in array post_list
@@ -75,7 +76,7 @@ define([
             },
 
             created: function () {
-
+                this.instanceName = instanceName;
                 /**
                  * Initialisation of variables with empty values
                  * to prevent "undefined variable" error messages
@@ -689,7 +690,7 @@ define([
             }, // END app methods
             template: `
                 <div id="newsmod-container">
-                    <h3 class="mb-4"><img style="width:30px; height:30px;" src="pix/icon.svg"> {{newsgroup_name}}</h3>
+                    <h3 class="mb-4"><img style="width:30px; height:30px;" src="pix/icon.svg"> {{ instanceName }}</h3>
                     <div class="d-flex">
                         <div class="d-flex mr-auto">
                             <button class="btn btn-primary btn-sm" v-on:click="newTopic" title="Ein neues Thema erstellen">
@@ -730,8 +731,8 @@ define([
                         </li>
                     </ul>
                     <div class="tab-content">
-                        <div class="container-fluid border-left tab-pane active" id="viewlist">
-                            <div class="pt-4 pl-2">
+                        <div class="container-fluid px-2 border-left tab-pane active" id="viewlist">
+                            <div class="pt-4 pl-0">
                                 <div class="row" >
                                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 border-right" id="tree" style="overflow-y:auto; overflow-x:hidden; margin-bottom:3px; height: auto" >
                                         <post-container 

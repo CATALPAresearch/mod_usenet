@@ -55,9 +55,8 @@ $PAGE->set_context($modulecontext);
 $PAGE->requires->css( '/mod/newsmod/styles.css', true );
 
 echo $OUTPUT->header();
-
 echo '<newsmod-container></newsmod-container>';
 
-$PAGE->requires->js_call_amd('mod_newsmod/newsmod', 'init', array('course'=>$cm->id, 'msgnr'=>$msgnr));
+$PAGE->requires->js_call_amd('mod_newsmod/newsmod', 'init', array('course'=>$cm->id, 'msgnr'=>$msgnr, 'instanceName'=>$moduleinstance->name));
 
 echo $OUTPUT->footer();

@@ -26,7 +26,7 @@ define([
             }
         });
 
-        var start = function (courseid, messageid) {
+        var start = function (courseid, messageid, instanceName) {
 
             require([], function () {
                 var utils = new Utils();
@@ -34,14 +34,14 @@ define([
                     context: 'mod_newsmod',
                     outputType: 0 // set to 1 in order to store logs to the database
                 });
-                new Reader(log, courseid, messageid);
+                new Reader(log, courseid, messageid, instanceName);
             });
         };
 
         return {
-            init: function (courseid, messageid) {
+            init: function (courseid, messageid, instanceName) {
                 try {
-                    start(courseid, messageid);
+                    start(courseid, messageid, instanceName);
                 } catch (e) {
                     console.error(e);
                 }
