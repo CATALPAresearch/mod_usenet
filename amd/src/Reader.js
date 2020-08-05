@@ -689,7 +689,7 @@ define([
             }, // END app methods
             template: `
                 <div id="newsmod-container">
-                    <h3 class="mb-4"><img style="width:30px; height:30px;" src="pix/icon.svg"> Newsgroup</h3>
+                    <h3 class="mb-4"><img style="width:30px; height:30px;" src="pix/icon.svg"> {{newsgroup_name}}</h3>
                     <div class="d-flex">
                         <div class="d-flex mr-auto">
                             <button class="btn btn-primary btn-sm" v-on:click="newTopic" title="Ein neues Thema erstellen">
