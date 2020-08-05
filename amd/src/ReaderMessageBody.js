@@ -204,7 +204,6 @@ define([
                                         <div class="bold">
                                             {{postdata.header.subject}}
                                         </div>
-                                        
                                     </div>
                                     <template v-if="ismobile">
                                         <button class="fas fa-times ml-auto align-self-center" v-on:click="closemodal">

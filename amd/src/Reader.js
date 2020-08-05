@@ -687,7 +687,13 @@ define([
                             </button>
                         </div>
                         <div class="search d-flex">
-                            <input class="form-control form-control-sm" v-model="searchstring" placeholder="Suchen..." v-on:click="resetsearchstring">
+                            <input 
+                                class="form-control form-control-sm" 
+                                v-model="searchstring" 
+                                placeholder="Suchen..." 
+                                v-on:click="resetsearchstring"
+                                :style="[ viewportsize==='mobile' ? {width:70+'px'} : {width:150+'px'} ]"
+                                >
 
                             <button class="btn btn-light btn-sm" type="submit" v-on:click="search" title="In allen Nachrichten suchen">
                                 <i class="fa fa-search"></i>
