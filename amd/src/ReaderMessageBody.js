@@ -79,7 +79,7 @@ define([
 
                 },
                 convertDate: function(date){
-                    console.log(date);
+                    console.log(date)
                     date = date * 1000;
                     var options = {
                         year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric'
@@ -223,7 +223,6 @@ define([
                     <template v-if="iscreatingtopic"></template>
 
                     <template v-else>
-                        
                         <template v-if="isreading">
                             <div :class="{hidden: hideloadingicon}">
                                 <i class="fas fa-cog fa-spin fa-5x"/>
