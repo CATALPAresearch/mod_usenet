@@ -82,6 +82,13 @@ define([
                             }
                         }
                         this.previouspost = arraypos;   // current post is next previouspost
+                        window.scroll({
+                            top: 200,
+                            left: 0,
+                            behavior: 'smooth'
+                        });
+                        //document.body.scrollTop = 200;
+                        //document.documentElement.scrollTop = 200;
 
                     }, // END event method ongetmsg
 
@@ -129,9 +136,11 @@ define([
                         this.$emit('setSelected', arraypos);
                     }
                 }, // END component methods
-                template: `<div class ='post-container'>
-                                <div :class = "{hidden: showloadingicon}">
-                                    <i class="fas fa-cog fa-spin fa-5x"/>
+                template: `<div class="post-container"">
+                                <div class="">
+                                    <div :class="{hidden: showloadingicon}">
+                                        <i class="fas fa-circle-o-notch fa-spin fa-3x"/>
+                                    </div>
                                 </div>
                                 <post v-for='singlepost in postlist' 
                                     v-bind:content='singlepost' 

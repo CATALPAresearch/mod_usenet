@@ -7,7 +7,7 @@ define([
     return Vue.component('messagebody-container',
         {
             props: ['postdata', 'isused', 'isreading', 'isanswering', 'iscreatingtopic', 'courseid',
-                    'identiconstring', 'viewportsize', 'hideloadingicon'],
+                'identiconstring', 'viewportsize', 'hideloadingicon'],
 
             data: function () {
                 return {
@@ -20,12 +20,12 @@ define([
                 };
             },
 
-            created: function() {
+            created: function () {
                 if (this.viewportsize == 'mobile') {
                     this.ismobile = true;
                 }
                 else {
-                    this.ismobile = false;       
+                    this.ismobile = false;
                 }
             },
 
@@ -48,7 +48,7 @@ define([
                         this.textarea_usrinput = newmessage;
                     }
                     else {                      // ==If user is answering a post
-                        // this.textareacontent = this.postdata.messagebody;
+                        // this.textareacontent=this.postdata.messagebody;
                         this.isreading = true;
                         this.isanswering = false;
 
@@ -59,7 +59,7 @@ define([
                         const params = new URLSearchParams();
                         params.append('userInput', this.textarea_usrinput);
                         if (this.postdata.header === undefined) {
-                            this.postdata.header = {subject:'', references:'', id:-1};
+                            this.postdata.header = { subject: '', references: '', id: -1 };
                         }
                         params.append('subject', this.postdata.header.subject);
                         params.append('references', this.postdata.header.references);
@@ -78,8 +78,15 @@ define([
 
 
                 },
-
-                prevmsg: function () {   // Number = messageid
+                convertDate: function(date){
+                    console.log(date)
+                    date = date * 1000;
+                    var options = {
+                        year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric'
+                    };
+                    return new Date(date).toLocaleDateString('de-DE', options) ? new Date(date).toLocaleDateString('de-DE', options) : "";
+                },
+                prevmsg: function () {   // Number=messageid
                     this.$emit('prevmsg', this.postdata.header !== undefined ? this.postdata.header.number : 0);
                 },
 
@@ -87,7 +94,7 @@ define([
                     this.$emit('nextmsg', this.postdata.header !== undefined ? this.postdata.header.number : 0);
                 },
 
-                closemodal: function() {
+                closemodal: function () {
                     this.$emit('closemodal');
                 },
 
@@ -121,66 +128,91 @@ define([
                     }
 
                 },
-                viewportsize: function() {
+                viewportsize: function () {
                     if (this.viewportsize == 'mobile') {
                         this.ismobile = true;
                     }
                     else {
-                        this.ismobile = false;       
+                        this.ismobile = false;
                     }
                 },
                 /**
                  * When user requests a new message to display in textarea of ReaderMessageBody,
                  * then show the loading icon and delete previous content
                  */
-                hideloadingicon: function () {                  
+                hideloadingicon: function () {
                     if (this.hideloadingicon == false) {
-                        this.textareacontent = "";                  
+                        this.textareacontent = "";
                     }
                 }
             },
 
             template: `
-                <div :class = "{'messagebody-container': true}" :style = "{display: isused}">
+                <div :class="{'messagebody-container': true}" :style="{display: isused}">
                     <div class="" style="padding-right:0px">
-                        <div class="container">
-                            <template v-if = "iscreatingtopic">
-                                <div class ="row">
-                                    <button :class="'btn btn-primary'" v-on:click="createtopic">
-                                        Senden
-                                    </button>
-                                    <template v-if="ismobile">
-                                        <button class = "fas fa-times ml-auto align-self-center" v-on:click = "closemodal"
-                                        style = "margin-right: 30px">
-                                        </button>
-                                    </template>
+                        <div class="">
+                            
+                            <!-- Create new message -->
+                            <template v-if="iscreatingtopic">
+                                <div class="mb-2 pl-1 pb-1">
+                                    <div class="mx-0 control-bar">
+                                        <button :class="'btn btn-sm btn-primary'" v-on:click="createtopic">
+                                        Senden</button>
+                                        <template v-if="ismobile">
+                                            <button class="fas fa-times ml-auto align-self-center" v-on:click="closemodal"
+                                            style="margin-right: 30px">
+                                            </button>
+                                        </template>
+                                    </div>
                                 </div>
-                                <br/>
-                                <label>
-                                    Betreff:
-                                </label>
-                                <textarea v-model="usrinput_subject" :class="{'form-control': true}" cols=30 rows=1> </textarea>
-                                <label>
-                                    Text:
-                                </label>
-                                <br/>
-                                <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>                        
+                                <div class="form-group">
+                                    <label hidden for="inputsubject">Betreff:</label>
+                                    <input id="inputsubject" placeholder="Betreff" v-model="usrinput_subject" :class="{'form-control': true}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label hidden for="inputtext">Text:</label>
+                                    <textarea id="inputtext" placeholder="Beitragstext" v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=10> </textarea>
+                                </div>
                             </template>
+
+                            <!-- Read message -->
                             <template v-else>
-                            <div class = "container">
-                                <div class = "row">
-                                    <img width=40 height=40 :src="this.identiconstring"/>
+                            <div class="bg-infoX border-bottom mb-2 pl-1 pb-1">
+                                <div class="mx-0 mb-3 control-bar" :class="{hidden: postdata.header.is_error}">
+                                    <button class="btn btn-sm btn-outline-primary mr-3" v-on:click="onanswerbuttonclick" title="Beitrag beantworten">
+                                        <i class="fa fa-reply"></i>
+                                        {{answerbuttontext}}
+                                    </button>
+                                    <button class="btn btn-sm btn-light mr-1" v-on:click="prevmsg" title="Die vorherige Nachricht anzeigen">
+                                        <i class="fa fa-arrow-left"></i>
+                                        Vorherige Nachricht
+                                    </button>
+                                    <button class="btn btn-sm btn-light" v-on:click="nextmsg" title="Die nächste Nachricht anzeigen">
+                                        Nächste Nachricht 
+                                        <i class="fa fa-arrow-right"></i>    
+                                    </button>
+                                </div>
+                                <div class="">
                                     <div>
-                                        <div>
-                                            {{postdata.header.name}}
+                                        <div class="d-flex">
+                                            <img style="height:40px; width:40px;" :src="this.identiconstring"/>
+                                            <span class="mr-auto pt-1" >
+                                                <a :href="'mailto:' + postdata.header.from">{{postdata.header.name}}</a>
+                                            </span>
+                                            <span class="pt-1">{{ convertDate(postdata.header.date) }}</span>
                                         </div>
-                                        <div>
+                                        <div class="bold">
                                             {{postdata.header.subject}}
                                         </div>
                                     </div>
                                     <template v-if="ismobile">
-                                        <button class = "fas fa-times ml-auto align-self-center" v-on:click = "closemodal">
+                                        <button class="fas fa-times ml-auto align-self-center" v-on:click="closemodal">
                                         </button>
+                                        <!-- 
+                                        <button type="button" class="close ml-auto align-self-center" aria-label="Close" v-on:click="closemodal">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        -->
                                     </template>
                                 </div>
                             </div>
@@ -191,32 +223,19 @@ define([
                     <template v-if="iscreatingtopic"></template>
 
                     <template v-else>
-                        <div class="row control-bar" :class = "{hidden: postdata.header.is_error}">
-                            <button class="btn btn-sm btn-outline-primary" v-on:click="onanswerbuttonclick" title="Beitrag beantworten">
-                                <i class="fa fa-reply"></i>
-                                {{answerbuttontext}}
-                            </button>
-                            <button class="btn btn-sm btn-light" v-on:click="prevmsg" title="Die vorherige Nachricht anzeigen">
-                                <i class="fa fa-arrow-left"></i>
-                                Vorherige Nachricht
-                            </button>
-                            <button class="btn btn-sm btn-light" v-on:click="nextmsg" title="Die nächste Nachricht anzeigen">
-                                 Nächste Nachricht 
-                                 <i class="fa fa-arrow-right"></i>    
-                            </button>
-                        </div>
+                        
                         <template v-if="isreading">
-                            <div :class = "{hidden: hideloadingicon}">
+                            <div :class="{hidden: hideloadingicon}">
                                 <i class="fas fa-cog fa-spin fa-5x"/>
                             </div>
-                            <div>
+                            <div class="">
                                 <!-- 'white-space': 'pre-line' is needed here because v-model automatically formats nl it seems -->
-                                <p :style="{'white-space': 'pre-line', 'overflow': 'auto', 'height': '400px'}"> {{textareacontent}}</p>
+                                <p :style="{'white-space': 'pre-line', 'overflow': 'auto', 'height': 'auto'}"> {{textareacontent}}</p>
                             </div>
                         </template>
                         <template v-else>
                             <div class="form-group">
-                                <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=17> </textarea>
+                                <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=10> </textarea>
                             </div>
                         </template>
                     </template>                        
