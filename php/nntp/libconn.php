@@ -11,7 +11,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
         $localconfig = get_config('newsmod');
         
         $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
-        $result = nntp_headers($nntp, $journal->newsgroup);
+        $result = nntp_headers_all($nntp, $journal->newsgroup);
         file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
 
         /*
@@ -27,7 +27,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
         global $CFG;
         $localconfig = get_config('newsmod');
         $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
-        $result = nntp_headers($nntp, $journal->newsgroup);
+        $result = nntp_headers_all($nntp, $journal->newsgroup);
         file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
     }
 
@@ -53,20 +53,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
         $messageid = message_send($message);
         //$a=email_to_user($email_user, $email_user, $subject, html_to_text($content),$content);
     }
-    function getUserIdByEmail($sender)
-    {
-        global $DB,$CFG;
-        if (!$user = $DB->get_record('user', ['email' => $sender])) {
-            //echo "User Information not found";
-            $user = new \stdClass();
-            $user->id = "-99";
-            $user->firstname = $sender;
-            $user->lastname = "";
-            $user->picture = 0;
-        }
-        return $user;
-    }
-
+    
 
     // builds up a JSON object representing message threads:
     //  threadopener
@@ -84,7 +71,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
         $localconfig = get_config('newsmod');
         $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
         
-        if (array_key_exists('is_error',(array)$nntp)) {    //error detected, theres error_feedback data structure here!
+        if (is_array($nntp) && array_key_exists('is_error', $nntp)) {    //error detected, theres error_feedback data structure here!
             return json_encode($nntp);
         }
 
@@ -93,7 +80,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
         
         $threads = thread_load_newsserver($nntp, $journal->newsgroup);
         
-        if (array_key_exists('is_error',(array)$threads)) {    //error detected, theres error_feedback data structure here!
+        if (is_array($threads) && array_key_exists('is_error', $threads)) {    //error detected, theres error_feedback data structure here!
             return json_encode($threads);
         }
 
@@ -254,7 +241,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
             return;
         }
 
-        $header = nntp_header($nntp, $groupname, $val);
+        //$header = nntp_header($nntp, $groupname, $val);
 
 
 
@@ -276,7 +263,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
             $DB->insert_record('newsmod__messagestatus', $moduleinstanl);
         }
     }
-    function loadMessageStatus($msgnr)
+   /*  function loadMessageStatus($msgnr)
     {
         global $DB,$USER;
         if ($messageid = $DB->record_exists('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))) {
@@ -295,6 +282,20 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
         }
         return  $moduleinstan;
     }
+
+    function getUserIdByEmail($sender)
+    {
+        global $DB,$CFG;
+        if (!$user = $DB->get_record('user', ['email' => $sender])) {
+            //echo "User Information not found";
+            $user = new \stdClass();
+            $user->id = "-99";
+            $user->firstname = $sender;
+            $user->lastname = "";
+            $user->picture = 0;
+        }
+        return $user;
+    } */
 
     function loadCachedData($journal)
     {
