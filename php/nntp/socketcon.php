@@ -469,12 +469,6 @@ function thread_overview_interpret($line, $overviewformat, $groupname)
       }
   }
 
-function gettree($journal, $start, $end)
-{
-}
-
-
-//todo: error handling
 function nntp_open($host, $user, $pass, $port = 119)
 {
     $ipaddress = gethostbyname($host);
@@ -511,11 +505,10 @@ function getgroupinfo($journal)
     $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
 
 
-    if (array_key_exists('is_error', $nntp)) {    //error detected, theres error_feedback data structure here!
+    if (is_array($nntp) && array_key_exists('is_error', $nntp)) {    //error detected, theres error_feedback data structure here!
         return $nntp;
     }
 
-    $overviewformat=thread_overview_read($nntp);
     fputs($nntp, "GROUP $groupname\r\n");   // select a group
     $groupinfo=explode(" ", line_read($nntp));
     if (substr($groupinfo[0], 0, 1) != 2) {     // error: no such group
@@ -531,6 +524,208 @@ function getgroupinfo($journal)
   ];
 
     return $returnmsg;
+}
+
+function gettree($journal, $start, $end) {
+
+    global $CFG;
+    //require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
+
+    $localconfig = get_config('newsmod');
+
+    $groupname = $journal->newsgroup;
+
+
+    $socket = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+    
+    if (is_array($socket) && array_key_exists('is_error', $socket)) {    //error detected, theres error_feedback data structure here!
+        return $socket;
+    }
+
+    $headers = nntp_headers($socket, $groupname, $start, $end);
+    
+    $siblings = [];
+    $tree = [
+        "children" => []
+    ];
+
+    /**
+     * This foreach-loop checks the threads for orphaned posts 
+     */
+    foreach ($headers as $header) {
+    
+        if (isset($header->references))    // Is this post a child post ?
+        {
+                if (!isset($headers[$header->references[0]]))  // Is the father post NOT in the array ?
+                {
+                    if (count($header->references) == 1) {   // Is this child post a direct descendant of father post ?
+                    $header->isReply = false;                   // Change child post to father post by setting the flags
+                    unset($header->references);                 // Problem: a father post may have many direct descendants
+                    }                                           // so the structure of a thread may become unorganized and confusing
+                }                                               
+        }
+    }
+
+    foreach ($headers as $header) {
+        
+        if (!$header->isReply && !isset($header->references))
+        {
+            
+            $statusread = @loadMessageStatus($header->number);
+            $userinfo = @getUserIdByEmail($header->from);
+
+            $self = [];
+
+            $self["name"] = $header->subject;
+            $self["number"] = $header->number;
+            $self["id"] = $header->id;
+            $self["personal"] = $header->name;
+            $self["sender"] = addcslashes(str_replace('\\', '', $header->from), "\"");
+            $self["messagestatus"] = $statusread->readstatus;
+            $self["markedstatus"] = $statusread->marked;
+            $self["picturestatus"] = $userinfo->picture;
+            $self["user_id"] = $userinfo->id;
+            $self["date"] = $header->displaydate;
+
+            if (isset($header->answers)) {
+                $self["children"] = agetchildren($header, $headers);
+            }
+            
+            $siblings[] = $self;
+
+        }
+    }
+    $tree["children"] = $siblings;
+    return $tree;
+    //return "yes";
+}
+
+function agetchildren($header, $headers) {
+
+    $siblings = [];
+
+    if (isset($header->answers)) {
+
+        foreach ($header->answers as $childid)
+        {
+
+            
+            $child = $headers[$childid];
+
+            $self = [];
+
+            $statusread = @loadMessageStatus($header->number);
+            $userinfo = @getUserIdByEmail($header->from);
+
+
+            $self["name"] = $child->subject;
+            $self["number"] = $child->number;
+            $self["id"] = $child->id;
+            $self["personal"] = $child->name;
+            $self["sender"] = addcslashes(str_replace('\\', '', $child->from), "\"");
+            $self["messagestatus"] = $statusread->readstatus;
+            $self["markedstatus"] = $statusread->marked;
+            $self["picturestatus"] = $userinfo->picture;
+            $self["user_id"] = $userinfo->id;
+            $self["date"] = $child->displaydate;
+
+            if (isset($child->answers)) {
+                $self["children"] = agetchildren($child, $headers);
+            }
+            
+            $siblings[] = $self;
+
+        }
+        return $siblings;
+    }
+}
+
+function nntp_headers($socket, $groupname, $start, $end) {
+
+    $overviewformat=thread_overview_read($socket);
+    fputs($socket, "GROUP $groupname\r\n");   // select a group
+    $groupinfo=explode(" ", line_read($socket));
+
+    if (substr($groupinfo[0], 0, 1) != 2) {
+
+        return error_handler(substr($groupinfo[0], 0, 3));
+
+    } else {
+        $firstarticle=$start;
+        $lastarticle=$end;
+
+        // order the article overviews from the newsserver
+        fputs($socket, "XOVER ".$firstarticle."-".$lastarticle."\r\n");
+        $tmp=line_read($socket);
+        // have the server accepted our order?
+        if (substr($tmp, 0, 3) == "224") {
+            $line=line_read($socket);
+            // read overview by overview until the data ends
+            while ($line != ".") {
+                // parse the output of the server...
+                $article=thread_overview_interpret($line, $overviewformat, $groupname);
+                // ... and save it in our data structure
+                $article->threadsize++;
+                $article->date_thread=$article->date;
+                $headers[$article->id]=$article;
+                // if we are in poll-mode: print status information and
+                // decode the article itself, so it can be saved in the article
+                // cache
+          
+                // read the next line from the newsserver
+                $line=line_read($socket);
+            }
+        } else {
+            return error_handler(substr($tmp, 0, 3));
+        }
+        // make function of code below
+        if ((isset($headers)) && (count($headers)>0)) {
+            foreach ($headers as $c) {
+                if (($c->isAnswer == false) &&
+             (isset($c->references))) {   // is the article an answer to an
+                    // other article?
+                    // try to find a matching article to one of the references
+                    $refmatch=false;
+                    foreach ($c->references as $reference) {
+                        if (isset($headers[$reference])) {
+                            $refmatch=$reference;
+                        } else {
+                            //load missing header, restart procedure
+                        }
+                    }
+                    // have we found an article, to which this article is an answer?
+                    if ($refmatch!=false) {
+                        $c->isAnswer=true;
+                        $c->bestreference=$refmatch;
+                        $headers[$c->id]=$c;
+                        // the referenced article get the ID af this article as in
+                        // its answers-array
+                        $headers[$refmatch]->answers[]=$c->id;
+                        // propagate down the number of articles in this thread
+                        $d =& $headers[$c->bestreference];
+                        do {
+                            $d->threadsize+=$c->threadsize;
+                            $d->date_thread=max($c->date, $d->date_thread);
+                        } while ((isset($d->bestreference)) && ($headers[$d->bestreference]) && ($d =& $headers[$d->bestreference]));
+                    }
+                }
+            }
+            reset($headers);
+            // sort the articles
+            $thread_sort_order=-1;
+            if (($thread_sort_order != 0) && (count($headers)>0)) {
+                uasort($headers, 'thread_mycompare');
+            }
+        }
+        if (isset($headers)) {
+            return $headers;
+        } else {
+            return error_handler(601);
+        }
+      
+    
+        //return((isset($headers)) ? $headers : false);
+    }
 }
 
 function nntp_header($socket, $groupname, $msgno)
@@ -578,7 +773,7 @@ function nntp_header($socket, $groupname, $msgno)
 }
 
 
-function nntp_headers($socket, $groupname)
+function nntp_headers_all($socket, $groupname)
 {
     $overviewformat=thread_overview_read($socket);
     fputs($socket, "GROUP $groupname\r\n");   // select a group
@@ -627,7 +822,6 @@ function nntp_headers($socket, $groupname)
 
 
 
-//todo: format the server response
 function nntp_fetchbody($socket, $groupname, $msgno)
 {
     //echo " ";
@@ -664,7 +858,7 @@ function nntp_fetchbody($socket, $groupname, $msgno)
 
 function nntp_search($nntp, $groupname, $param)
 {
-    $headers = nntp_headers($nntp, $groupname);
+    $headers = nntp_headers_all($nntp, $groupname);
 
     foreach ($headers as $key => $header) {
         $currentbody = nntp_fetchbody($nntp, $groupname, $header->id);
@@ -692,6 +886,41 @@ function nntp_search($nntp, $groupname, $param)
     } else {
         return error_handler(600);
     }
+}
+
+function getUserIdByEmail($sender)
+{
+    global $DB,$CFG;
+    if (!$user = $DB->get_record('user', ['email' => $sender])) {
+        //echo "User Information not found";
+        $user = new \stdClass();
+        $user->id = "-99";
+        $user->firstname = $sender;
+        $user->lastname = "";
+        $user->picture = 0;
+    }
+    return $user;
+}
+
+
+function loadMessageStatus($msgnr)
+{
+    global $DB,$USER;
+    if ($messageid = $DB->record_exists('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))) {
+        $moduleinstan = new stdClass();
+        $moduleinstan = $DB->get_record('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr), '*', IGNORE_MISSING);
+        if (!$moduleinstan->readstatus) {
+            $moduleinstan->readstatus=false;
+        }
+        if (!$moduleinstan->marked) {
+            $moduleinsta->marked=false;
+        }
+    } else {
+        $moduleinstan = new stdClass();
+        $moduleinstan->readstatus = "0";
+        $moduleinstan->marked = "0";
+    }
+    return  $moduleinstan;
 }
 
 // returns a message post (header and body) about an error

@@ -63,6 +63,8 @@ define([
                     newsgroup_name: '',
                     newsgroup_postquantity: 0,
                     fetch_postquantity: 50,         // Quantity to load and display in one go
+                    start: '830',
+                    end: '840'
                 };
             },
 
@@ -180,6 +182,23 @@ define([
                 processgroupinfo: function (groupinfo) {
                     app.newsgroup_name = groupinfo.groupname;
                     app.newsgroup_postquantity = groupinfo.lastarticle - groupinfo.firstarticle + 1;
+
+                    app.start = parseInt(groupinfo.firstarticle);
+                    app.end = parseInt(groupinfo.lastarticle);
+
+                    axios
+                    .get(M.cfg.wwwroot + "/mod/newsmod/php/fetchtree.php?id=" + courseid + "&start=" + app.start + "&end=" + app.end)
+                    .then(function (response) {
+                        if (app.check_for_error(response.data)) {
+                            app.post_list.push(app.prepare_postdata(response.data));
+            
+                        } else {
+                            console.log(response.data);
+                        }
+
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
                 },
 
 
