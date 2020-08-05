@@ -710,7 +710,7 @@ define([
                                 class="form-control form-control-sm" 
                                 v-model="searchstring" 
                                 placeholder="Suchen..." 
-                                v-on:click="resetsearchstring"
+                                v-on:keyup.enter="search"
                                 :style="[ viewportsize==='mobile' ? {width:70+'px'} : {width:150+'px'} ]"
                                 >
 
