@@ -72,7 +72,7 @@ function compose_mail($form, $msgnr)
 
     $body = addslashes($form->userInput);
 
-    $from = $USER->firstname." ".$USER->lastname."<".$from.">";  
+    $from = $USER->firstname." ".$USER->lastname." <".$from.">";  
 
     flush();
     $ns = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
