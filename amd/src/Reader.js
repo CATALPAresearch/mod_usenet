@@ -65,7 +65,8 @@ define([
                     newsgroup_postquantity: 0,
                     fetch_postquantity: 50,         // Quantity to load and display in one go
                     start: '830',
-                    end: '840'
+                    end: '840',
+                    errorMessages: {}
                 };
             },
 
@@ -530,6 +531,7 @@ define([
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 app.post_list.push(app.prepare_postdata(response.data));
+                                //this.errorMessages.push(response.data)
                                 app.displayerrormsg = true;
                             } else {
                                 app.displaysearchresult('', response.data);
@@ -735,6 +737,7 @@ define([
                             <div class="pt-4 pl-0">
                                 <div class="row" >
                                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 border-right" id="tree" style="overflow-y:auto; overflow-x:hidden; margin-bottom:3px; height: auto" >
+                                        <div v-for="error in errorMessages" class="alert">{{ e }}</div>
                                         <post-container 
                                             v-bind:courseid="courseid" 
                                             v-bind:postlist="post_list" 
