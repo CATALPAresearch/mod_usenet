@@ -609,9 +609,7 @@ define([
                         size: 20, // 420px square
                         format: 'svg' // use SVG instead of PNG
                     };
-                    // TODO: fix feed
-
-
+                    
                     var identiconhash = this.hash64(input, true);
                     var identicondata = new Identicon(identiconhash, options).toString();
                     return "data:image/svg+xml;base64," + identicondata;

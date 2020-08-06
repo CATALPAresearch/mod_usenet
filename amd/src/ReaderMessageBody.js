@@ -41,7 +41,7 @@ define([
 
                 onanswerbuttonclick: function () {
                     
-                    this.isreading = false;
+                    this.isreading = false; // smell
                     this.isanswering = true;
 
                     // previous post is included in a reply
