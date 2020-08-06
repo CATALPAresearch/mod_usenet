@@ -493,6 +493,7 @@ define([
 
                 newTopic: function () {
                     this.msgbodycontainerdisplay = '';
+                    this.showMessageBody = true;
                     this.iscreatingtopic = true;
                     this.isreading = false;
                     this.isanswering = false;
@@ -672,9 +673,9 @@ define([
                     <h3 class="mb-4"><img style="width:30px; height:30px;" src="pix/icon.svg"> {{ instanceName }}</h3>
                     <div class="d-flex">
                         <div class="d-flex mr-auto">
-                            <button class="btn btn-primary btn-sm" v-on:click="newTopic" title="Ein neues Thema erstellen">
+                            <button class="btn btn-primary btn-sm" :disabled="iscreatingtopic" v-on:click="newTopic" title="Eine neue Nachricht erstellen">
                                 <i class="fa fa-pen"></i>
-                                Neues Thema
+                                Neue Nachricht
                             </button>
 
                             <button class="btn btn-light btn-sm" v-on:click="refresh" title="Neue Nachrichten abholen">

@@ -177,9 +177,9 @@ define([
                 <div class="post" :class="{hidden: content.hidden}" :style="{'padding-bottom': this.postpadding}">
                     <div class="node px-0" :column="content.margin" :class="{'font-weight-bold': content.unread}">
                         <div class ="container-fluid px-0">
-                            <div class="row px-0">
+                            <div class="row px-0 mx-0" :class="{'bg-info': content.isSelected}" >
                                 
-                                <div class="px-0 col-1 col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                                <div class="px-0  col-1 col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
                                     <i class="fas fa-sm pt-2 px-3" 
                                         :class="{'fa-caret-down': content.haschild, 'fa-caret-right': this.hiddenfamily}" 
                                         :style="poststylechildcnd"
@@ -191,7 +191,6 @@ define([
                                 <div 
                                     class="px-0 col-11 col-xs-11 col-sm-11 col-md-11 col-lg-11 col-xl-11" 
                                     style="display:inline-block;"
-                                    v-bind:class="{'bg-info': content.isSelected}" 
                                     >
                                     <div class="row poststyle mb-xs-2" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
                                         
