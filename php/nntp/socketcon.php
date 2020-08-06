@@ -12,67 +12,67 @@ $error_catalogue = [
   600 => [
     0 => 'No results found',
     1 => -600,
-    2 => 'No search result was found'
+    2 => 'Für den Suchbergiff konnten keine Beiträge gefunden werden.'
   ],
   601 => [
     0 => 'No posts in newsgroup',
     1 => -601,
-    2 => 'The newsgroup you selected contains no posts from other users'
+    2 => 'In dieser Newsgroup hat noch niemand eine Nachricht geschrieben.'
   ],
   481 => [
     0 => 'Username/Password not recognized',
     1 => -481,
-    2 => 'The username or password you entered in the settings are not recognized'
+    2 => 'Upps. Wir haben Probleme die Nachrichten in dieser Newsgroup abzurufen (Code 481). Kannst du bitte einen Kursbetreuenden per E-Mail informieren.'
   ],
   400 => [
     0 => 'Service temporarily unavailable',
     1 => -400,
-    2 => 'No connection could be established. Check internet connection'
+    2 => 'Wir können uns nicht mit dem Newsgroup-Server verbinden (Code 400). Versuche die Seite neu zu laden oder probiere es später noch einmal.'
   ],
   502 => [
     0 => 'Service permamently unavailable',
     1 => -502,
-    2 => 'This service is disabled'
+    2 => 'Es gibt ein Problem mit dem Newsgroup-Server (Code 502). Bitte probiere es später noch einmal.'
   ],
   411 => [
     0 => 'No such newsgroup',
     1 => -411,
-    2 => 'No newsgroup with this name found'
+    2 => 'Die ausgewählte Newsgroup existiert leider nicht (Code 411).'
   ],
   412 => [
     0 => 'No newsgroup selected',
     1 => -412,
-    2 => 'No newsgroup with this name found'
+    2 => 'Es wurde keine Newsgroup angegeben (Code 412).'
   ],
   420 => [
     0 => 'No article with that number',
     1 => -420,
-    2 => 'Article not found'
+    2 => 'Es existiert kein Beitrag mit der gegebenen ID-Nummer (Code 420).'
   ],
   423 => [
     0 => 'No article(s) with that number',
     1 => -423,
-    2 => 'Article not found'
+    2 => 'Es existieren keine Beiträge mit der gegebenen ID-Nummer (Code 423).'
   ],
   430 => [
     0 => 'No article with that message-id',
     1 => -430,
-    2 => 'Article not found'
+    2 => 'Es konnte keine Nachricht mit dieser Nummer gefunden werden (Code 430)'
   ],
   440 => [
     0 => 'Posting not permitted',
     1 => -440,
-    2 => 'Posting not permitted'
+    2 => 'Es ist Ihnen nicht gestattet, Nachrichten zu versenden (Code 440).'
   ],
   441 => [
     0 => 'Posting failed',
     1 => -441,
-    2 => 'Posting has failed'
+    2 => 'Das Versenden der Nachricht ist leider fehlgeschlagen (441)'
   ],
   501 => [
     0 => 'Unknown command',
     1 => -501,
-    2 => 'Newsserver recieved unknown command from client'
+    2 => 'Upps, der Newsgroup-Server konnte uns leider nicht weiterhelfen (Code 501).'
   ]
 ];
 
