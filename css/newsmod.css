@@ -12,63 +12,8 @@
   cursor: pointer;
 }
 
-/* The Modal (background) */
 
-.modal {
-  display: block;
-  /* Hidden by default */
-  position: absolute;
-  /* Stay in place */
-  z-index: 10;
-  /* Sit on top */
-  left: 0;
-  top: 100px;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  /* Enable scroll if needed */
-  background-color: rgb(255, 255, 255);
-  /* Fallback color */
-  background-color: rgb(255, 255, 255);
-  /* Black w/ opacity */
-  -webkit-animation-name: fadeIn;
-  /* Fade in the background */
-  -webkit-animation-duration: 0.4s;
-  animation-name: fadeIn;
-  animation-duration: 0.4s;
-  border: solid red 1px;
-}
-
-/* Modal Content */
-
-.modal-content {
-  position: fixed;
-  bottom: 0;
-  background-color: #fefefe;
-  width: 100%;
-  -webkit-animation-name: slideIn;
-  -webkit-animation-duration: 0.4s;
-  animation-name: slideIn;
-  animation-duration: 0.4s
-}
-
-/* The Close Button */
-
-.close-modal {
-  color: white;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close-modal:hover, .close-modal:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-/* Add Animation */
-
+/* Add Animation, not needed anymore */
 @-webkit-keyframes slideIn {
   from {
     bottom: -300px;
@@ -108,6 +53,8 @@
     opacity: 1
   }
 }
+
+
 
 /* Small devices (landscape phones, 576px and up) */
 @media (max-width: 576px) {
