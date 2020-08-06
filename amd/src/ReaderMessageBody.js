@@ -19,8 +19,7 @@ define([
             ],
 
             data: function () {
-                return {
-                    answerbuttontext: 'Antworten',  // Text is toggled between 'Antworten' and 'Senden'
+                return { 
                     textareacontent: '',
                     value: {},
                     usrinput_subject: '',
@@ -41,8 +40,7 @@ define([
             methods: {
 
                 onanswerbuttonclick: function () {
-                    this.answerbuttontext = this.answerbuttontext == 'Antworten' ? 'Senden' : 'Antworten';
-
+                    
                     if (this.isreading) {
                         this.isreading = false;
                         this.isanswering = true;
@@ -128,7 +126,6 @@ define([
                     this.textareacontent = this.postdata.messagebody;
                     this.isreading = true;
                     this.isanswering = false;
-                    this.answerbuttontext = "Antworten";
                 },
                 iscreatingtopic: function () {
                     if (this.iscreatingtopic) {
@@ -163,8 +160,8 @@ define([
                         <div class="border-bottom ml-3 mb-1 pl-1 pb-1">
                             <div class="mb-2 pl-1 pb-1">
                                 <div class="mx-0 control-bar">
-                                    <button :class="'btn btn-sm btn-primary'" v-on:click="submitNewMessage">Senden</button>
-                                    <button type="button" class="close ml-auto align-self-center" aria-label="Close" v-on:click="hideParentMessageBody">
+                                    <span class="bold">Neue Nachricht verfassen</span>
+                                    <button type="button" class="close ml-auto align-self-center d-block d-sm-none" aria-label="Close" v-on:click="hideParentMessageBody">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
@@ -176,6 +173,8 @@ define([
                             <div class="form-group">
                                 <label hidden for="inputtext">Text:</label>
                                 <textarea id="inputtext" placeholder="Beitragstext" v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=10> </textarea>
+                                <button class="btn btn-sm btn-primary mt-1" v-on:click="submitNewMessage">Senden</button>
+                                <button class="btn btn-sm btn-link mt-1 float-right d-block d-sm-none" v-on:click="hideParentMessageBody">Nachricht verwerfen</button>
                             </div>
                         </div>
                     </template>
@@ -185,9 +184,9 @@ define([
                     <template v-else>
                         <div class="border-bottom ml-3 mb-1 pl-1 pb-1">
                             <div class="mx-0 mb-3 control-bar" :class="{hidden: postdata.header.is_error}">
-                                <button class="btn btn-sm btn-outline-primary mr-3" v-on:click="onanswerbuttonclick" title="Beitrag beantworten">
+                                <button class="btn btn-sm btn-outline-primary mr-3" :disabled="isanswering" v-on:click="onanswerbuttonclick" title="Beitrag beantworten">
                                     <i class="fa fa-reply"></i>
-                                    {{answerbuttontext}}
+                                    Antworten
                                 </button>
                                 <button class="btn btn-sm btn-light mr-0" v-on:click="prevmsg" title="Die vorherige Nachricht anzeigen">
                                     <i class="fa fa-chevron-left"></i>
@@ -218,7 +217,7 @@ define([
                         </div>
                     </template>
                         
-                    
+
                     <template v-if="! iscreatingtopic">
                         <template v-if="isreading">
                             <div :class="{hidden: hideloadingicon}">
