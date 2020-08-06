@@ -7,7 +7,13 @@ define([
 
     return Vue.component('post-container',
             {
-                props: ['postlist', 'markedpost', 'courseid', 'showloadingicon', 'viewportsize'],
+                props: [
+                    'postlist', 
+                    'markedpost', 
+                    'courseid', 
+                    'showloadingicon', 
+                    'viewportsize'
+                ],
 
 
                 data: function () {
@@ -136,11 +142,10 @@ define([
                         this.$emit('setSelected', arraypos);
                     }
                 }, // END component methods
-                template: `<div class="post-container"">
-                                <div class="">
-                                    <div :class="{hidden: showloadingicon}">
-                                        <i class="fas fa-circle-o-notch fa-spin fa-3x"/>
-                                    </div>
+                
+                template: `<div class="post-container">
+                                <div :class="{'hidden': showloadingicon, 'text-center': true, 'my-2': true}" style="opacity:0.5;">
+                                    <i class="fas fa-circle-o-notch fa-spin fa-3x"/>
                                 </div>
                                 <post v-for='singlepost in postlist' 
                                     v-bind:content='singlepost' 
@@ -155,6 +160,4 @@ define([
                                 </post>
                             </div>`
             }); // END component post-container
-
-        
 });
