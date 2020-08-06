@@ -31,7 +31,7 @@ define([
     */
 
         var Reader = function (Log, courseid, messageid, instanceName) {
-            console.log(instanceName)
+            
         var app = new Vue({
             el: 'newsmod-container',
             data: function () {
@@ -141,7 +141,7 @@ define([
                         }
 
                     }).catch(function (error) {
-                        console.log(error);
+                        console.error(error);
                     })
                     .then(function () {
                         app.hideloadingicon = true;
@@ -181,7 +181,7 @@ define([
                             }
 
                         }).catch(function (error) {
-                            console.log(error);
+                            console.error(error);
                         });
                 },
 
@@ -199,11 +199,11 @@ define([
                             app.post_list.push(app.prepare_postdata(response.data));
             
                         } else {
-                            console.log(response.data);
+                            //console.log(response.data);
                         }
 
                     }).catch(function (error) {
-                        console.log(error);
+                        console.error(error);
                     });
                 },
 
@@ -234,7 +234,7 @@ define([
                                 app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
                             }
                         }).catch(function (error) {
-                            console.log(error);
+                            console.error(error);
                         }).then(function () {
                             app.hideloadingiconRMB = true;
                         });
@@ -309,9 +309,6 @@ define([
                     modpost.hidden = false;
                     Vue.set(this.post_list, arraypos, modpost);
 
-                    console.log(arraypos);
-                    console.log(msgid);
-
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
                         .then(function (response) {
@@ -323,7 +320,7 @@ define([
                                 app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
                             }
                         }).catch(function (error) {
-                            console.log(error);
+                            console.error(error);
                         }).then(function () {
                             app.hideloadingiconRMB = true;
                         });
@@ -341,7 +338,6 @@ define([
 
                     let post = this.findinarr(msgid, this.post_list);
 
-                    console.log(post.arraypos);
                     let arraypos = post.arraypos;
 
                     arraypos += 1;
@@ -353,10 +349,6 @@ define([
                     let modpost = this.findinarr(msgid, this.post_list);                // Set next message to visible if it was hidden
                     modpost.hidden = false;
                     Vue.set(this.post_list, arraypos, modpost);
-
-                    console.log(arraypos);
-                    console.log(msgid);
-
 
                     //msgid = parseInt(msgid);
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
@@ -370,7 +362,7 @@ define([
                                 app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
                             }
                         }).catch(function (error) {
-                            console.log(error);
+                            console.error(error);
                         }).then(function () {
                             app.hideloadingiconRMB = true;
                         });
@@ -517,7 +509,7 @@ define([
                             }
                         })
                         .catch(error => (
-                            console.log(error)
+                            console.error(error)
                         ))
                         .then(function () {
                             app.hideloadingicon = true;
@@ -552,7 +544,7 @@ define([
                             Vue.set(this.post_list, modpost.arraypos, modpost);
                         }
                         else {
-                            console.log("err displaysearchresult");
+                            console.error("error displaysearchresult");
                         }
                     }
                     //this.hideloadingicon = true;
@@ -602,7 +594,7 @@ define([
                             }
 
                         }).catch(function (error) {
-                            console.log(error);
+                            console.error(error);
                         })
                         .then(function () {
                             app.hideloadingicon = true;
