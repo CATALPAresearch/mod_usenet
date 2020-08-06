@@ -37,6 +37,7 @@ define([
             data: function () {
                 return {
                     instanceName: 'Newsgroup',
+                    showMessageBody: false,
                     searchstring: '',
                     searchresult: [],
                     hiddenposts: [],        // Stores array pos of searchresult items in array post_list
@@ -151,6 +152,9 @@ define([
 
             },
             methods: {
+                hideMessageBody: function(){
+                    this.showMessageBody = false;
+                },
                 Windowresizehandler: function () {
                     if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
                         this.viewportsize = 'mobile';
@@ -216,7 +220,7 @@ define([
                 },
 
                 ondisplaymsg: function (msgid) {
-
+                    this.showMessageBody = true;
                     this.hideloadingiconRMB = false;
 
                     axios
@@ -382,7 +386,7 @@ define([
                  * Refresh post
                  */
                 onansweredmsg: function () {
-
+                    
                     this.hideloadingicon = false;
 
                     app.post_list.splice(0);    //unset content array
@@ -391,39 +395,13 @@ define([
                     this.isanswering = false;
                     this.iscreatingtopic = false;
                     this.isreading = false;
-
-                    if (this.viewportsize == 'mobile') {
-                        this.showmodal = false;
-                    }
-
+                    let _this = this;
                     // Timeout of 2 seconds. Reason: After user posted a message, page gets refreshed with new data
                     // but server might not have the new message available yet, depending on server load (?)
                     setTimeout(function () {
+                        _this.refresh
+                    }, (2000));
 
-                        axios   //returned data is already js object (axios automaticly converts json to js obj)
-                            .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + app.courseid)
-                            .then(function (response) {
-                                if (app.check_for_error(response.data)) {
-                                    app.post_list.push(app.prepare_postdata(response.data));
-
-                                } else {
-                                    app.info = response;
-                                    app.tree_data = response.data;
-                                    app.buildtree(response.data, 1);
-                                }
-                            }).catch(function (error) {
-                                console.log(error);
-                            }).then(function () {
-                                app.hideloadingicon = true;
-                            });
-
-                    }, (2 * 1000));
-
-                },
-
-                closemodal: function () {
-                    this.showmodal = false;
-                    this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
                 },
 
                 prepare_postdata: function (postdata_raw, margin = 1) {
@@ -628,7 +606,6 @@ define([
                         .then(function () {
                             app.hideloadingicon = true;
                         });
-
                 },
 
                 getidenticon: function (input) {
@@ -736,6 +713,24 @@ define([
                         <div class="container-fluid px-2 border-left tab-pane active" id="viewlist">
                             <div class="pt-4 pl-0">
                                 <div class="row" >
+                                    <div v-if="showMessageBody" class="d-block d-sm-none">
+                                        <messagebody-container 
+                                            v-bind:courseid="courseid"
+                                            v-bind:postdata="singlepostdata"
+                                            :identiconstring = "identiconstring"
+                                            :isused ="msgbodycontainerdisplay" 
+                                            :isreading="isreading" 
+                                            :isanswering="isanswering" 
+                                            :iscreatingtopic="iscreatingtopic"
+                                            :viewportsize = "viewportsize"
+                                            :hideloadingicon = "hideloadingiconRMB"
+                                            v-on:answeredmsg="onansweredmsg"
+                                            v-on:prevmsg="onprevmsg" 
+                                            v-on:nextmsg="onnextmsg"
+                                            v-on:hideMessageBody="hideMessageBody"
+                                            >
+                                        </messagebody-container>
+                                    </div>
                                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 border-right" id="tree" style="overflow-y:auto; overflow-x:hidden; margin-bottom:3px; height: auto" >
                                         <div v-for="error in errorMessages" class="alert">{{ e }}</div>
                                         <post-container 
@@ -748,8 +743,9 @@ define([
                                             v-on:setSelected="setSelected">
                                         </post-container>
                                     </div>
-                                    <div :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12', {modal: showmodal}]" id="treeinfo">
-                                        <messagebody-container
+                                    <div class="col-xl-6 col-lg-6 col-md-12 d-none d-sm-inline" id="treeinfo">
+                                        <!-- , {modal: showmodal} :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12']"-->
+                                        <messagebody-container 
                                             v-bind:courseid="courseid" 
                                             v-bind:postdata="singlepostdata"
                                             :identiconstring = "identiconstring"
@@ -762,7 +758,7 @@ define([
                                             v-on:answeredmsg="onansweredmsg"
                                             v-on:prevmsg="onprevmsg" 
                                             v-on:nextmsg="onnextmsg"
-                                            v-on:closemodal="closemodal">
+                                            v-on:hideMessageBody="hideMessageBody">
                                         </messagebody-container>
                                     </div>
                                 </div>
