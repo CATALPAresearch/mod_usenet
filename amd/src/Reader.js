@@ -745,8 +745,7 @@ define([
                                             v-on:setSelected="setSelected">
                                         </post-container>
                                     </div>
-                                    <div :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12', {modal: showmodal}]" id="treeinfo" 
-                                    style="padding-right:0px;">
+                                    <div :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12', {modal: showmodal}]" id="treeinfo">
                                         <messagebody-container
                                             v-bind:courseid="courseid" 
                                             v-bind:postdata="singlepostdata"

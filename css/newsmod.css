@@ -26,22 +26,21 @@
   z-index: 10;
   /* Sit on top */
   left: 0;
-  top: auto;
+  top: 100px;
   width: 100%;
-  /* Full width */
   height: 100%;
-  /* Full height */
-  overflow: auto;
+  overflow: hidden;
   /* Enable scroll if needed */
   background-color: rgb(255, 255, 255);
   /* Fallback color */
-  background-color: rgb(233, 233, 233);
+  background-color: rgb(255, 255, 255);
   /* Black w/ opacity */
   -webkit-animation-name: fadeIn;
   /* Fade in the background */
   -webkit-animation-duration: 0.4s;
   animation-name: fadeIn;
-  animation-duration: 0.4s
+  animation-duration: 0.4s;
+  border: solid red 1px;
 }
 
 /* Modal Content */

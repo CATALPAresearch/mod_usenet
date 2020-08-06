@@ -79,7 +79,7 @@ define([
 
                 },
                 convertDate: function(date){
-                    console.log(date);
+                    console.log(date)
                     date = date * 1000;
                     var options = {
                         year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric'
