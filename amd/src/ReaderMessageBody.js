@@ -41,48 +41,17 @@ define([
 
                 onanswerbuttonclick: function () {
                     
-                    if (this.isreading) {
-                        this.isreading = false;
-                        this.isanswering = true;
+                    this.isreading = false;
+                    this.isanswering = true;
 
-                        // previous post is included in a reply
-                        // placing ">" to distinguish old message from new reply 
-                        var messagesplit = this.textareacontent.split('\n');
-                        var newmessage = "\n";
-                        for (var i = 0; i < messagesplit.length; i++) {
-                            newmessage = newmessage + ">" + messagesplit[i] + "\n";
-                        }
-                        this.textarea_usrinput = newmessage;
+                    // previous post is included in a reply
+                    // placing ">" to distinguish old message from new reply 
+                    var messagesplit = this.textareacontent.split('\n');
+                    var newmessage = "\n";
+                    for (var i = 0; i < messagesplit.length; i++) {
+                        newmessage = newmessage + ">" + messagesplit[i] + "\n";
                     }
-                    else {                      // ==If user is answering a post
-                        // this.textareacontent=this.postdata.messagebody;
-                        this.isreading = true;
-                        this.isanswering = false;
-
-
-                        // Why PARAMS: axios also converts js objects to json on POST
-                        // which is incompatible with moodles "data_submitted()"
-                        // thats why the classic approach of urlsearchparams() is needed 
-                        const params = new URLSearchParams();
-                        params.append('userInput', this.textarea_usrinput);
-                        if (this.postdata.header === undefined) {
-                            this.postdata.header = { subject: '', references: '', id: -1 };
-                        }
-                        params.append('subject', this.postdata.header.subject);
-                        params.append('references', this.postdata.header.references);
-                        params.append('uid', this.postdata.header.id);
-
-                        axios   //returned data is already js object (axios automaticly converts json to js obj)
-                            .post(M.cfg.wwwroot + "/mod/newsmod/php/posttest.php?id=" + this.courseid + "&msgnr=" + this.postdata.header.id,
-                                params)
-                            .then(response => (this.value = response));
-
-                        this.$emit('answeredmsg');
-
-                        //{ userInput : this.textareacontent, subject : this.postdata.header.subject, references : this.postdata.header.references, uid : this.postdata.header.id }
-
-                    }
-
+                    this.textarea_usrinput = newmessage;
 
                 },
                 
@@ -110,6 +79,33 @@ define([
                         .then(response => (this.value = response));
 
                     this.$emit('answeredmsg');
+                },
+
+                submitReplyMessage: function (){
+                    // ==If user is answering a post
+                    // this.textareacontent=this.postdata.messagebody;
+                    this.isreading = true;
+                    this.isanswering = false;
+
+                    // Why PARAMS: axios also converts js objects to json on POST
+                    // which is incompatible with moodles "data_submitted()"
+                    // thats why the classic approach of urlsearchparams() is needed 
+                    const params = new URLSearchParams();
+                    params.append('userInput', this.textarea_usrinput);
+                    if (this.postdata.header === undefined) {
+                        this.postdata.header = { subject: '', references: '', id: -1 };
+                    }
+                    params.append('subject', this.postdata.header.subject);
+                    params.append('references', this.postdata.header.references);
+                    params.append('uid', this.postdata.header.id);
+
+                    axios 
+                        .post(M.cfg.wwwroot + "/mod/newsmod/php/posttest.php?id=" + this.courseid + "&msgnr=" + this.postdata.header.id,
+                            params)
+                        .then(response => (this.value = response));
+
+                    this.$emit('answeredmsg');
+
                 },
 
                 convertDate: function (date) {
@@ -173,8 +169,8 @@ define([
                             <div class="form-group">
                                 <label hidden for="inputtext">Text:</label>
                                 <textarea id="inputtext" placeholder="Beitragstext" v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=10> </textarea>
-                                <button class="btn btn-sm btn-primary mt-1" v-on:click="submitNewMessage">Senden</button>
-                                <button class="btn btn-sm btn-link mt-1 float-right d-block d-sm-none" v-on:click="hideParentMessageBody">Nachricht verwerfen</button>
+                                <button class="btn btn-sm btn-primary mt-3" v-on:click="submitNewMessage">Absenden</button>
+                                <button class="btn btn-sm btn-link float-right mt-3 d-block d-sm-none" v-on:click="hideParentMessageBody">Nachricht verwerfen</button>
                             </div>
                         </div>
                     </template>
@@ -228,8 +224,10 @@ define([
                             </div>
                         </template>
                         <template v-else>
-                            <div class="form-group border-bottom ml-3 mb-3 pl-1 pb-3">
+                            <div class="form-group ml-3 mb-3 pl-1 pb-3">
                                 <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=10> </textarea>
+                                <button class="btn btn-sm mt-3 btn-primary" v-on:click="submitReplyMessage">Absenden</button>
+                                <button class="btn btn-sm mt-3 btn-link float-right d-block d-sm-none" v-on:click="hideParentMessageBody">Nachricht verwerfen</button>
                             </div>
                         </template>
                     </template>                        
