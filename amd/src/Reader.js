@@ -489,6 +489,7 @@ define([
                     this.iscreatingtopic = true;
                     this.isreading = false;
                     this.isanswering = false;
+                    // not working: this.$nextTick(() => this.$refs.newMessageSubject.focus())
                 },
 
                 search: function (options) {

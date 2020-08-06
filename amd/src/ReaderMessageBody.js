@@ -52,7 +52,9 @@ define([
                         newmessage = newmessage + ">" + messagesplit[i] + "\n";
                     }
                     this.textarea_usrinput = newmessage;
-
+                    // set focus on textarea
+                    this.$nextTick(() => this.$refs.replyText.focus())
+                    
                 },
                 
                 prevmsg: function () {   // Number=messageid
@@ -71,7 +73,6 @@ define([
                     const params = new URLSearchParams();
                     params.append('userInput', this.textarea_usrinput);
                     params.append('subject', this.usrinput_subject);
-
 
                     axios   //returned data is already js object (axios automaticly converts json to js obj)
                         .post(M.cfg.wwwroot + "/mod/newsmod/php/posttest.php?id=" + this.courseid + "&msgnr=new",
@@ -164,7 +165,7 @@ define([
                             </div>
                             <div class="form-group">
                                 <label hidden for="inputsubject">Betreff:</label>
-                                <input id="inputsubject" placeholder="Betreff" v-model="usrinput_subject" :class="{'form-control': true}"/>
+                                <input ref="newMessageSubject" id="inputsubject" placeholder="Betreff" v-model="usrinput_subject" :class="{'form-control': true}"/>
                             </div>
                             <div class="form-group">
                                 <label hidden for="inputtext">Text:</label>
@@ -225,7 +226,7 @@ define([
                         </template>
                         <template v-else>
                             <div class="form-group ml-3 mb-3 pl-1 pb-3">
-                                <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=10> </textarea>
+                                <textarea ref="replyText" v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=10></textarea>
                                 <button class="btn btn-sm mt-3 btn-primary" v-on:click="submitReplyMessage">Absenden</button>
                                 <button class="btn btn-sm mt-3 btn-link float-right d-block d-sm-none" v-on:click="hideParentMessageBody">Nachricht verwerfen</button>
                             </div>
