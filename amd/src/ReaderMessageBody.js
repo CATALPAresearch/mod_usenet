@@ -7,19 +7,19 @@ define([
     return Vue.component('messagebody-container',
         {
             props: [
-                'postdata', 
-                'isused', 
-                'isreading', 
-                'isanswering', 
-                'iscreatingtopic', 
+                'postdata',
+                'isused',
+                'isreading',
+                'isanswering',
+                'iscreatingtopic',
                 'courseid',
-                'identiconstring', 
-                'viewportsize', 
+                'identiconstring',
+                'viewportsize',
                 'hideloadingicon'
             ],
 
             data: function () {
-                return { 
+                return {
                     textareacontent: '',
                     value: {},
                     usrinput_subject: '',
@@ -40,7 +40,7 @@ define([
             methods: {
 
                 onanswerbuttonclick: function () {
-                    
+
                     this.isreading = false; // smell
                     this.isanswering = true;
 
@@ -54,9 +54,9 @@ define([
                     this.textarea_usrinput = newmessage;
                     // set focus on textarea
                     this.$nextTick(() => this.$refs.replyText.focus())
-                    
+
                 },
-                
+
                 prevmsg: function () {   // Number=messageid
                     this.$emit('prevmsg', this.postdata.header !== undefined ? this.postdata.header.number : 0);
                 },
@@ -82,7 +82,7 @@ define([
                     this.$emit('answeredmsg');
                 },
 
-                submitReplyMessage: function (){
+                submitReplyMessage: function () {
                     // ==If user is answering a post
                     // this.textareacontent=this.postdata.messagebody;
                     this.isreading = true;
@@ -100,7 +100,7 @@ define([
                     params.append('references', this.postdata.header.references);
                     params.append('uid', this.postdata.header.id);
 
-                    axios 
+                    axios
                         .post(M.cfg.wwwroot + "/mod/newsmod/php/posttest.php?id=" + this.courseid + "&msgnr=" + this.postdata.header.id,
                             params)
                         .then(response => (this.value = response));

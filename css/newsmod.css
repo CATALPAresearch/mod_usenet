@@ -12,8 +12,8 @@
   cursor: pointer;
 }
 
-
 /* Add Animation, not needed anymore */
+
 @-webkit-keyframes slideIn {
   from {
     bottom: -300px;
@@ -54,9 +54,8 @@
   }
 }
 
-
-
 /* Small devices (landscape phones, 576px and up) */
+
 @media (max-width: 576px) {
   #newsmod-container h3 {
     font-size: 1.2rem;

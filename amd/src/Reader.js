@@ -30,8 +30,8 @@ define([
     
     */
 
-        var Reader = function (Log, courseid, messageid, instanceName) {
-            
+    var Reader = function (Log, courseid, messageid, instanceName) {
+
         var app = new Vue({
             el: 'newsmod-container',
             data: function () {
@@ -152,7 +152,7 @@ define([
 
             },
             methods: {
-                hideMessageBody: function(){
+                hideMessageBody: function () {
                     this.showMessageBody = false;
                 },
                 Windowresizehandler: function () {
@@ -193,18 +193,18 @@ define([
                     app.end = parseInt(groupinfo.lastarticle);
 
                     axios
-                    .get(M.cfg.wwwroot + "/mod/newsmod/php/fetchtree.php?id=" + courseid + "&start=" + app.start + "&end=" + app.end)
-                    .then(function (response) {
-                        if (app.check_for_error(response.data)) {
-                            app.post_list.push(app.prepare_postdata(response.data));
-            
-                        } else {
-                            //console.log(response.data);
-                        }
+                        .get(M.cfg.wwwroot + "/mod/newsmod/php/fetchtree.php?id=" + courseid + "&start=" + app.start + "&end=" + app.end)
+                        .then(function (response) {
+                            if (app.check_for_error(response.data)) {
+                                app.post_list.push(app.prepare_postdata(response.data));
 
-                    }).catch(function (error) {
-                        console.error(error);
-                    });
+                            } else {
+                                //console.log(response.data);
+                            }
+
+                        }).catch(function (error) {
+                            console.error(error);
+                        });
                 },
 
 
@@ -378,7 +378,7 @@ define([
                  * Refresh post
                  */
                 onansweredmsg: function () {
-                    
+
                     this.hideloadingicon = false;
 
                     app.post_list.splice(0);    //unset content array
@@ -609,7 +609,7 @@ define([
                         size: 20, // 420px square
                         format: 'svg' // use SVG instead of PNG
                     };
-                    
+
                     var identiconhash = this.hash64(input, true);
                     var identicondata = new Identicon(identiconhash, options).toString();
                     return "data:image/svg+xml;base64," + identicondata;

@@ -205,7 +205,7 @@ define([
 
                                         <div class="col-2 order-2 order-md-3 col-xs-4 col-sm-2 col-md-2 col-lg-2 col-xl-2 px-0" data-date-format="DD.MM.YYYY">
                                             <span style="font-size:0.9em">{{content.calctime}}</span>
-                                            <i class="far fa-star poststyle d-none d-xs-block" :class="{starmarked: content.marked, fas: content.marked }"
+                                            <i class="far fa-star poststyle d-xs-block" :class="{starmarked: content.marked, fas: content.marked }"
                                         v-on:click="togglemarked" title="Favoriten markieren"/>
                                         </div>
                                     </div>
