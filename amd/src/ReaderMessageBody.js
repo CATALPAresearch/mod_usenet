@@ -15,7 +15,8 @@ define([
                 'courseid',
                 'identiconstring', 
                 'viewportsize', 
-                'hideloadingicon'
+                'hideloadingicon',
+                'statesRMB'
             ],
 
             data: function () {
@@ -141,6 +142,9 @@ define([
                         this.ismobile = false;
                     }
                 },
+                statesRMB: function () {
+
+                },
                 /**
                  * When user requests a new message to display in textarea of ReaderMessageBody,
                  * then show the loading icon and delete previous content
@@ -167,13 +171,13 @@ define([
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label hidden for="inputsubject">Betreff:</label>
+                               <!-- <label hidden for="Ainputsubject">Betreff:</label> -->
                                 <input id="inputsubject" placeholder="Betreff" v-model="usrinput_subject" :class="{'form-control': true}"/>
                             </div>
                             <div class="form-group">
                                 <label hidden for="inputtext">Text:</label>
                                 <textarea id="inputtext" placeholder="Beitragstext" v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=10> </textarea>
-                                <button class="btn btn-sm btn-primary mt-1" v-on:click="submitNewMessage">Senden</button>
+                                <button class="btn btn-sm btn-primary mt-1" :disabled="isanswering" v-on:click="submitNewMessage">Senden</button>
                                 <button class="btn btn-sm btn-link mt-1 float-right d-block d-sm-none" v-on:click="hideParentMessageBody">Nachricht verwerfen</button>
                             </div>
                         </div>
@@ -184,15 +188,15 @@ define([
                     <template v-else>
                         <div class="border-bottom ml-3 mb-1 pl-1 pb-1">
                             <div class="mx-0 mb-3 control-bar" :class="{hidden: postdata.header.is_error}">
-                                <button class="btn btn-sm btn-outline-primary mr-3" :disabled="isanswering" v-on:click="onanswerbuttonclick" title="Beitrag beantworten">
+                                <button class="btn btn-sm btn-outline-primary mr-3" :hidden="isanswering" v-on:click="onanswerbuttonclick" title="Beitrag beantworten">
                                     <i class="fa fa-reply"></i>
                                     Antworten
                                 </button>
-                                <button class="btn btn-sm btn-light mr-0" v-on:click="prevmsg" title="Die vorherige Nachricht anzeigen">
+                                <button class="btn btn-sm btn-light mr-0" :disabled = "!statesRMB.CanSelectPrev" v-on:click="prevmsg" title="Die vorherige Nachricht anzeigen">
                                     <i class="fa fa-chevron-left"></i>
                                 </button>
                                 <span class="mx-0">Nachricht</span>
-                                <button class="btn btn-sm btn-light ml-0" v-on:click="nextmsg" title="Die nächste Nachricht anzeigen">
+                                <button class="btn btn-sm btn-light ml-0" :disabled = "!statesRMB.CanSelectNext" v-on:click="nextmsg" title="Die nächste Nachricht anzeigen">
                                     <i class="fa fa-chevron-right"></i>    
                                 </button>
                                 <button type="button" class="close ml-auto align-self-center" aria-label="Close" v-on:click="hideParentMessageBody">

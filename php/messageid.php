@@ -43,42 +43,35 @@ $localconfig = get_config('newsmod');
 
 require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
 
-if ($msgnr < 0) {       //if msgnr is negative, then an error message is requested, else its just a normal request
-    $returnmsg = [
-        "header" => error_handler(($msgnr * -1)),
-        "messagebody" => $error_catalogue[($msgnr * -1)][2]
-    ];
+
+$nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+
+
+if (is_array($nntp) && array_key_exists('is_error',$nntp)) {    //error detected, theres error_feedback data structure here!
+    $returnmsg = $nntp;
 }
 else {
-
-    $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
-
-
-    if (is_array($nntp) && array_key_exists('is_error',$nntp)) {    //error detected, theres error_feedback data structure here!
-        $returnmsg = $nntp;
+    $header = nntp_header($nntp, $journal->newsgroup, $msgnr);
+    if (array_key_exists('is_error', $header)) {
+        $returnmsg = $header;
     }
     else {
-        $header = nntp_header($nntp, $journal->newsgroup, $msgnr);
-        if (array_key_exists('is_error', $header)) {
-            $returnmsg = $header;
+        $messagebody = nntp_fetchbody($nntp, $journal->newsgroup, $msgnr);
+        if (is_array($messagebody) && array_key_exists('is_error', $messagebody)) {
+            $returnmsg = $body;
         }
         else {
-            $messagebody = nntp_fetchbody($nntp, $journal->newsgroup, $msgnr);
-            if (is_array($messagebody) && array_key_exists('is_error', $messagebody)) {
-                $returnmsg = $body;
-            }
-            else {
-                $returnmsg = [
-                    "header" => $header,
-                    "messagebody" => $messagebody
-                ];
-            
-                require_once($CFG->dirroot . '/mod/newsmod/php/nntp/libconn.php');
-                markMessageRead($msgnr);
-            }
+            $returnmsg = [
+                "header" => $header,
+                "messagebody" => $messagebody
+            ];
+        
+            require_once($CFG->dirroot . '/mod/newsmod/php/nntp/libconn.php');
+            markMessageRead($msgnr);
         }
     }
 }
+
 echo json_encode($returnmsg);
 
 

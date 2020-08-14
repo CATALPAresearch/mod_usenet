@@ -8,73 +8,124 @@
 
 //error_reporting(E_ALL);
 
-$error_catalogue = [
-  600 => [
-    0 => 'No results found',
-    1 => -600,
-    2 => 'Für den Suchbergiff konnten keine Beiträge gefunden werden.'
-  ],
-  601 => [
-    0 => 'No posts in newsgroup',
-    1 => -601,
-    2 => 'In dieser Newsgroup hat noch niemand eine Nachricht geschrieben.'
-  ],
-  481 => [
-    0 => 'Username/Password not recognized',
-    1 => -481,
-    2 => 'Upps. Wir haben Probleme die Nachrichten in dieser Newsgroup abzurufen (Code 481). Kannst du bitte einen Kursbetreuenden per E-Mail informieren.'
-  ],
-  400 => [
-    0 => 'Service temporarily unavailable',
-    1 => -400,
-    2 => 'Wir können uns nicht mit dem Newsgroup-Server verbinden (Code 400). Versuche die Seite neu zu laden oder probiere es später noch einmal.'
-  ],
-  502 => [
-    0 => 'Service permamently unavailable',
-    1 => -502,
-    2 => 'Es gibt ein Problem mit dem Newsgroup-Server (Code 502). Bitte probiere es später noch einmal.'
-  ],
-  411 => [
-    0 => 'No such newsgroup',
-    1 => -411,
-    2 => 'Die ausgewählte Newsgroup existiert leider nicht (Code 411).'
-  ],
-  412 => [
-    0 => 'No newsgroup selected',
-    1 => -412,
-    2 => 'Es wurde keine Newsgroup angegeben (Code 412).'
-  ],
-  420 => [
-    0 => 'No article with that number',
-    1 => -420,
-    2 => 'Es existiert kein Beitrag mit der gegebenen ID-Nummer (Code 420).'
-  ],
-  423 => [
-    0 => 'No article(s) with that number',
-    1 => -423,
-    2 => 'Es existieren keine Beiträge mit der gegebenen ID-Nummer (Code 423).'
-  ],
-  430 => [
-    0 => 'No article with that message-id',
-    1 => -430,
-    2 => 'Es konnte keine Nachricht mit dieser Nummer gefunden werden (Code 430)'
-  ],
-  440 => [
-    0 => 'Posting not permitted',
-    1 => -440,
-    2 => 'Es ist Ihnen nicht gestattet, Nachrichten zu versenden (Code 440).'
-  ],
-  441 => [
-    0 => 'Posting failed',
-    1 => -441,
-    2 => 'Das Versenden der Nachricht ist leider fehlgeschlagen (441)'
-  ],
-  501 => [
-    0 => 'Unknown command',
-    1 => -501,
-    2 => 'Upps, der Newsgroup-Server konnte uns leider nicht weiterhelfen (Code 501).'
-  ]
-];
+function error_catalogue($err_num) {
+
+    switch ($err_num) {
+
+        case 400:
+            $errorinfo = [
+                0 => 'Service temporarily unavailable',
+                1 => -400,
+                2 => 'Wir können uns nicht mit dem Newsgroup-Server verbinden (Code 400). Versuche die Seite neu zu laden oder probiere es später noch einmal.'
+            ];
+        break;
+
+        case 411:
+            $errorinfo = [
+                0 => 'No such newsgroup',
+                1 => -411,
+                2 => 'Die ausgewählte Newsgroup existiert leider nicht (Code 411).'            
+            ];
+        break;
+
+        case 412:
+            $errorinfo = [
+                0 => 'No newsgroup selected',
+                1 => -412,
+                2 => 'Es wurde keine Newsgroup angegeben (Code 412).'
+            ];
+        break;
+
+        case 420:
+            $errorinfo = [
+                0 => 'No article with that number',
+                1 => -420,
+                2 => 'Es existiert kein Beitrag mit der gegebenen ID-Nummer (Code 420).'            
+            ];
+        break;
+
+        case 423:
+            $errorinfo = [
+                0 => 'No article(s) with that number',
+                1 => -423,
+                2 => 'Es existieren keine Beiträge mit der gegebenen ID-Nummer (Code 423).'            
+            ];
+        break;
+
+        case 430:
+            $errorinfo = [
+                0 => 'No article with that message-id',
+                1 => -430,
+                2 => 'Es konnte keine Nachricht mit dieser Nummer gefunden werden (Code 430)'            
+            ];
+        break;
+
+        case 440:
+            $errorinfo = [
+                0 => 'Posting not permitted',
+                1 => -440,
+                2 => 'Es ist Ihnen nicht gestattet, Nachrichten zu versenden (Code 440).'            
+            ];
+        break;
+
+        case 441:
+            $errorinfo = [
+                0 => 'Posting failed',
+                1 => -441,
+                2 => 'Das Versenden der Nachricht ist leider fehlgeschlagen (441)'            
+            ];
+        break;
+
+        case 481:
+            $errorinfo = [
+                0 => 'Username/Password not recognized',
+                1 => -481,
+                2 => 'Upps. Wir haben Probleme die Nachrichten in dieser Newsgroup abzurufen (Code 481). Kannst du bitte einen Kursbetreuenden per E-Mail informieren.'            
+            ];
+        break;
+
+        case 501:
+            $errorinfo = [
+                0 => 'Unknown command',
+                1 => -501,
+                2 => 'Upps, der Newsgroup-Server konnte uns leider nicht weiterhelfen (Code 501).'            
+            ];
+        break;
+
+        case 502:
+            $errorinfo = [
+                0 => 'Service permamently unavailable',
+                1 => -502,
+                2 => 'Es gibt ein Problem mit dem Newsgroup-Server (Code 502). Bitte probiere es später noch einmal.'                            
+            ];
+        break;
+
+        case 600:
+            $errorinfo = [
+                0 => 'No results found',
+                1 => -600,
+                2 => 'Für den Suchbergiff konnten keine Beiträge gefunden werden.'            
+            ];
+        break;
+
+        case 601:
+            $errorinfo = [
+                0 => 'No posts in newsgroup',
+                1 => -601,
+                2 => 'In dieser Newsgroup hat noch niemand eine Nachricht geschrieben.'            
+            ];
+        break;
+
+        default:
+            $errorinfo = [
+                0 => 'Unknown command',
+                1 => -501,
+                2 => 'Upps, der Newsgroup-Server konnte uns leider nicht weiterhelfen (Code 501).'                            
+            ];
+        break;
+    }
+    return $errorinfo;
+}
 
 function debug2c($data)
 {
@@ -578,7 +629,7 @@ function gettree($journal, $start, $end) {
 
             $self["name"] = $header->subject;
             $self["number"] = $header->number;
-            $self["id"] = $header->id;
+            $self["messageid"] = $header->id;
             $self["personal"] = $header->name;
             $self["sender"] = addcslashes(str_replace('\\', '', $header->from), "\"");
             $self["messagestatus"] = $statusread->readstatus;
@@ -597,7 +648,6 @@ function gettree($journal, $start, $end) {
     }
     $tree["children"] = $siblings;
     return $tree;
-    //return "yes";
 }
 
 function agetchildren($header, $headers) {
@@ -620,7 +670,7 @@ function agetchildren($header, $headers) {
 
             $self["name"] = $child->subject;
             $self["number"] = $child->number;
-            $self["id"] = $child->id;
+            $self["messageid"] = $child->id;
             $self["personal"] = $child->name;
             $self["sender"] = addcslashes(str_replace('\\', '', $child->from), "\"");
             $self["messagestatus"] = $statusread->readstatus;
@@ -662,6 +712,7 @@ function nntp_headers($socket, $groupname, $start, $end) {
             $line=line_read($socket);
             // read overview by overview until the data ends
             while ($line != ".") {
+                
                 // parse the output of the server...
                 $article=thread_overview_interpret($line, $overviewformat, $groupname);
                 // ... and save it in our data structure
@@ -671,9 +722,29 @@ function nntp_headers($socket, $groupname, $start, $end) {
                 // if we are in poll-mode: print status information and
                 // decode the article itself, so it can be saved in the article
                 // cache
-          
+                
                 // read the next line from the newsserver
                 $line=line_read($socket);
+            }
+            // Fetch articles missing from conversation tree
+            foreach ($headers as $article) {
+                if (isset($article->references)) {
+                    foreach ($article->references as $ref) {
+                        if (!isset($headers[$ref])) {
+                            //echo $ref;
+                            $missingart = nntp_header_id($socket, $groupname, $ref);
+                            //var_dump($missingart);
+                            //echo $missingart->id;
+                            if (isset($missingart->id)) {
+                                $missingart->subject = "WENTMISSING";
+                                $headers[$missingart->id] = $missingart;
+                            }
+                            
+                        }
+                    }
+                }
+                
+                
             }
         } else {
             return error_handler(substr($tmp, 0, 3));
@@ -728,6 +799,83 @@ function nntp_headers($socket, $groupname, $start, $end) {
     }
 }
 
+function nntp_header_id($socket, $groupname, $msgid) {
+
+    $overviewformat=thread_overview_read($socket);
+    fputs($socket, "GROUP $groupname\r\n");   // select a group
+    $groupinfo=explode(" ", line_read($socket));
+
+    $header = "";
+
+    if (substr($groupinfo[0], 0, 1) != 2) {
+        //echo "<p>".$text_error["error:"]."</p>";
+        //echo "<p>".$text_thread["no_such_group"]."</p>";
+        return error_handler(substr($groupinfo[0], 0, 3));
+    } else {
+        
+        // order the article overviews from the newsserver
+        fputs($socket, "XHDR references ".$msgid."\r\n");
+        $tmp=line_read($socket);
+        $checkret = substr($tmp, 0, 3);
+        print_r ($tmp);
+
+        $tmp=line_read($socket);
+        print_r ($tmp);
+
+        // have the server accepted our order?
+        if ($checkret == "224" || $checkret == "221") {
+
+          /*   $line = line_read($socket);
+
+            while ($line != ".") {
+                //$line=line_read($socket);
+                // read overview by overview until the data ends
+            
+                // parse the output of the server...
+                //$article=thread_overview_interpret($line, $overviewformat, $groupname);
+                // ... and save it in our data structure
+               /*  
+                $article->threadsize++;
+                $article->date_thread=$article->date;
+                $header=$article;
+                 
+                
+                $header .= $line."\t";
+
+                //print_r ($header);
+                //var_dump($formatedline);
+                //$headers[$article->id]=$article;
+                // if we are in poll-mode: print status information and
+                // decode the article itself, so it can be saved in the article
+                // cache
+                $line = line_read($socket);
+
+                // read the next line from the newsserver
+            }
+            print_r ($header); */
+            //$article=thread_overview_interpret($header, $overviewformat, $groupname);
+            //print_r($article);
+            //parse_header($header);
+        } else {
+            return error_handler(substr($tmp, 0, 3));
+        }
+    }
+    return $article;
+}
+
+function parse_header ($header) {
+
+    $header_arr = explode("\t", $header);
+    $from = substr($header_arr[1], 6);
+    $newsgroup = substr($header_arr[2], 12);
+    $subject = substr($header_arr[3], 9);
+    $date = substr($header_arr[4], 6);
+    $organ = substr($header_arr[5], 14);
+    $msgid = substr($header_arr[6], 12);
+    print_r ($from."\n".$newsgroup."\n".$subject."\n".$date."\n".$organ."\n".$msgid);
+}
+
+
 function nntp_header($socket, $groupname, $msgno)
 {
     //echo " ";
@@ -738,16 +886,14 @@ function nntp_header($socket, $groupname, $msgno)
         //echo "<p>".$text_error["error:"]."</p>";
         //echo "<p>".$text_thread["no_such_group"]."</p>";
         return error_handler(substr($groupinfo[0], 0, 3));
-        flush();
     } else {
-        $firstarticle=$groupinfo[2];
-        $lastarticle=$groupinfo[3];
 
         // order the article overviews from the newsserver
         fputs($socket, "XOVER ".$msgno."\r\n");
         $tmp=line_read($socket);
+        $checkret = substr($tmp, 0, 3);
         // have the server accepted our order?
-        if (substr($tmp, 0, 3) == "224") {
+        if ($checkret == "224" || $checkret == "221") {
             $line=line_read($socket);
             // read overview by overview until the data ends
           
@@ -929,18 +1075,22 @@ function loadMessageStatus($msgnr)
 
 function error_handler($err_num)
 {
-    global $error_catalogue;
+    $errorinfo = error_catalogue($err_num);
 
-    $error_display = $error_catalogue[$err_num][0];
-    $feedback_num = $error_catalogue[$err_num][1];
-
-    if (!isset($error_display)) {
-        $error_display = $err_num;
+    $error_shortdescr = $errorinfo[0];      //error_shortdescription
+    $feedback_num = $errorinfo[1];
+    $error_longdescr = $errorinfo[2];
+  
+    if (!isset($error_shortdescr)) {
+        $error_shortdescr = $err_num;
+        $error_longdescr = $err_num;
     }
+    
 
     $headerdata = [
-        "name" => $error_display,
+        "name" => $error_shortdescr,
         "messageid" => $feedback_num,
+        "errordescr" => $error_longdescr,
         "personal" => 'SystemMessage',
         "sender" => 'system@client',
         "messagestatus" => '0',

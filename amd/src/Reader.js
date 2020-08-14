@@ -49,6 +49,8 @@ define([
                     sequence: 1,
                     arraypos: 0,
                     post_list: [],
+                    post_list_section: [],      // section of tree_data is stored here (contains currently viewed section)
+                    post_list_section_size: 0,
                     singlepostdata: [],
                     msgbodycontainerdisplay: 'none',
                     isreading: false,
@@ -65,9 +67,13 @@ define([
                     newsgroup_name: '',
                     newsgroup_postquantity: 0,
                     fetch_postquantity: 50,         // Quantity to load and display in one go
-                    start: '830',
-                    end: '840',
-                    errorMessages: {}
+                    start: '6500',
+                    end: '6600',
+                    errorMessages: [],
+                    statesRMB: {                // States for ReaderMessageBody
+                        CanSelectNext: true,
+                        CanSelectPrev: true
+                    }
                 };
             },
 
@@ -122,7 +128,7 @@ define([
                 const g = 0;
                 let id = 0;
 
-                this.getgroupinfo();
+                //this.getgroupinfo();
 
                 this.hideloadingicon = false;
 
@@ -189,22 +195,24 @@ define([
                     app.newsgroup_name = groupinfo.groupname;
                     app.newsgroup_postquantity = groupinfo.lastarticle - groupinfo.firstarticle + 1;
 
-                    app.start = parseInt(groupinfo.firstarticle);
-                    app.end = parseInt(groupinfo.lastarticle);
+                   // app.start = parseInt(groupinfo.firstarticle);
+                   // app.end = parseInt(groupinfo.lastarticle);
+                    console.log(groupinfo);
 
-                    axios
+                    /* axios
                     .get(M.cfg.wwwroot + "/mod/newsmod/php/fetchtree.php?id=" + courseid + "&start=" + app.start + "&end=" + app.end)
                     .then(function (response) {
                         if (app.check_for_error(response.data)) {
                             app.post_list.push(app.prepare_postdata(response.data));
             
                         } else {
-                            //console.log(response.data);
+                            console.log(response.data);
+                            app.buildtree(response.data);
                         }
 
                     }).catch(function (error) {
                         console.error(error);
-                    });
+                    }); */
                 },
 
 
@@ -253,6 +261,9 @@ define([
                     if (this.viewportsize == 'mobile') {
                         this.showmodal = true;
                     }
+
+                    this.stateupdateRMB();
+
 
                 },
 
@@ -329,6 +340,9 @@ define([
                     this.isreading = true;
                     this.isanswering = false;
 
+                    this.stateupdateRMB();
+
+
 
                 },
 
@@ -372,8 +386,27 @@ define([
                     this.isreading = true;
                     this.isanswering = false;
 
+                    this.stateupdateRMB();
+                    
 
                 },
+
+                stateupdateRMB: function () {
+                    if (this.markedpost <= 0) {
+                        Vue.set(this.statesRMB, "CanSelectPrev", false);
+                    }
+                    else {
+                        Vue.set(this.statesRMB, "CanSelectPrev", true);
+                    }
+
+                    if (this.markedpost >= this.post_list_section_size - 1) {
+                        Vue.set(this.statesRMB, "CanSelectNext", false);
+                    }
+                    else {
+                        Vue.set(this.statesRMB, "CanSelectNext", true);
+                    }
+                },
+
                 /**
                  * Refresh post
                  */
@@ -391,7 +424,7 @@ define([
                     // Timeout of 2 seconds. Reason: After user posted a message, page gets refreshed with new data
                     // but server might not have the new message available yet, depending on server load (?)
                     setTimeout(function () {
-                        _this.refresh
+                        app.refresh();
                     }, (2000));
 
                 },
@@ -460,6 +493,9 @@ define([
                         let content = this.prepare_postdata(val, margin);
 
                         this.post_list.push(content);
+
+                        this.post_list_section_size++;
+
                         if (val.children) {
                             app.buildtree(val, margin + 15);    //original margin val: margin + 25
                         }
@@ -501,9 +537,9 @@ define([
                         .get(M.cfg.wwwroot + "/mod/newsmod/php/search.php?id=" + courseid + "&searchparam=" + this.searchstring)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
-                                app.post_list.push(app.prepare_postdata(response.data));
-                                //this.errorMessages.push(response.data)
-                                app.displayerrormsg = true;
+                                //app.post_list.push(app.prepare_postdata(response.data));
+                                app.errorMessages.push(response.data);
+                                //app.displayerrormsg = true;
                             } else {
                                 app.displaysearchresult('', response.data);
                             }
@@ -655,6 +691,10 @@ define([
                     }
                 },
 
+                error_to_alert: function (error) {
+                    app.errorMessages.push();
+                }
+
 
 
 
@@ -706,6 +746,7 @@ define([
                         <div class="container-fluid px-2 border-left tab-pane active" id="viewlist">
                             <div class="pt-4 pl-0">
                                 <div class="row" >
+                                <!--
                                     <div v-if="showMessageBody" class="d-block d-sm-none">
                                         <messagebody-container 
                                             v-bind:courseid="courseid"
@@ -717,6 +758,7 @@ define([
                                             :iscreatingtopic="iscreatingtopic"
                                             :viewportsize = "viewportsize"
                                             :hideloadingicon = "hideloadingiconRMB"
+                                            :statesRMB = "statesRMB"
                                             v-on:answeredmsg="onansweredmsg"
                                             v-on:prevmsg="onprevmsg" 
                                             v-on:nextmsg="onnextmsg"
@@ -724,8 +766,9 @@ define([
                                             >
                                         </messagebody-container>
                                     </div>
+                                -->
                                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 border-right" id="tree" style="overflow-y:auto; overflow-x:hidden; margin-bottom:3px; height: auto" >
-                                        <div v-for="error in errorMessages" class="alert">{{ e }}</div>
+                                        <div v-for="error in errorMessages" class="alert">{{ error.errordescr }}</div>
                                         <post-container 
                                             v-bind:courseid="courseid" 
                                             v-bind:postlist="post_list" 
@@ -748,6 +791,7 @@ define([
                                             :iscreatingtopic="iscreatingtopic"
                                             :viewportsize = "viewportsize"
                                             :hideloadingicon = "hideloadingiconRMB"
+                                            :statesRMB = "statesRMB"
                                             v-on:answeredmsg="onansweredmsg"
                                             v-on:prevmsg="onprevmsg" 
                                             v-on:nextmsg="onnextmsg"
