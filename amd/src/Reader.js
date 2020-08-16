@@ -70,6 +70,8 @@ define([
                     start: '6500',
                     end: '6600',
                     errorMessages: [],
+                    searchresultmsg: '',
+                    statesearchresult: false,
                     statesRMB: {                // States for ReaderMessageBody
                         CanSelectNext: true,
                         CanSelectPrev: true
@@ -531,6 +533,7 @@ define([
 
                     this.hideallposts();
 
+                    this.statesearchresult = false;
                     this.hideloadingicon = false;
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
@@ -566,11 +569,18 @@ define([
                         modpost.hidden = false;
                         Vue.set(this.post_list, i, modpost);
                     }
+                    // todo this cant stay here
+                    this.statesearchresult = false;
                 },
 
                 displaysearchresult: function (options, searchresult) {
 
                     this.hideallposts();
+
+                    this.hiddenposts.splice(0);
+
+                    this.statesearchresult = true;
+                    this.searchresultmsg = searchresult.length;
 
                     for (let i = 0; i < searchresult.length; i++) {
                         this.hiddenposts.push(this.findinarr(searchresult[i].messagenum, this.post_list));
@@ -603,6 +613,7 @@ define([
                 refresh: function () {
 
                     this.hideloadingicon = false;
+                    this.statesearchresult = false;
 
                     this.isreading = false;
                     this.isanswering = false;
@@ -758,7 +769,6 @@ define([
                                             :iscreatingtopic="iscreatingtopic"
                                             :viewportsize = "viewportsize"
                                             :hideloadingicon = "hideloadingiconRMB"
-                                            :statesRMB = "statesRMB"
                                             v-on:answeredmsg="onansweredmsg"
                                             v-on:prevmsg="onprevmsg" 
                                             v-on:nextmsg="onnextmsg"
@@ -768,7 +778,18 @@ define([
                                     </div>
                                 -->
                                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 border-right" id="tree" style="overflow-y:auto; overflow-x:hidden; margin-bottom:3px; height: auto" >
-                                        <div v-for="error in errorMessages" class="alert">{{ error.errordescr }}</div>
+                                        <div v-for="error in errorMessages" class="alert">
+                                            {{ error.errordescr }}
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div v-if = "statesearchresult" class = "alert">
+                                            Ihre Suche hat {{ searchresultmsg }} Treffer erzielt
+                                            <button type="button" class="close" aria-label="Close" v-on:click = "showallposts">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
                                         <post-container 
                                             v-bind:courseid="courseid" 
                                             v-bind:postlist="post_list" 
