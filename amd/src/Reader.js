@@ -30,8 +30,8 @@ define([
     
     */
 
-        var Reader = function (Log, courseid, messageid, instanceName) {
-            
+    var Reader = function (Log, courseid, messageid, instanceName) {
+
         var app = new Vue({
             el: 'newsmod-container',
             data: function () {
@@ -136,7 +136,7 @@ define([
 
             },
             methods: {
-                hideMessageBody: function() {
+                hideMessageBody: function () {
                     this.showMessageBody = false;
                 },
                 Windowresizehandler: function () {
@@ -396,7 +396,7 @@ define([
                  * Refresh post
                  */
                 onansweredmsg: function () {
-                    
+
                     this.hideloadingicon = false;
 
                     app.post_list.splice(0);    //unset content array
@@ -510,6 +510,7 @@ define([
                     this.iscreatingtopic = true;
                     this.isreading = false;
                     this.isanswering = false;
+                    // not working: this.$nextTick(() => this.$refs.newMessageSubject.focus())
                 },
 
                 search: function (options) {
@@ -638,8 +639,6 @@ define([
                         size: 20, // 420px square
                         format: 'svg' // use SVG instead of PNG
                     };
-                    // TODO: fix feed
-
 
                     var identiconhash = this.hash64(input, true);
                     var identicondata = new Identicon(identiconhash, options).toString();

@@ -7,11 +7,11 @@ define([
     return Vue.component('messagebody-container',
         {
             props: [
-                'postdata', 
-                'isused', 
-                'isreading', 
-                'isanswering', 
-                'iscreatingtopic', 
+                'postdata',
+                'isused',
+                'isreading',
+                'isanswering',
+                'iscreatingtopic',
                 'courseid',
                 'identiconstring', 
                 'viewportsize', 
@@ -20,7 +20,7 @@ define([
             ],
 
             data: function () {
-                return { 
+                return {
                     textareacontent: '',
                     value: {},
                     usrinput_subject: '',
@@ -41,52 +41,23 @@ define([
             methods: {
 
                 onanswerbuttonclick: function () {
-                    
-                    if (this.isreading) {
-                        this.isreading = false;
-                        this.isanswering = true;
 
-                        // previous post is included in a reply
-                        // placing ">" to distinguish old message from new reply 
-                        var messagesplit = this.textareacontent.split('\n');
-                        var newmessage = "\n";
-                        for (var i = 0; i < messagesplit.length; i++) {
-                            newmessage = newmessage + ">" + messagesplit[i] + "\n";
-                        }
-                        this.textarea_usrinput = newmessage;
+                    this.isreading = false; // smell
+                    this.isanswering = true;
+
+                    // previous post is included in a reply
+                    // placing ">" to distinguish old message from new reply 
+                    var messagesplit = this.textareacontent.split('\n');
+                    var newmessage = "\n";
+                    for (var i = 0; i < messagesplit.length; i++) {
+                        newmessage = newmessage + ">" + messagesplit[i] + "\n";
                     }
-                    else {                      // ==If user is answering a post
-                        // this.textareacontent=this.postdata.messagebody;
-                        this.isreading = true;
-                        this.isanswering = false;
-
-
-                        // Why PARAMS: axios also converts js objects to json on POST
-                        // which is incompatible with moodles "data_submitted()"
-                        // thats why the classic approach of urlsearchparams() is needed 
-                        const params = new URLSearchParams();
-                        params.append('userInput', this.textarea_usrinput);
-                        if (this.postdata.header === undefined) {
-                            this.postdata.header = { subject: '', references: '', id: -1 };
-                        }
-                        params.append('subject', this.postdata.header.subject);
-                        params.append('references', this.postdata.header.references);
-                        params.append('uid', this.postdata.header.id);
-
-                        axios   //returned data is already js object (axios automaticly converts json to js obj)
-                            .post(M.cfg.wwwroot + "/mod/newsmod/php/posttest.php?id=" + this.courseid + "&msgnr=" + this.postdata.header.id,
-                                params)
-                            .then(response => (this.value = response));
-
-                        this.$emit('answeredmsg');
-
-                        //{ userInput : this.textareacontent, subject : this.postdata.header.subject, references : this.postdata.header.references, uid : this.postdata.header.id }
-
-                    }
-
+                    this.textarea_usrinput = newmessage;
+                    // set focus on textarea
+                    this.$nextTick(() => this.$refs.replyText.focus());
 
                 },
-                
+
                 prevmsg: function () {   // Number=messageid
                     this.$emit('prevmsg', this.postdata.header !== undefined ? this.postdata.header.number : 0);
                 },
@@ -104,13 +75,39 @@ define([
                     params.append('userInput', this.textarea_usrinput);
                     params.append('subject', this.usrinput_subject);
 
-
                     axios   //returned data is already js object (axios automaticly converts json to js obj)
                         .post(M.cfg.wwwroot + "/mod/newsmod/php/posttest.php?id=" + this.courseid + "&msgnr=new",
                             params)
                         .then(response => (this.value = response));
 
                     this.$emit('answeredmsg');
+                },
+
+                submitReplyMessage: function () {
+                    // ==If user is answering a post
+                    // this.textareacontent=this.postdata.messagebody;
+                    this.isreading = true;
+                    this.isanswering = false;
+
+                    // Why PARAMS: axios also converts js objects to json on POST
+                    // which is incompatible with moodles "data_submitted()"
+                    // thats why the classic approach of urlsearchparams() is needed 
+                    const params = new URLSearchParams();
+                    params.append('userInput', this.textarea_usrinput);
+                    if (this.postdata.header === undefined) {
+                        this.postdata.header = { subject: '', references: '', id: -1 };
+                    }
+                    params.append('subject', this.postdata.header.subject);
+                    params.append('references', this.postdata.header.references);
+                    params.append('uid', this.postdata.header.id);
+
+                    axios
+                        .post(M.cfg.wwwroot + "/mod/newsmod/php/posttest.php?id=" + this.courseid + "&msgnr=" + this.postdata.header.id,
+                            params)
+                        .then(response => (this.value = response));
+
+                    this.$emit('answeredmsg');
+
                 },
 
                 convertDate: function (date) {
@@ -171,8 +168,8 @@ define([
                                 </div>
                             </div>
                             <div class="form-group">
-                               <!-- <label hidden for="Ainputsubject">Betreff:</label> -->
-                                <input id="inputsubject" placeholder="Betreff" v-model="usrinput_subject" :class="{'form-control': true}"/>
+                                <label hidden for="inputsubject">Betreff:</label>
+                                <input ref="newMessageSubject" id="inputsubject" placeholder="Betreff" v-model="usrinput_subject" :class="{'form-control': true}"/>
                             </div>
                             <div class="form-group">
                                 <label hidden for="inputtext">Text:</label>
@@ -199,7 +196,7 @@ define([
                                 <button class="btn btn-sm btn-light ml-0" :disabled = "!statesRMB.CanSelectNext" v-on:click="nextmsg" title="Die nächste Nachricht anzeigen">
                                     <i class="fa fa-chevron-right"></i>    
                                 </button>
-                                <button type="button" class="close ml-auto align-self-center" aria-label="Close" v-on:click="hideParentMessageBody">
+                                <button type="button" class="close ml-auto align-self-center d-block d-sm-none" aria-label="Close" v-on:click="hideParentMessageBody">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
@@ -224,16 +221,18 @@ define([
 
                     <template v-if="! iscreatingtopic">
                         <template v-if="isreading">
-                            <div :class="{hidden: hideloadingicon}">
-                                <i class="fas fa-cog fa-spin fa-5x"/>
+                            <div :class="{hidden: hideloadingicon, 'text-center': true, 'my-2': true}" style="opacity:0.5;">
+                                <i class="fas fa-circle-o-notch fa-spin fa-3x"/>
                             </div>
                             <div class="border-bottom ml-3 mb-3 pl-1 pb-3" :style="{'white-space': 'pre-line'}">
                                 {{textareacontent}}
                             </div>
                         </template>
                         <template v-else>
-                            <div class="form-group border-bottom ml-3 mb-3 pl-1 pb-3">
-                                <textarea v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=10> </textarea>
+                            <div class="form-group ml-3 mb-3 pl-1 pb-3">
+                                <textarea ref="replyText" v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=10></textarea>
+                                <button class="btn btn-sm mt-3 btn-primary" v-on:click="submitReplyMessage">Absenden</button>
+                                <button class="btn btn-sm mt-3 btn-link float-right d-block d-sm-none" v-on:click="hideParentMessageBody">Nachricht verwerfen</button>
                             </div>
                         </template>
                     </template>                        
