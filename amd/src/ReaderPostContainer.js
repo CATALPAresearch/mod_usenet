@@ -144,9 +144,9 @@ define([
                                 </div>
                                 <post v-for='singlepost in postlist' 
                                     v-bind:content='singlepost' 
-                                    v-bind:key = 'singlepost.messageid'
+                                    v-bind:key = 'singlepost.messagenumber'
                                     :viewportsize = 'viewportsize'
-                                    :ref='singlepost.messageid'
+                                    :ref='singlepost.messagenumber'
                                     v-on:getmsg='ongetmsg'
                                     v-on:hidefamily='onhidefamily'
                                     v-on:showfamily='onshowfamily'

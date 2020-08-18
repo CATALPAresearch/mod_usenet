@@ -67,8 +67,8 @@ define([
                     newsgroup_name: '',
                     newsgroup_postquantity: 0,
                     fetch_postquantity: 50,         // Quantity to load and display in one go
-                    start: '6500',
-                    end: '6600',
+                    start: '0',
+                    end: '0',
                     errorMessages: [],
                     searchresultmsg: '',
                     statesearchresult: false,
@@ -125,42 +125,18 @@ define([
 
 
             mounted: function () {
-                const h = messageid; // !!??
-                const f = courseid;
-                const g = 0;
-                let id = 0;
-
-                //this.getgroupinfo();
 
                 this.hideloadingicon = false;
 
-                //returned data is already js object (axios automaticly converts json to js obj)
-                axios
-                    .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + courseid)
-                    .then(function (response) {
-                        if (app.check_for_error(response.data)) {
-                            app.post_list.push(app.prepare_postdata(response.data));
+                this.initiatecontact();
 
-                        } else {
-                            app.treedata_viz = response.data.children;
-                            app.info = response;
-                            app.tree_data = response.data;
-                            app.buildtree(response.data, 1);
-                        }
-
-                    }).catch(function (error) {
-                        console.error(error);
-                    })
-                    .then(function () {
-                        app.hideloadingicon = true;
-                    });
             },
 
             computed: {
 
             },
             methods: {
-                hideMessageBody: function(){
+                hideMessageBody: function() {
                     this.showMessageBody = false;
                 },
                 Windowresizehandler: function () {
@@ -177,12 +153,35 @@ define([
                     }
                 },
 
+                initiatecontact: function () {
+                    this.getgroupinfo().then(function (response) {
+                        axios
+                        .get(M.cfg.wwwroot + "/mod/newsmod/php/fetchtree.php?id=" + courseid + "&start=" + app.start + "&end=" + app.end)
+                        .then(function (response) {
+                            if (app.check_for_error(response.data)) {
+                                app.errorMessages.push(response.data);
+
+                            } else {
+                                app.treedata_viz = response.data.children;
+                                app.info = response;
+                                app.tree_data = response.data;
+                                app.buildtree(response.data, 1);
+                            }
+
+                        }).catch(function (error) {
+                            console.error(error);
+                        }).then(function () {
+                            app.hideloadingicon = true;
+                        });
+                    });
+                },
+
                 getgroupinfo: function () {
-                    axios
+                    return axios
                         .get(M.cfg.wwwroot + "/mod/newsmod/php/groupinfo.php?id=" + courseid)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
-                                app.post_list.push(app.prepare_postdata(response.data));
+                                app.errorMessages.push(response.data);
 
                             } else {
                                 app.processgroupinfo(response.data);
@@ -197,24 +196,8 @@ define([
                     app.newsgroup_name = groupinfo.groupname;
                     app.newsgroup_postquantity = groupinfo.lastarticle - groupinfo.firstarticle + 1;
 
-                   // app.start = parseInt(groupinfo.firstarticle);
-                   // app.end = parseInt(groupinfo.lastarticle);
-                    console.log(groupinfo);
-
-                    /* axios
-                    .get(M.cfg.wwwroot + "/mod/newsmod/php/fetchtree.php?id=" + courseid + "&start=" + app.start + "&end=" + app.end)
-                    .then(function (response) {
-                        if (app.check_for_error(response.data)) {
-                            app.post_list.push(app.prepare_postdata(response.data));
-            
-                        } else {
-                            console.log(response.data);
-                            app.buildtree(response.data);
-                        }
-
-                    }).catch(function (error) {
-                        console.error(error);
-                    }); */
+                    app.start = parseInt(groupinfo.firstarticle);
+                    app.end = parseInt(groupinfo.lastarticle);
                 },
 
 
@@ -223,21 +206,21 @@ define([
                 },
                 findinarr: function (key, inputArray) {
                     for (let i = 0; i < inputArray.length; i++) {
-                        if (inputArray[i].messageid === key) {
+                        if (inputArray[i].messagenumber === key) {
                             return inputArray[i];
                         }
                     }
                 },
 
-                ondisplaymsg: function (msgid) {
+                ondisplaymsg: function (messagenum) {
                     this.showMessageBody = true;
                     this.hideloadingiconRMB = false;
 
                     axios
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
+                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
-                                app.post_list.push(app.prepare_postdata(response.data));
+                                app.errorMessages.push(response.data);
 
                             } else {
                                 app.singlepostdata = response.data;
@@ -255,7 +238,7 @@ define([
                     this.isreading = true;
                     this.isanswering = false;
 
-                    let post = this.findinarr(msgid, this.post_list);
+                    let post = this.findinarr(messagenum, this.post_list);
 
                     let arraypos = post.arraypos;
                     this.markedpost = arraypos;
@@ -304,11 +287,11 @@ define([
                  * Future todo:
                  *      only fetch body from server and attach it to element on array post_list
                  */
-                onprevmsg: function (msgid) {
+                onprevmsg: function (messagenum) {
 
                     this.hideloadingiconRMB = false;
 
-                    let post = this.findinarr(msgid, this.post_list);
+                    let post = this.findinarr(messagenum, this.post_list);
 
                     let arraypos = post.arraypos;
 
@@ -316,17 +299,17 @@ define([
                     this.markedpost = arraypos;
 
 
-                    msgid = this.post_list[arraypos].messageid;
+                    messagenum = this.post_list[arraypos].messagenumber;
 
-                    let modpost = this.findinarr(msgid, this.post_list);                // Set next message to visible if it was hidden
+                    let modpost = this.findinarr(messagenum, this.post_list);                // Set next message to visible if it was hidden
                     modpost.hidden = false;
                     Vue.set(this.post_list, arraypos, modpost);
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
+                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
-                                app.post_list.push(app.prepare_postdata(response.data));
+                                app.errorMessages.push(response.data);
 
                             } else {
                                 app.singlepostdata = response.data;
@@ -348,11 +331,11 @@ define([
 
                 },
 
-                onnextmsg: function (msgid) {
+                onnextmsg: function (messagenum) {
 
                     this.hideloadingiconRMB = false;
 
-                    let post = this.findinarr(msgid, this.post_list);
+                    let post = this.findinarr(messagenum, this.post_list);
 
                     let arraypos = post.arraypos;
 
@@ -360,18 +343,18 @@ define([
 
                     this.markedpost = arraypos;         // Variable is transmitted to "post-container"
 
-                    msgid = this.post_list[arraypos].messageid;
+                    messagenum = this.post_list[arraypos].messagenumber;
 
-                    let modpost = this.findinarr(msgid, this.post_list);                // Set next message to visible if it was hidden
+                    let modpost = this.findinarr(messagenum, this.post_list);                // Set next message to visible if it was hidden
                     modpost.hidden = false;
                     Vue.set(this.post_list, arraypos, modpost);
 
                     //msgid = parseInt(msgid);
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
+                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
-                                app.post_list.push(app.prepare_postdata(response.data));
+                                app.errorMessages.push(response.data);
 
                             } else {
                                 app.singlepostdata = response.data;
@@ -478,7 +461,7 @@ define([
                     var content = {
                         marked: marked, unread: unread, markedhtml: marked,
                         picturestatus: postdata_raw.picturestatus, personal: postdata_raw.personal, sender: postdata_raw.sender,
-                        user_id: postdata_raw.user_id, margin: margin, sequence: this.sequence++, messageid: postdata_raw.messageid,
+                        user_id: postdata_raw.user_id, margin: margin, sequence: this.sequence++, messageid: postdata_raw.messageid, messagenumber: postdata_raw.number,
                         date: postdata_raw.date, subject: postdata_raw.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
                         isSelected: false, hidden: false, family: family, identicon: identiconstring
                     };
@@ -487,7 +470,7 @@ define([
                 },
 
                 buildtree: function (tree_data, margin) {
-                    if (tree_data.children === undefined) {
+                    if (typeof tree_data.children === 'undefined') {
                         console.error("tree_data.children not defined", tree_data);
                     }
                     tree_data.children.forEach(val => {
@@ -512,7 +495,7 @@ define([
                         var childrenamount = rootnode.children.length;
 
                         for (let i = 0; i < childrenamount; i++) {
-                            children.push(rootnode.children[i].messageid);
+                            children.push(rootnode.children[i].number);
                             if (rootnode.children[i].children) {
                                 children.push(app.getfamily(rootnode.children[i]));
                             }
@@ -583,7 +566,7 @@ define([
                     this.searchresultmsg = searchresult.length;
 
                     for (let i = 0; i < searchresult.length; i++) {
-                        this.hiddenposts.push(this.findinarr(searchresult[i].messagenum, this.post_list));
+                        this.hiddenposts.push(this.findinarr(searchresult[i].messagenumber, this.post_list));
                         let modpost = this.hiddenposts[i];
                         if (typeof modpost.hidden !== 'undefined') {
                             modpost.hidden = false;
@@ -631,7 +614,7 @@ define([
                         .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + courseid)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
-                                app.post_list.push(app.prepare_postdata(response.data));
+                                app.errorMessages.push(response.data);
 
                             } else {
                                 app.treedata_viz = response.data.children;
@@ -784,7 +767,7 @@ define([
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
-                                        <div v-if = "statesearchresult" class = "alert">
+                                        <div v-if = "statesearchresult" class = "alert alert-success">
                                             Ihre Suche hat {{ searchresultmsg }} Treffer erzielt
                                             <button type="button" class="close" aria-label="Close" v-on:click = "showallposts">
                                                 <span aria-hidden="true">&times;</span>

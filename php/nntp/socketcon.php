@@ -528,7 +528,7 @@ function nntp_open($host, $user, $pass, $port = 119)
     $pass_msg = "AUTHINFO PASS ".$pass."\r\n"; // enter your password here
 
 
-    $sock = fsockopen($ipaddress, $port);
+    $sock = @fsockopen($ipaddress, $port);
 
     $tmp = line_read($sock);
 
@@ -725,26 +725,6 @@ function nntp_headers($socket, $groupname, $start, $end) {
                 
                 // read the next line from the newsserver
                 $line=line_read($socket);
-            }
-            // Fetch articles missing from conversation tree
-            foreach ($headers as $article) {
-                if (isset($article->references)) {
-                    foreach ($article->references as $ref) {
-                        if (!isset($headers[$ref])) {
-                            //echo $ref;
-                            $missingart = nntp_header_id($socket, $groupname, $ref);
-                            //var_dump($missingart);
-                            //echo $missingart->id;
-                            if (isset($missingart->id)) {
-                                $missingart->subject = "WENTMISSING";
-                                $headers[$missingart->id] = $missingart;
-                            }
-                            
-                        }
-                    }
-                }
-                
-                
             }
         } else {
             return error_handler(substr($tmp, 0, 3));

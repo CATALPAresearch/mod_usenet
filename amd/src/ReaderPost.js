@@ -131,7 +131,7 @@ define([
                             "/mod/newsmod/php/statuschange.php?id=" +
                             this.courseid +
                             "&msgnr=" +
-                            this.content.messageid
+                            this.content.messagenumber
                         ].join())
                         .then();
 
@@ -192,7 +192,7 @@ define([
                                     class="px-0 col-11 col-xs-11 col-sm-11 col-md-11 col-lg-11 col-xl-11" 
                                     style="display:inline-block;"
                                     >
-                                    <div class="row poststyle mb-xs-2" v-on:click="$emit('getmsg', content.messageid, content.arraypos)">
+                                    <div class="row poststyle mb-xs-2" v-on:click="$emit('getmsg', content.messagenumber, content.arraypos)">
                                         
                                         <div class="col-3 order-1 order-sm-1 col-xs-8 col-sm-3 col-md-3 col-lg-3 col-xl-3 text-truncate px-0">
                                             <img class="" style="width:20px; height:20px;" :src="this.content.identicon" :title="this.content.personal"/>
