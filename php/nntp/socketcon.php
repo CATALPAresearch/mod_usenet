@@ -586,14 +586,41 @@ function gettree($journal, $start, $end) {
 
     $groupname = $journal->newsgroup;
 
+    $cacheddata = loadCachedData($journal);
 
+    if (is_array($cacheddata) && array_key_exists('is_error', $cacheddata)) {    //error detected, theres error_feedback data structure here!
+        return $cacheddata;
+    }
+
+    if (isset($cacheddata)) {
+        $CacheNumberList = array_column($cacheddata, 'number');
+        $CacheNumberListLast = array_slice($CacheNumberList, -1, 1);
+        if ($CacheNumberListLast[0] < $end) {
+            $newadditons = buildCache_partial($journal, $CacheNumberListLast[0] + 1, $end);
+            if (is_array($newadditons) && array_key_exists('is_error', $newadditons)) {    //error detected, theres error_feedback data structure here!
+                return $newadditons;
+            }
+            $cacheddata = array_merge($cacheddata, $newadditons);
+            //echo "newadditions";
+            //echo json_encode($cacheddata);
+        }
+    } else {
+        echo "somethingwrong";
+    }
+    //echo "normal";
+    //echo json_encode($cacheddata);
+
+/* 
     $socket = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
     
     if (is_array($socket) && array_key_exists('is_error', $socket)) {    //error detected, theres error_feedback data structure here!
         return $socket;
     }
 
-    $headers = nntp_headers($socket, $groupname, $start, $end);
+    $headers = nntp_headers($socket, $groupname, $start, $end); */
+
+    //$headers = process_headers($headers);
+    $headers = process_headers($cacheddata);
     
     $siblings = [];
     $tree = [
@@ -647,6 +674,8 @@ function gettree($journal, $start, $end) {
         }
     }
     $tree["children"] = $siblings;
+    //echo "AAAAAAAAAAAA";
+    //echo json_encode($tree);
     return $tree;
 }
 
@@ -664,8 +693,8 @@ function agetchildren($header, $headers) {
 
             $self = [];
 
-            $statusread = @loadMessageStatus($header->number);
-            $userinfo = @getUserIdByEmail($header->from);
+            $statusread = @loadMessageStatus($child->number);
+            $userinfo = @getUserIdByEmail($child->from);
 
 
             $self["name"] = $child->subject;
@@ -730,117 +759,61 @@ function nntp_headers($socket, $groupname, $start, $end) {
             return error_handler(substr($tmp, 0, 3));
         }
         // make function of code below
-        if ((isset($headers)) && (count($headers)>0)) {
-            foreach ($headers as $c) {
-                if (($c->isAnswer == false) &&
-             (isset($c->references))) {   // is the article an answer to an
-                    // other article?
-                    // try to find a matching article to one of the references
-                    $refmatch=false;
-                    foreach ($c->references as $reference) {
-                        if (isset($headers[$reference])) {
-                            $refmatch=$reference;
-                        } else {
-                            //load missing header, restart procedure
-                        }
-                    }
-                    // have we found an article, to which this article is an answer?
-                    if ($refmatch!=false) {
-                        $c->isAnswer=true;
-                        $c->bestreference=$refmatch;
-                        $headers[$c->id]=$c;
-                        // the referenced article get the ID af this article as in
-                        // its answers-array
-                        $headers[$refmatch]->answers[]=$c->id;
-                        // propagate down the number of articles in this thread
-                        $d =& $headers[$c->bestreference];
-                        do {
-                            $d->threadsize+=$c->threadsize;
-                            $d->date_thread=max($c->date, $d->date_thread);
-                        } while ((isset($d->bestreference)) && ($headers[$d->bestreference]) && ($d =& $headers[$d->bestreference]));
-                    }
-                }
-            }
-            reset($headers);
-            // sort the articles
-            $thread_sort_order=-1;
-            if (($thread_sort_order != 0) && (count($headers)>0)) {
-                uasort($headers, 'thread_mycompare');
-            }
-        }
+        
         if (isset($headers)) {
             return $headers;
         } else {
             return error_handler(601);
         }
-      
-    
         //return((isset($headers)) ? $headers : false);
     }
 }
 
-function nntp_header_id($socket, $groupname, $msgid) {
+function process_headers($headers) {
 
-    $overviewformat=thread_overview_read($socket);
-    fputs($socket, "GROUP $groupname\r\n");   // select a group
-    $groupinfo=explode(" ", line_read($socket));
-
-    $header = "";
-
-    if (substr($groupinfo[0], 0, 1) != 2) {
-        //echo "<p>".$text_error["error:"]."</p>";
-        //echo "<p>".$text_thread["no_such_group"]."</p>";
-        return error_handler(substr($groupinfo[0], 0, 3));
-    } else {
-        
-        // order the article overviews from the newsserver
-        fputs($socket, "XHDR references ".$msgid."\r\n");
-        $tmp=line_read($socket);
-        $checkret = substr($tmp, 0, 3);
-        print_r ($tmp);
-
-        $tmp=line_read($socket);
-        print_r ($tmp);
-
-        // have the server accepted our order?
-        if ($checkret == "224" || $checkret == "221") {
-
-          /*   $line = line_read($socket);
-
-            while ($line != ".") {
-                //$line=line_read($socket);
-                // read overview by overview until the data ends
-            
-                // parse the output of the server...
-                //$article=thread_overview_interpret($line, $overviewformat, $groupname);
-                // ... and save it in our data structure
-               /*  
-                $article->threadsize++;
-                $article->date_thread=$article->date;
-                $header=$article;
-                 
-                
-                $header .= $line."\t";
-
-                //print_r ($header);
-                //var_dump($formatedline);
-                //$headers[$article->id]=$article;
-                // if we are in poll-mode: print status information and
-                // decode the article itself, so it can be saved in the article
-                // cache
-                $line = line_read($socket);
-
-                // read the next line from the newsserver
+    if ((isset($headers)) && (count($headers)>0)) {
+        foreach ($headers as $c) {
+            if (($c->isAnswer == false) &&
+         (isset($c->references))) {   // is the article an answer to an
+                // other article?
+                // try to find a matching article to one of the references
+                $refmatch=false;
+                foreach ($c->references as $reference) {
+                    if (isset($headers[$reference])) {
+                        $refmatch=$reference;
+                    } else {
+                        //load missing header, restart procedure
+                    }
+                }
+                // have we found an article, to which this article is an answer?
+                if ($refmatch!=false) {
+                    $c->isAnswer=true;
+                    $c->bestreference=$refmatch;
+                    $headers[$c->id]=$c;
+                    // the referenced article get the ID af this article as in
+                    // its answers-array
+                    $headers[$refmatch]->answers[]=$c->id;
+                    // propagate down the number of articles in this thread
+                    $d =& $headers[$c->bestreference];
+                    do {
+                        $d->threadsize+=$c->threadsize;
+                        $d->date_thread=max($c->date, $d->date_thread);
+                    } while ((isset($d->bestreference)) && ($headers[$d->bestreference]) && ($d =& $headers[$d->bestreference]));
+                }
             }
-            print_r ($header); */
-            //$article=thread_overview_interpret($header, $overviewformat, $groupname);
-            //print_r($article);
-            //parse_header($header);
-        } else {
-            return error_handler(substr($tmp, 0, 3));
+        }
+        reset($headers);
+        // sort the articles
+        $thread_sort_order=-1;
+        if (($thread_sort_order != 0) && (count($headers)>0)) {
+            uasort($headers, 'thread_mycompare');
         }
     }
-    return $article;
+    if (isset($headers)) {
+        return $headers;
+    } else {
+        return error_handler(601);
+    }
 }
 
 function parse_header ($header) {
@@ -920,32 +893,34 @@ function nntp_headers_all($socket, $groupname)
         if (substr($tmp, 0, 3) == "224") {
             $line=line_read($socket);
             // read overview by overview until the data ends
-          
             while ($line != ".") {
+                
                 // parse the output of the server...
                 $article=thread_overview_interpret($line, $overviewformat, $groupname);
                 // ... and save it in our data structure
                 $article->threadsize++;
                 $article->date_thread=$article->date;
                 $headers[$article->id]=$article;
-            
-                //$headers[$article->id]=$article;
                 // if we are in poll-mode: print status information and
                 // decode the article itself, so it can be saved in the article
                 // cache
-            
+                
                 // read the next line from the newsserver
                 $line=line_read($socket);
             }
         } else {
             return error_handler(substr($tmp, 0, 3));
         }
+        // make function of code below
+        
+        if (isset($headers)) {
+            return $headers;
+        } else {
+            return error_handler(601);
+        }
+        //return((isset($headers)) ? $headers : false);
     }
-    //var_dump(header_decode($headers[0]->subject));
-    return $headers;
 }
-
-
 
 
 function nntp_fetchbody($socket, $groupname, $msgno)
@@ -1047,6 +1022,56 @@ function loadMessageStatus($msgnr)
         $moduleinstan->marked = "0";
     }
     return  $moduleinstan;
+}
+
+function loadCachedData($journal)
+{
+    global $CFG;
+    //file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
+    //try {
+    if (!$string_data = @file_get_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt")) {
+        return buildCache_complete($journal);
+    } else {
+        $result = unserialize($string_data);
+        return $result;
+    }
+    return;
+}
+
+function buildCache_partial($journal, $start, $end) 
+{
+    global $CFG;
+    $localconfig = get_config('newsmod');
+
+    $socket = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+    if (is_array($socket) && array_key_exists('is_error', $socket)) {    //error detected, theres error_feedback data structure here!
+        return $socket;
+    }
+
+    $result = nntp_headers($socket, $journal->newsgroup, $start, $end);
+
+    if (is_array($result) && array_key_exists('is_error', $result)) {    //error detected, theres error_feedback data structure here!
+        return $result;
+    }
+
+    file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result), FILE_APPEND);
+    return $result;
+}
+
+function buildCache_complete($journal)
+{
+    global $CFG;
+    $localconfig = get_config('newsmod');
+    $socket = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+    if (is_array($socket) && array_key_exists('is_error', $socket)) {    //error detected, theres error_feedback data structure here!
+        return $socket;
+    }
+    $result = nntp_headers_all($socket, $journal->newsgroup);
+    if (is_array($result) && array_key_exists('is_error', $result)) {    //error detected, theres error_feedback data structure here!
+        return $result;
+    }
+    file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
+    return $result;
 }
 
 // returns a message post (header and body) about an error

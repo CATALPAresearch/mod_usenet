@@ -21,7 +21,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
         */
         return $result;
     }
-
+/* 
     function buildCache($journal)
     {
         global $CFG;
@@ -29,7 +29,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
         $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
         $result = nntp_headers_all($nntp, $journal->newsgroup);
         file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
-    }
+    } */
 
     function sendemail($email, $content)
     {
@@ -297,7 +297,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
         return $user;
     } */
 
-    function loadCachedData($journal)
+  /*   function loadCachedData($journal)
     {
         global $CFG;
         //file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
@@ -309,7 +309,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
             return $result;
         }
         return;
-    }
+    } */
 
     
     function msgSearch($journal, $param)
