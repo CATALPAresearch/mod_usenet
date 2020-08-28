@@ -150,7 +150,7 @@ define([
                         this.hiddenfamily = false;
                         this.$emit('showfamily', this.content.family);
                     }
-                    this.$emit('setSelected', this.content.arraypos);
+                    this.$emit('setSelected', this.content.messagenumber);
                 },
 
                 // Called by container 'ReaderPostContainer'

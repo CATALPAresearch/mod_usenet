@@ -46,12 +46,15 @@ define([
                     content: [],
                     tree_data: '',
                     treedata_viz: {},           // data just for viz_bubble
-                    sequence: 1,
+                    sequence: 0,
                     arraypos: 0,
                     post_list: [],
-                    post_list_section: [],      // section of tree_data is stored here (contains currently viewed section)
-                    post_list_section_size: 0,
+                    post_list_sections: [],      // neatly divided sections of post_list are here
+                    post_list_section_size: 50,
+                    post_list_section_reservespace: 10,
+                    view_section: 0,
                     singlepostdata: [],
+                    threadlist: [],
                     msgbodycontainerdisplay: 'none',
                     isreading: false,
                     isanswering: false,
@@ -75,6 +78,10 @@ define([
                     statesRMB: {                // States for ReaderMessageBody
                         CanSelectNext: true,
                         CanSelectPrev: true
+                    },
+                    statesview_section: {                // States for ReaderMessageBody
+                        CanSelectNext: true,
+                        CanSelectPrev: false
                     }
                 };
             },
@@ -165,7 +172,7 @@ define([
                                 app.treedata_viz = response.data.children;
                                 app.info = response;
                                 app.tree_data = response.data;
-                                app.buildtree(response.data, 1);
+                                app.gettree(response.data);
                             }
 
                         }).catch(function (error) {
@@ -240,7 +247,10 @@ define([
 
                     let post = this.findinarr(messagenum, this.post_list);
 
-                    let arraypos = post.arraypos;
+                    console.log(this.post_list.indexOf(post));
+                    console.log(post.arraypos);
+
+                    let arraypos = this.post_list.indexOf(post);
                     this.markedpost = arraypos;
 
                     if (this.viewportsize == 'mobile') {
@@ -252,13 +262,14 @@ define([
 
                 },
 
-                setSelected: function (arraypos) {
-                    this.markedpost = arraypos;
+                setSelected: function (messagenumber) {
+                    let post = this.findinarr(messagenumber, this.post_list);
+                    this.markedpost = this.post_list.indexOf(post);
                 },
 
                 /**
                  * 
-                 * @param {*} msgid
+                 * @param {*} messagenum
                  * 
                  * function is called from button click "(Show) Previous message"
                  * Shows previous message in thread
@@ -266,7 +277,7 @@ define([
                  * Notes:
                  * 
                  * When the page is first loaded, a json data structure is fetched
-                 * from the server (headers of postings) and is processed into an array post_data in buildtree(), along with
+                 * from the server (headers of postings) and is processed into an array post_data in gettree(), along with
                  * the corresponding position on the array
                  * 
                  * When user clicks on a post however, post data (header and body) is fetched from server,
@@ -293,7 +304,7 @@ define([
 
                     let post = this.findinarr(messagenum, this.post_list);
 
-                    let arraypos = post.arraypos;
+                    let arraypos = this.post_list.indexOf(post);
 
                     arraypos -= 1;
                     this.markedpost = arraypos;
@@ -337,7 +348,7 @@ define([
 
                     let post = this.findinarr(messagenum, this.post_list);
 
-                    let arraypos = post.arraypos;
+                    let arraypos = this.post_list.indexOf(post);
 
                     arraypos += 1;
 
@@ -376,6 +387,58 @@ define([
 
                 },
 
+                PLprev: function () {
+                    if (this.view_section > 0) {
+                        if (this.markedpost != -1) {
+                            let modpost = this.post_list[this.markedpost];
+                            modpost.isSelected = false;
+                        }
+
+                        this.markedpost = -1;
+                        this.post_list = this.post_list_sections[--this.view_section];
+                        this.isreading = false;
+                        this.isanswering = false;
+                        this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
+                        this.arraypos = 0;
+                        this.stateupdateview_selection();
+                    }
+                    
+                },
+
+                PLnext: function () {
+                    if (this.view_section < this.post_list_sections.length - 1) {
+                        if (this.markedpost != -1) {
+                            let modpost = this.post_list[this.markedpost];
+                            modpost.isSelected = false;
+                        }
+                        
+                        this.markedpost = -1;
+                        this.post_list = this.post_list_sections[++this.view_section];
+                        this.isreading = false;
+                        this.isanswering = false;
+                        this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
+                        this.arraypos = 0;
+                        this.stateupdateview_selection();
+                    }
+                    
+                },
+
+                stateupdateview_selection: function () {
+                    if (this.view_section <= 0) {
+                        Vue.set(this.statesview_section, "CanSelectPrev", false);
+                    }
+                    else {
+                        Vue.set(this.statesview_section, "CanSelectPrev", true);
+                    }
+
+                    if (this.view_section >= this.post_list_sections.length - 1) {
+                        Vue.set(this.statesview_section, "CanSelectNext", false);
+                    }
+                    else {
+                        Vue.set(this.statesview_section, "CanSelectNext", true);
+                    }
+                },
+
                 stateupdateRMB: function () {
                     if (this.markedpost <= 0) {
                         Vue.set(this.statesRMB, "CanSelectPrev", false);
@@ -384,7 +447,7 @@ define([
                         Vue.set(this.statesRMB, "CanSelectPrev", true);
                     }
 
-                    if (this.markedpost >= this.post_list_section_size - 1) {
+                    if (this.markedpost >= this.post_list_sections[this.view_section].length - 1) {
                         Vue.set(this.statesRMB, "CanSelectNext", false);
                     }
                     else {
@@ -412,6 +475,112 @@ define([
                         app.refresh();
                     }, (2000));
 
+                },
+
+                gettree: function (tree_data) {
+
+                    this.buildthread_starter(tree_data, this.threadlist);
+
+                    console.log(this.threadlist);
+
+                    this.buildsections(this.threadlist, this.post_list_sections,
+                         this.post_list_section_size, this.post_list_section_reservespace);
+
+                    console.log(this.post_list_sections);
+
+                    this.post_list = this.post_list_sections[0];
+                    
+                },
+
+                buildsections: function (threadlist, sectionlist, sectionsize, reserve_space) {
+                    var remainingspace = sectionsize;
+                    var reservespace = reserve_space;
+                    var sectionindex = 0;
+                    sectionlist[sectionindex] = [];
+                    for (let i = 0; i < threadlist.length; i++) {
+
+                        if (threadlist[i].length > sectionsize) {    // is the thread larger than slots are available on a single section ?
+                            for (let j = 0; j < threadlist[i].length; j++) {
+                                sectionlist[sectionindex].push(threadlist[i][j]);
+                            }
+                            sectionindex++;
+                            sectionlist[sectionindex] = [];
+                            remainingspace = sectionsize;
+                            reservespace = reserve_space;
+                            continue;
+                        }
+
+                        if (threadlist[i].length > remainingspace) {
+                            if (threadlist[i].length > remainingspace + reservespace) {
+                                sectionindex++;
+                                sectionlist[sectionindex] = [];
+                                remainingspace = sectionsize;
+                                reservespace = reserve_space;
+                            } else {
+                                remainingspace = threadlist[i].length;
+                                reservespace = 0;
+                            }
+                            
+                        }
+                        
+                        if (threadlist[i].length <= remainingspace) {
+                            for (let j = 0; j < threadlist[i].length; j++) {
+                                sectionlist[sectionindex].push(threadlist[i][j]);
+                            }
+                            remainingspace -= threadlist[i].length;
+                        }   
+                    }
+                },
+
+                buildthread_starter: function (tree_data, threadlist) {
+                    if (typeof tree_data.children === 'undefined') {
+                        console.error("tree_data.children not defined", tree_data);
+                    }
+                        tree_data.children.forEach(threadhead => {
+
+                            threadlist.push(this.buildthread(threadhead, 1));
+
+                        });
+                },
+
+                buildthread: function (threadhead, margin, thread = 0) {
+                    if (thread == 0) {
+                        thread = [];
+                    }
+                    thread.push(this.prepare_postdata(threadhead, margin));
+
+                    if (typeof threadhead.children !== 'undefined') { 
+                        threadhead.children.forEach(val => {
+
+
+                            if (val.children) {
+                                app.buildthread(val, margin + 15, thread);    //original margin val: margin + 25
+                            } else {
+                                thread.push(this.prepare_postdata(val, margin));
+                            }
+
+                        });
+                    }
+                    return thread;
+                },
+
+
+                buildtree_classic: function (tree_data, margin) {
+                    if (typeof tree_data.children === 'undefined') {
+                        console.error("tree_data.children not defined", tree_data);
+                    }
+                        tree_data.children.forEach(val => {
+
+                            let content = this.prepare_postdata(val, margin);
+
+                            this.post_list.push(content);
+
+                            if (val.children) {
+                                app.buildtree_classic(val, margin + 15);    //original margin val: margin + 25
+                            }
+
+                        });
+                    
                 },
 
                 prepare_postdata: function (postdata_raw, margin = 1) {
@@ -465,27 +634,8 @@ define([
                         date: postdata_raw.date, subject: postdata_raw.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
                         isSelected: false, hidden: false, family: family, identicon: identiconstring
                     };
-
+                    
                     return content;
-                },
-
-                buildtree: function (tree_data, margin) {
-                    if (typeof tree_data.children === 'undefined') {
-                        console.error("tree_data.children not defined", tree_data);
-                    }
-                    tree_data.children.forEach(val => {
-
-                        let content = this.prepare_postdata(val, margin);
-
-                        this.post_list.push(content);
-
-                        this.post_list_section_size++;
-
-                        if (val.children) {
-                            app.buildtree(val, margin + 15);    //original margin val: margin + 25
-                        }
-
-                    });
                 },
 
                 getfamily: function (rootnode) {
@@ -621,7 +771,7 @@ define([
                                 app.treedata_viz = response.data.children;
                                 app.info = response;
                                 app.tree_data = response.data;
-                                app.buildtree(response.data, 1);
+                                app.gettree(response.data);
                             }
 
                         }).catch(function (error) {
@@ -697,7 +847,7 @@ define([
                 <div id="newsmod-container">
                     <h3 class="mb-4"><img style="width:30px; height:30px;" src="pix/icon.svg"> {{ instanceName }}</h3>
                     <div class="d-flex">
-                        <div class="d-flex mr-auto">
+                        <div class="d-flex">
                             <button class="btn btn-primary btn-sm" :disabled="iscreatingtopic" v-on:click="newTopic" title="Eine neue Nachricht erstellen">
                                 <i class="fa fa-pen"></i>
                                 Neue Nachricht
@@ -707,6 +857,16 @@ define([
                                     <i class="fa fa-sync"></i>
                                     <span class="d-none d-md-inline">aktualisieren</span>
                             </button>
+                        </div>
+                        <div class="mr-auto px-2">
+                            <button class="btn btn-sm btn-light mr-0" :disabled = "!statesview_section.CanSelectPrev" v-on:click="PLprev" title="">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <span>{{view_section +1}}</span>
+                            <button class="btn btn-sm btn-light ml-0" :disabled = "!statesview_section.CanSelectNext" v-on:click="PLnext" title="">
+                                <i class="fa fa-chevron-right"></i>    
+                            </button>
+
                         </div>
                         <div class="search d-flex">
                             <input 

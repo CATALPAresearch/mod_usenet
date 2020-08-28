@@ -595,6 +595,7 @@ function gettree($journal, $start, $end) {
     if (isset($cacheddata)) {
         $CacheNumberList = array_column($cacheddata, 'number');
         $CacheNumberListLast = array_slice($CacheNumberList, -1, 1);
+
         if ($CacheNumberListLast[0] < $end) {
             $newadditons = buildCache_partial($journal, $CacheNumberListLast[0] + 1, $end);
             if (is_array($newadditons) && array_key_exists('is_error', $newadditons)) {    //error detected, theres error_feedback data structure here!
@@ -604,24 +605,22 @@ function gettree($journal, $start, $end) {
             //echo "newadditions";
             //echo json_encode($cacheddata);
         }
+
+        $headers = process_headers($cacheddata);
+
     } else {
-        echo "somethingwrong";
-    }
-    //echo "normal";
-    //echo json_encode($cacheddata);
-
-/* 
-    $socket = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+        $socket = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
     
-    if (is_array($socket) && array_key_exists('is_error', $socket)) {    //error detected, theres error_feedback data structure here!
-        return $socket;
+        if (is_array($socket) && array_key_exists('is_error', $socket)) {    //error detected, theres error_feedback data structure here!
+            return $socket;
+        }
+
+        $headers = nntp_headers($socket, $groupname, $start, $end);
+
+        $headers = process_headers($headers);
     }
+  
 
-    $headers = nntp_headers($socket, $groupname, $start, $end); */
-
-    //$headers = process_headers($headers);
-    $headers = process_headers($cacheddata);
-    
     $siblings = [];
     $tree = [
         "children" => []
@@ -657,6 +656,7 @@ function gettree($journal, $start, $end) {
             $self["name"] = $header->subject;
             $self["number"] = $header->number;
             $self["messageid"] = $header->id;
+            $self["threadhead"] = true;
             $self["personal"] = $header->name;
             $self["sender"] = addcslashes(str_replace('\\', '', $header->from), "\"");
             $self["messagestatus"] = $statusread->readstatus;
@@ -674,8 +674,6 @@ function gettree($journal, $start, $end) {
         }
     }
     $tree["children"] = $siblings;
-    //echo "AAAAAAAAAAAA";
-    //echo json_encode($tree);
     return $tree;
 }
 
@@ -700,6 +698,7 @@ function agetchildren($header, $headers) {
             $self["name"] = $child->subject;
             $self["number"] = $child->number;
             $self["messageid"] = $child->id;
+            $self["threadhead"] = false;
             $self["personal"] = $child->name;
             $self["sender"] = addcslashes(str_replace('\\', '', $child->from), "\"");
             $self["messagestatus"] = $statusread->readstatus;

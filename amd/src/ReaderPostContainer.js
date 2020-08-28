@@ -48,6 +48,13 @@ define([
                             }
                         }
                         this.previouspost = this.markedpost;   // current post is next previouspost
+                    } else {
+                        if (typeof this.postlist[this.previouspost] !== 'undefined') {
+                            let modpost = this.postlist[this.previouspost];
+                            modpost.isSelected = false;
+                            Vue.set(this.postlist, this.previouspost, modpost);
+                        }
+                        else {console.log("oh noe");}
                     }
                 },
 
@@ -71,7 +78,9 @@ define([
                     //
                     // Vue.set() helps,
                     // see https://vuejs.org/v2/guide/reactivity.html#Change-Detection-Caveats
-                    var modpost = this.postlist[arraypos];
+                    //var modpost = this.postlist[arraypos];
+                    var modpost = this.findinarr(msgid, this.postlist);
+                    arraypos = this.postlist.indexOf(modpost);
                     modpost.isSelected = true;
                     modpost.unread = false;
                     Vue.set(this.postlist, arraypos, modpost);
@@ -138,9 +147,17 @@ define([
                 // When a post is clicked, set the background of post to 'blue' (visual feedback to user)
                 // Event is triggered by click on a post in ReaderPost.js and is bubbled up to
                 // Reader.js, where processing takes place
-                setSelectedUP: function (arraypos) {
-                    this.$emit('setSelected', arraypos);
-                }
+                setSelectedUP: function (messagenumber) {
+                    this.$emit('setSelected', messagenumber);
+                },
+
+                findinarr: function (key, inputArray) {
+                    for (let i = 0; i < inputArray.length; i++) {
+                        if (inputArray[i].messagenumber === key) {
+                            return inputArray[i];
+                        }
+                    }
+                },
             }, // END component methods
 
             template: `<div class="post-container">
