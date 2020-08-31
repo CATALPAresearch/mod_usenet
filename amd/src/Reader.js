@@ -133,7 +133,6 @@ define([
 
             mounted: function () {
 
-                this.hideloadingicon = false;
 
                 this.initiatecontact();
 
@@ -161,6 +160,8 @@ define([
                 },
 
                 initiatecontact: function () {
+                    this.hideloadingicon = false;
+
                     this.getgroupinfo().then(function (response) {
                         axios
                         .get(M.cfg.wwwroot + "/mod/newsmod/php/fetchtree.php?id=" + courseid + "&start=" + app.start + "&end=" + app.end)
@@ -247,8 +248,6 @@ define([
 
                     let post = this.findinarr(messagenum, this.post_list);
 
-                    console.log(this.post_list.indexOf(post));
-                    console.log(post.arraypos);
 
                     let arraypos = this.post_list.indexOf(post);
                     this.markedpost = arraypos;
@@ -421,6 +420,22 @@ define([
                         this.stateupdateview_selection();
                     }
                     
+                },
+
+                PLselect: function (page) {
+                    if (this.markedpost != -1) {
+                        let modpost = this.post_list[this.markedpost];
+                        modpost.isSelected = false;
+                    }
+                    
+                    this.markedpost = -1;
+                    this.post_list = this.post_list_sections[page];
+                    this.view_section = page;
+                    this.isreading = false;
+                    this.isanswering = false;
+                    this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
+                    this.arraypos = 0;
+                    this.stateupdateview_selection();
                 },
 
                 stateupdateview_selection: function () {
@@ -761,25 +776,7 @@ define([
                         this.showmodal = false;
                     }
 
-                    axios
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + courseid)
-                        .then(function (response) {
-                            if (app.check_for_error(response.data)) {
-                                app.errorMessages.push(response.data);
-
-                            } else {
-                                app.treedata_viz = response.data.children;
-                                app.info = response;
-                                app.tree_data = response.data;
-                                app.gettree(response.data);
-                            }
-
-                        }).catch(function (error) {
-                            console.error(error);
-                        })
-                        .then(function () {
-                            app.hideloadingicon = true;
-                        });
+                    this.initiatecontact();
                 },
 
                 getidenticon: function (input) {
@@ -846,8 +843,7 @@ define([
             template: `
                 <div id="newsmod-container">
                     <h3 class="mb-4"><img style="width:30px; height:30px;" src="pix/icon.svg"> {{ instanceName }}</h3>
-                    <div class="d-flex">
-                        <div class="d-flex">
+                    <div class="d-flex align-items-center">
                             <button class="btn btn-primary btn-sm" :disabled="iscreatingtopic" v-on:click="newTopic" title="Eine neue Nachricht erstellen">
                                 <i class="fa fa-pen"></i>
                                 Neue Nachricht
@@ -857,17 +853,32 @@ define([
                                     <i class="fa fa-sync"></i>
                                     <span class="d-none d-md-inline">aktualisieren</span>
                             </button>
-                        </div>
-                        <div class="mr-auto px-2">
-                            <button class="btn btn-sm btn-light mr-0" :disabled = "!statesview_section.CanSelectPrev" v-on:click="PLprev" title="">
-                                <i class="fa fa-chevron-left"></i>
-                            </button>
-                            <span>{{view_section +1}}</span>
-                            <button class="btn btn-sm btn-light ml-0" :disabled = "!statesview_section.CanSelectNext" v-on:click="PLnext" title="">
-                                <i class="fa fa-chevron-right"></i>    
-                            </button>
 
-                        </div>
+                            <div class="mr-auto px-2">
+                                <div class="d-flex">
+                                    <div>
+                                        <a class="page-link" :class="{disabled: !statesview_section.CanSelectPrev}" v-on:click="PLprev" 
+                                            href="#" title="Vorherige Seite">
+                                            <i class="fa fa-chevron-left"></i>
+                                        </a>
+                                    </div>
+                                    <a v-for="(el, index) in post_list_sections"
+                                        class="page-link"
+                                        href="#"
+                                        v-on:click="PLselect(index)"
+                                        :class="{'bg-info': view_section == index}"
+                                        >
+                                        {{index+1}}
+                                    </a>
+                                    <div>
+                                        <a class="page-link" :class="{disabled: !statesview_section.CanSelectNext}" v-on:click="PLnext" 
+                                            href="#" title="Nächste Seite">
+                                            <i class="fa fa-chevron-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
                         <div class="search d-flex">
                             <input 
                                 class="form-control form-control-sm d-inline ml-2" 
