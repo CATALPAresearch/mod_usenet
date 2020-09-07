@@ -14,15 +14,13 @@ define([
 
         require.config({
             enforceDefine: false,
-            baseUrl: M.cfg.wwwroot + "/mod/usenet/lib/build",
             paths: {
-                //"d3": ["d3.v5.min"],
-                "pnglib": ["pnglib"],
-                "identicon": ["identicon"],
-                "helper": ["helper"]
+                "pnglib": [M.cfg.wwwroot + "/mod/usenet/lib/build/pnglib"],
+                "identicon": [M.cfg.wwwroot + "/mod/usenet/lib/build/identicon"],
+                "helper": [M.cfg.wwwroot + "/mod/usenet/lib/build/helper"]
             },
             shim: {
-                
+
             }
         });
 
