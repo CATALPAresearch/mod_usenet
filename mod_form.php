@@ -63,6 +63,8 @@ class mod_usenet_mod_form extends moodleform_mod
         $mform->addElement('text', 'newsgroup', get_string('newsgroup', 'mod_usenet'), array('size'=>'64'));
         $mform->setType('newsgroup', PARAM_TEXT);
         $mform->addRule('newsgroup', null, 'required', null, 'client');
+        $mform->addHelpButton('newsgroup', 'newsgroup', 'mod_usenet');
+
         // Adding the standard "intro" and "introformat" fields.
         if ($CFG->branch >= 29) {
             $this->standard_intro_elements();

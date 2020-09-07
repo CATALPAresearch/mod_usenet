@@ -36,5 +36,6 @@ $string['pluginadministration'] = 'Newsgroup module administration';
 $string['username'] = 'Loginname Newsserver';
 $string['userpassword'] = 'Loginpassword Newsserver';
 $string['newsgroup'] = 'Address of the Newsgroup';
+$string['newsgroup_help'] = 'For instance: <ul><li>misc.test<li></li>feu.cafe<li></li>feu.informatik.kurs.1801</li></ul>';
 $string['email_send'] = 'Newsgroup Scheduled Summary';
 $string['messageprovider:submission'] = 'Notification of New Posts';
