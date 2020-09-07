@@ -5777,6 +5777,7 @@ readers do not read off random characters that represent icons */
   width: auto;
 }
 
+/*
 @font-face {
   font-family: 'Font Awesome 5 Brands';
   font-style: normal;
@@ -5812,6 +5813,8 @@ readers do not read off random characters that represent icons */
   src: url([[font:mod_usenet|fa-solid-900.eot]]);
   src: url([[font:mod_usenet|fa-solid-900.eot?#iefix]]) format("embedded-opentype"), url([[font:mod_usenet|fa-solid-900.woff2]]) format("woff2"), url([[font:mod_usenet|fa-solid-900.woff]]) format("woff"), url([[font:mod_usenet|fa-solid-900.ttf]]) format("truetype"), url([[font:mod_usenet|fa-solid-900.svg#fontawesome]]) format("svg");
 }
+
+*/
 
 .fa, .fas {
   font-family: 'Font Awesome 5 Free';
