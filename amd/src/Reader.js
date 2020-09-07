@@ -726,19 +726,19 @@ define([
 
                     this.hideallposts();
 
-                    this.hiddenposts.splice(0);
+                    this.hiddenposts = []; 
 
                     this.statesearchresult = true;
                     this.searchresultmsg = searchresult.length;
-
+                    
                     for (let i = 0; i < searchresult.length; i++) {
-                        this.hiddenposts.push(this.findinarr(searchresult[i].messagenumber, this.post_list));
-                        let modpost = this.hiddenposts[i];
-                        if (typeof modpost.hidden !== 'undefined') {
+                        let modpost = this.findinarr(searchresult[i].messagenum, this.post_list);
+                        
+                        if (modpost !== undefined) {
                             modpost.hidden = false;
+                            this.hiddenposts.push(modpost);
                             Vue.set(this.post_list, modpost.arraypos, modpost);
-                        }
-                        else {
+                        } else {
                             console.error("error displaysearchresult");
                         }
                     }
