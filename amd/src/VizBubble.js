@@ -1,7 +1,7 @@
 define([
     'jquery',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js',
-    M.cfg.wwwroot + '/mod/newsmod/lib/src/d3.v5.js'
+    M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/src/d3.v5.js'
 ], function ($, Vue, d3) {
 
 

@@ -1,6 +1,6 @@
-# newsmod 
+# usenet 
 
-Newsmod is a moodle plugin for reading and writing newsgroup messages. 
+Usenet is a moodle plugin for reading and writing newsgroup messages. 
 
 **TODO**
 
@@ -13,9 +13,9 @@ Newsmod is a moodle plugin for reading and writing newsgroup messages.
 
 ## Installation
 
-* git clone ... to <your-local-moodle-path>/mod/newsmod  
+* git clone ... to <your-local-moodle-path>/mod/usenet  
 * Follow the install instruction at moodle
-* change usenet username and password at ´http://<your-moodle-path>/admin/settings.php?section=modsettingnewsmod´ 
+* change usenet username and password at ´http://<your-moodle-path>/admin/settings.php?section=modsettingusenet´ 
 
 After installation:
 add connection informations to plugin settings in your moodle

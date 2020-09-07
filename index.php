@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Display information about all the mod_newsmod modules in the requested course.
+ * Display information about all the mod_usenet modules in the requested course.
  *
- * @package     mod_newsmod
+ * @package     mod_usenet
  * @copyright   Rudolf Patzer <rpatzer@gmx.de>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -33,26 +33,26 @@ require_course_login($course);
 
 $coursecontext = context_course::instance($course->id);
 
-$event = \mod_newsmod\event\course_module_instance_list_viewed::create(array(
+$event = \mod_usenet\event\course_module_instance_list_viewed::create(array(
     'context' => $modulecontext
 ));
 $event->add_record_snapshot('course', $course);
 $event->trigger();
 
-$PAGE->set_url('/mod/newsmod/index.php', array('id' => $id));
+$PAGE->set_url('/mod/usenet/index.php', array('id' => $id));
 $PAGE->set_title(format_string($course->fullname));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($coursecontext);
 
 echo $OUTPUT->header();
 
-$modulenameplural = get_string('modulenameplural', 'mod_newsmod');
+$modulenameplural = get_string('modulenameplural', 'mod_usenet');
 echo $OUTPUT->heading($modulenameplural);
 
-$newsmods = get_all_instances_in_course('newsmod', $course);
+$usenets = get_all_instances_in_course('usenet', $course);
 
-if (empty($newsmods)) {
-    notice(get_string('nonewmodules', 'mod_newsmod'), new moodle_url('/course/view.php', array('id' => $course->id)));
+if (empty($usenets)) {
+    notice(get_string('nonewmodules', 'mod_usenet'), new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
 $table = new html_table();
@@ -69,22 +69,22 @@ if ($course->format == 'weeks') {
     $table->align = array('left', 'left', 'left');
 }
 
-foreach ($newsmods as $newsmod) {
-    if (!$newsmod->visible) {
+foreach ($usenets as $usenet) {
+    if (!$usenet->visible) {
         $link = html_writer::link(
-            new moodle_url('/mod/newsmod/view.php', array('id' => $newsmod->coursemodule)),
-            format_string($newsmod->name, true),
+            new moodle_url('/mod/usenet/view.php', array('id' => $usenet->coursemodule)),
+            format_string($usenet->name, true),
             array('class' => 'dimmed')
         );
     } else {
         $link = html_writer::link(
-            new moodle_url('/mod/newsmod/view.php', array('id' => $newsmod->coursemodule)),
-            format_string($newsmod->name, true)
+            new moodle_url('/mod/usenet/view.php', array('id' => $usenet->coursemodule)),
+            format_string($usenet->name, true)
         );
     }
 
     if ($course->format == 'weeks' or $course->format == 'topics') {
-        $table->data[] = array($newsmod->section, $link);
+        $table->data[] = array($usenet->section, $link);
     } else {
         $table->data[] = array($link);
     }

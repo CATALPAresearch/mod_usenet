@@ -17,7 +17,7 @@
 /**
  * Code to be executed after the plugin's database scheme has been installed is defined here.
  *
- * @package     mod_newsmod
+ * @package     mod_usenet
  * @category    upgrade
  * @copyright   Rudolf Patzer <rpatzer@gmx.de>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Custom code to be run on installing the plugin.
  */
-function xmldb_newsmod_install() {
+function xmldb_usenet_install() {
 
     return true;
 }

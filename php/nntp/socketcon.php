@@ -551,7 +551,7 @@ function nntp_open($host, $user, $pass, $port = 119)
 
 function getgroupinfo($journal)
 {
-    $localconfig = get_config('newsmod');
+    $localconfig = get_config('usenet');
     $groupname = $journal->newsgroup;
     $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
 
@@ -580,9 +580,9 @@ function getgroupinfo($journal)
 function gettree($journal, $start, $end) {
 
     global $CFG;
-    //require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
+    //require_once($CFG->dirroot . '/mod/usenet/php/nntp/socketcon.php');
 
-    $localconfig = get_config('newsmod');
+    $localconfig = get_config('usenet');
 
     $groupname = $journal->newsgroup;
 
@@ -1006,9 +1006,9 @@ function getUserIdByEmail($sender)
 function loadMessageStatus($msgnr)
 {
     global $DB,$USER;
-    if ($messageid = $DB->record_exists('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))) {
+    if ($messageid = $DB->record_exists('usenet__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))) {
         $moduleinstan = new stdClass();
-        $moduleinstan = $DB->get_record('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr), '*', IGNORE_MISSING);
+        $moduleinstan = $DB->get_record('usenet__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr), '*', IGNORE_MISSING);
         if (!$moduleinstan->readstatus) {
             $moduleinstan->readstatus=false;
         }
@@ -1040,7 +1040,7 @@ function loadCachedData($journal)
 function buildCache_partial($journal, $start, $end) 
 {
     global $CFG;
-    $localconfig = get_config('newsmod');
+    $localconfig = get_config('usenet');
 
     $socket = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
     if (is_array($socket) && array_key_exists('is_error', $socket)) {    //error detected, theres error_feedback data structure here!
@@ -1060,7 +1060,7 @@ function buildCache_partial($journal, $start, $end)
 function buildCache_complete($journal)
 {
     global $CFG;
-    $localconfig = get_config('newsmod');
+    $localconfig = get_config('usenet');
     $socket = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
     if (is_array($socket) && array_key_exists('is_error', $socket)) {    //error detected, theres error_feedback data structure here!
         return $socket;

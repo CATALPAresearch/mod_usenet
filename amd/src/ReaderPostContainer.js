@@ -1,7 +1,7 @@
 define([
     'jquery',
-    M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderPost.js',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js'
+    M.cfg.wwwroot + '/mod/usenet/amd/src/ReaderPost.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js'
 ], function ($, Post, Vue) {
 
 

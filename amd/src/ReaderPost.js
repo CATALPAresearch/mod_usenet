@@ -1,7 +1,7 @@
 define([
     'jquery',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/build/axios.min.js',
 ], function ($, Vue, axios) {
 
     /**
@@ -128,7 +128,7 @@ define([
                     axios   //returned data is already js object (axios automaticly converts json to js obj)
                         .get([
                             M.cfg.wwwroot +
-                            "/mod/newsmod/php/statuschange.php?id=" +
+                            "/mod/usenet/php/statuschange.php?id=" +
                             this.courseid +
                             "&msgnr=" +
                             this.content.messagenumber

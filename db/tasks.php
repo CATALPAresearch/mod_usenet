@@ -2,7 +2,7 @@
 
 $tasks = array(
 array(
-'classname' => 'mod_newsmod\task\send_summary',
+'classname' => 'mod_usenet\task\send_summary',
 'blocking' => 0,
 'minute' => '*',
 'hour' => '*',

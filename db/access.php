@@ -2,7 +2,7 @@
 
 
 $capabilities = array(
-'mod/newsmod:addinstance' => array(
+'mod/usenet:addinstance' => array(
         'riskbitmask' => RISK_XSS,
 
         'captype' => 'write',

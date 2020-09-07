@@ -17,7 +17,7 @@
 /**
  * Page external functions and service definitions.
  *
- * @package    mod_newsmod
+ * @package    mod_usenet
  * @category   external
  * @copyright  2015 Juan Leyva <juan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,12 +28,12 @@ defined('MOODLE_INTERNAL') || die;
 
 $functions = array(
 
-      'mod_newsmod_log' => array(
-        'classname'     => 'mod_newsmod_external',
+      'mod_usenet_log' => array(
+        'classname'     => 'mod_usenet_external',
         'methodname'    => 'log',
         'description'   => 'Writes logdata to database',
         'type'          => 'write',
-        'capabilities'  => 'mod/newsmod:view',
+        'capabilities'  => 'mod/usenet:view',
         //'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
         'ajax'        => true 
     )

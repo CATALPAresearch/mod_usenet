@@ -1,7 +1,7 @@
 define([
     'jquery',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min.js'
+    M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/build/axios.min.js'
 ], function ($, Vue, axios) {
 
     return Vue.component('messagebody-container',
@@ -76,7 +76,7 @@ define([
                     params.append('subject', this.usrinput_subject);
 
                     axios   //returned data is already js object (axios automaticly converts json to js obj)
-                        .post(M.cfg.wwwroot + "/mod/newsmod/php/posttest.php?id=" + this.courseid + "&msgnr=new",
+                        .post(M.cfg.wwwroot + "/mod/usenet/php/posttest.php?id=" + this.courseid + "&msgnr=new",
                             params)
                         .then(response => (this.value = response));
 
@@ -102,7 +102,7 @@ define([
                     params.append('uid', this.postdata.header.id);
 
                     axios
-                        .post(M.cfg.wwwroot + "/mod/newsmod/php/posttest.php?id=" + this.courseid + "&msgnr=" + this.postdata.header.id,
+                        .post(M.cfg.wwwroot + "/mod/usenet/php/posttest.php?id=" + this.courseid + "&msgnr=" + this.postdata.header.id,
                             params)
                         .then(response => (this.value = response));
 

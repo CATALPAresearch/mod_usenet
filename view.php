@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints an instance of mod_newsmod.
+ * Prints an instance of mod_usenet.
  *
- * @package     mod_newsmod
+ * @package     mod_usenet
  * @copyright   Konstantin Friedrich 
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,15 +32,15 @@ $msgnr = optional_param('msgnr', 0, PARAM_INT);
 $n  = optional_param('n', 0, PARAM_INT);
 
 if ($id) {
-    $cm             = get_coursemodule_from_id('newsmod', $id, 0, false, MUST_EXIST);
+    $cm             = get_coursemodule_from_id('usenet', $id, 0, false, MUST_EXIST);
     $course         = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $moduleinstance = $DB->get_record('newsmod', array('id' => $cm->instance), '*', MUST_EXIST);
+    $moduleinstance = $DB->get_record('usenet', array('id' => $cm->instance), '*', MUST_EXIST);
 } elseif ($n) {
-    $moduleinstance = $DB->get_record('newsmod', array('id' => $n), '*', MUST_EXIST);
+    $moduleinstance = $DB->get_record('usenet', array('id' => $n), '*', MUST_EXIST);
     $course         = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
-    $cm             = get_coursemodule_from_instance('newsmod', $moduleinstance->id, $course->id, false, MUST_EXIST);
+    $cm             = get_coursemodule_from_instance('usenet', $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
-    print_error(get_string('missingidandcmid', mod_newsmod));
+    print_error(get_string('missingidandcmid', mod_usenet));
 }
 
 require_login($course, true, $cm);
@@ -48,15 +48,15 @@ require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
 
-$PAGE->set_url('/mod/newsmod/view.php', array('id' => $cm->id));
+$PAGE->set_url('/mod/usenet/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
-$PAGE->requires->css( '/mod/newsmod/styles.css', true );
+$PAGE->requires->css( '/mod/usenet/styles.css', true );
 
 echo $OUTPUT->header();
-echo '<newsmod-container></newsmod-container>';
+echo '<usenet-container></usenet-container>';
 
-$PAGE->requires->js_call_amd('mod_newsmod/newsmod', 'init', array('course'=>$cm->id, 'msgnr'=>$msgnr, 'instanceName'=>$moduleinstance->name));
+$PAGE->requires->js_call_amd('mod_usenet/usenet', 'init', array('course'=>$cm->id, 'msgnr'=>$msgnr, 'instanceName'=>$moduleinstance->name));
 
 echo $OUTPUT->footer();
