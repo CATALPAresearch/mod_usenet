@@ -581,15 +581,18 @@ function gettree($journal, $start, $end) {
 
     global $CFG;
     //require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
+    $enable_cache = true;
 
     $localconfig = get_config('newsmod');
 
     $groupname = $journal->newsgroup;
 
-    $cacheddata = loadCachedData($journal);
+    if ($enable_cache) {
+        $cacheddata = loadCachedData($journal);
 
-    if (is_array($cacheddata) && array_key_exists('is_error', $cacheddata)) {    //error detected, theres error_feedback data structure here!
-        return $cacheddata;
+        if (is_array($cacheddata) && array_key_exists('is_error', $cacheddata)) {    //error detected, theres error_feedback data structure here!
+            return $cacheddata;
+        }
     }
 
     if (isset($cacheddata)) {
@@ -602,8 +605,6 @@ function gettree($journal, $start, $end) {
                 return $newadditons;
             }
             $cacheddata = array_merge($cacheddata, $newadditons);
-            //echo "newadditions";
-            //echo json_encode($cacheddata);
         }
 
         $headers = process_headers($cacheddata);
@@ -1052,8 +1053,10 @@ function buildCache_partial($journal, $start, $end)
     if (is_array($result) && array_key_exists('is_error', $result)) {    //error detected, theres error_feedback data structure here!
         return $result;
     }
-
-    file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result), FILE_APPEND);
+    $olddata = loadCachedData($journal);
+    $newdata = array_merge($olddata, $result);
+    
+    file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($newdata));
     return $result;
 }
 

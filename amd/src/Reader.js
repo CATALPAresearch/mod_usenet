@@ -51,7 +51,7 @@ define([
                     post_list: [],
                     post_list_sections: [],      // neatly divided sections of post_list are here
                     post_list_section_size: 50,
-                    post_list_section_reservespace: 10,
+                    post_list_section_reservespace: 10,  // Buffer space for threads that cant fit into remaining section_size space
                     view_section: 0,
                     singlepostdata: [],
                     threadlist: [],
@@ -478,6 +478,8 @@ define([
                     this.hideloadingicon = false;
 
                     app.post_list.splice(0);    //unset content array
+                    this.post_list_sections.splice(0);
+                    this.threadlist.splice(0);
                     this.arraypos = 0;          //reset index counter of content
                     this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
                     this.isanswering = false;
@@ -496,12 +498,10 @@ define([
 
                     this.buildthread_starter(tree_data, this.threadlist);
 
-                    console.log(this.threadlist);
 
                     this.buildsections(this.threadlist, this.post_list_sections,
                          this.post_list_section_size, this.post_list_section_reservespace);
 
-                    console.log(this.post_list_sections);
 
                     this.post_list = this.post_list_sections[0];
                     
@@ -571,7 +571,7 @@ define([
                             if (val.children) {
                                 app.buildthread(val, margin + 15, thread);    //original margin val: margin + 25
                             } else {
-                                thread.push(this.prepare_postdata(val, margin));
+                                thread.push(this.prepare_postdata(val, margin + 15));
                             }
 
                         });
@@ -771,6 +771,8 @@ define([
                     this.arraypos = 0;
 
                     this.post_list.splice(0);
+                    this.post_list_sections.splice(0);
+                    this.threadlist.splice(0);
 
                     if (this.viewportsize == 'mobile') {
                         this.showmodal = false;
