@@ -13,7 +13,6 @@
   line-height: 1;
 }
 
-
 .fa-lg {
   font-size: 1.33333em;
   line-height: 0.75em;
@@ -5778,45 +5777,59 @@ readers do not read off random characters that represent icons */
 }
 
 /*
-@font-face {
-  font-family: 'Font Awesome 5 Brands';
-  font-style: normal;
-  font-weight: normal;
-  font-display: auto;
-  src: url([[font:mod_usenet|fa-brands-400.eot]]);
-  src: url([[font:mod_usenet|fa-brands-400.eot?#iefix]]) format("embedded-opentype"), url([[font:mod_usenet|fa-brands-400.woff2]]) format("woff2"), url([[font:mod_usenet|fa-brands-400.woff]]) format("woff"), url([[font:mod_usenet|fa-brands-400.ttf]]) format("truetype"), url([[font:mod_usenet|fa-brands-400.svg#fontawesome]]) format("svg");
-}
+Its a really bad hack to include an absolut path to my personal moodle instance, but I could find
+a better solution. The problem is related to boost-theme which is looking for the font within boost and within the plugin folder.
+Since there is only one path valid at this point it fails to fetch the font at theme or at the plugin.
 
-.fab {
-  font-family: 'Font Awesome 5 Brands';
-}
+The following nonsense solutions I have tried:
+https://moodle.org/mod/forum/discuss.php?d=212973
+https://docs.moodle.org/dev/Creating_a_theme_settings_page
 
-@font-face {
-  font-family: 'Font Awesome 5 Free';
-  font-style: normal;
-  font-weight: 400;
-  font-display: auto;
-  src: url([[font:mod_usenet|fa-regular-400.eot]]);
-  src: url([[font:mod_usenet|fa-regular-400.eot?#iefix]]) format("embedded-opentype"), url([[font:mod_usenet|fa-regular-400.woff2]]) format("woff2"), url([[font:mod_usenet|fa-regular-400.woff]]) format("woff"), url([[font:mod_usenet|fa-regular-400.ttf]]) format("truetype"), url([[font:mod_usenet|fa-regular-400.svg#fontawesome]]) format("svg");
-}
-
-.far {
-  font-family: 'Font Awesome 5 Free';
-  font-weight: 400;
-}
-
-@font-face {
-  font-family: 'Font Awesome 5 Free';
-  font-style: normal;
-  font-weight: 900;
-  font-display: auto;
-  src: url([[font:mod_usenet|fa-solid-900.eot]]);
-  src: url([[font:mod_usenet|fa-solid-900.eot?#iefix]]) format("embedded-opentype"), url([[font:mod_usenet|fa-solid-900.woff2]]) format("woff2"), url([[font:mod_usenet|fa-solid-900.woff]]) format("woff"), url([[font:mod_usenet|fa-solid-900.ttf]]) format("truetype"), url([[font:mod_usenet|fa-solid-900.svg#fontawesome]]) format("svg");
-}
+Next thing to try is using scss by storing the path a variable. 
 
 */
 
+@font-face {
+  font-family: "Font Awesome 5 Brands";
+  font-style: normal;
+  font-weight: normal;
+  font-display: auto;
+  src: url(/moodle/mod/usenet/fonts/fa-brands-400.eot);
+  src: url(/moodle/mod/usenet/fonts/fa-brands-400.eot?#iefix) format("embedded-opentype"), url(/moodle/mod/usenet/fonts/fa-brands-400.woff2) format("woff2"), url(/moodle/mod/usenet/fonts/fa-brands-400.woff) format("woff"), url(/moodle/mod/usenet/fonts/fa-brands-400.ttf) format("truetype"), url(/moodle/mod/usenet/fonts/fa-brands-400.svg#fontawesome) format("svg");
+}
+
+.fab {
+  font-family: "Font Awesome 5 Brands";
+}
+
+@font-face {
+  font-family: "Font Awesome 5 Free";
+  font-style: normal;
+  font-weight: 400;
+  font-display: auto;
+  src: url(/moodle/mod/usenet/fonts/fa-regular-400.eot);
+  src: url(/moodle/mod/usenet/fonts/fa-regular-400.eot?#iefix) format("embedded-opentype"), url(/moodle/mod/usenet/fonts/fa-regular-400.woff2) format("woff2"), url(/moodle/mod/usenet/fonts/fa-regular-400.woff) format("woff"), url(/moodle/mod/usenet/fonts/fa-regular-400.ttf) format("truetype"), url(/moodle/mod/usenet/fonts/fa-regular-400.svg#fontawesome) format("svg");
+  /*
+  src: url(fonts/fa-regular-400.eot);
+  src: url(fonts/fa-regular-400.eot?#iefix) format("embedded-opentype"), url(fonts/fa-regular-400.woff2) format("woff2"), url(fonts/fa-regular-400.woff) format("woff"), url(fonts/fa-regular-400.ttf) format("truetype"), url(fonts/fa-regular-400.svg#fontawesome) format("svg");
+  */
+}
+
+.far {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Font Awesome 5 Free";
+  font-style: normal;
+  font-weight: 900;
+  font-display: auto;
+  src: url(/moodle/mod/usenet/fonts/fa-solid-900.eot);
+  src: url(/moodle/mod/usenet/fonts/fa-solid-900.eot?#iefix) format("embedded-opentype"), url(/moodle/mod/usenet/fonts/fa-solid-900.woff2) format("woff2"), url(/moodle/mod/usenet/fonts/fa-solid-900.woff) format("woff"), url(/moodle/mod/usenet/fonts/fa-solid-900.ttf) format("truetype"), url(/moodle/mod/usenet/fonts/fa-solid-900.svg#fontawesome) format("svg");
+}
+
 .fa, .fas {
-  font-family: 'Font Awesome 5 Free';
+  font-family: "Font Awesome 5 Free";
   font-weight: 900;
 }
