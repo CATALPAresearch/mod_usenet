@@ -5784,6 +5784,8 @@ Since there is only one path valid at this point it fails to fetch the font at t
 The following nonsense solutions I have tried:
 https://moodle.org/mod/forum/discuss.php?d=212973
 https://docs.moodle.org/dev/Creating_a_theme_settings_page
+- url('[[font:theme|fonts/fa-solid-900.woff2]]')
+url('[[font:usenet|fonts/fa-solid-900.woff2]]')
 
 Next thing to try is using scss by storing the path a variable. 
 
@@ -5794,8 +5796,8 @@ Next thing to try is using scss by storing the path a variable.
   font-style: normal;
   font-weight: normal;
   font-display: auto;
-  src: url(/moodle/mod/usenet/fonts/fa-brands-400.eot);
-  src: url(/moodle/mod/usenet/fonts/fa-brands-400.eot?#iefix) format("embedded-opentype"), url(/moodle/mod/usenet/fonts/fa-brands-400.woff2) format("woff2"), url(/moodle/mod/usenet/fonts/fa-brands-400.woff) format("woff"), url(/moodle/mod/usenet/fonts/fa-brands-400.ttf) format("truetype"), url(/moodle/mod/usenet/fonts/fa-brands-400.svg#fontawesome) format("svg");
+  src: url(fonts/fa-brands-400.eot);
+  src: url(fonts/fa-brands-400.eot?#iefix) format("embedded-opentype"), url(fonts/fa-brands-400.woff2) format("woff2"), url(fonts/fa-brands-400.woff) format("woff"), url(fonts/fa-brands-400.ttf) format("truetype"), url(fonts/fa-brands-400.svg#fontawesome) format("svg");
 }
 
 .fab {
@@ -5807,8 +5809,8 @@ Next thing to try is using scss by storing the path a variable.
   font-style: normal;
   font-weight: 400;
   font-display: auto;
-  src: url(/moodle/mod/usenet/fonts/fa-regular-400.eot);
-  src: url(/moodle/mod/usenet/fonts/fa-regular-400.eot?#iefix) format("embedded-opentype"), url(/moodle/mod/usenet/fonts/fa-regular-400.woff2) format("woff2"), url(/moodle/mod/usenet/fonts/fa-regular-400.woff) format("woff"), url(/moodle/mod/usenet/fonts/fa-regular-400.ttf) format("truetype"), url(/moodle/mod/usenet/fonts/fa-regular-400.svg#fontawesome) format("svg");
+  src: url(fonts/fa-regular-400.eot);
+  src: url(fonts/fa-regular-400.eot?#iefix) format("embedded-opentype"), url(fonts/fa-regular-400.woff2) format("woff2"), url(fonts/fa-regular-400.woff) format("woff"), url(fonts/fa-regular-400.ttf) format("truetype"), url(fonts/fa-regular-400.svg#fontawesome) format("svg");
   /*
   src: url(fonts/fa-regular-400.eot);
   src: url(fonts/fa-regular-400.eot?#iefix) format("embedded-opentype"), url(fonts/fa-regular-400.woff2) format("woff2"), url(fonts/fa-regular-400.woff) format("woff"), url(fonts/fa-regular-400.ttf) format("truetype"), url(fonts/fa-regular-400.svg#fontawesome) format("svg");
@@ -5825,8 +5827,8 @@ Next thing to try is using scss by storing the path a variable.
   font-style: normal;
   font-weight: 900;
   font-display: auto;
-  src: url(/moodle/mod/usenet/fonts/fa-solid-900.eot);
-  src: url(/moodle/mod/usenet/fonts/fa-solid-900.eot?#iefix) format("embedded-opentype"), url(/moodle/mod/usenet/fonts/fa-solid-900.woff2) format("woff2"), url(/moodle/mod/usenet/fonts/fa-solid-900.woff) format("woff"), url(/moodle/mod/usenet/fonts/fa-solid-900.ttf) format("truetype"), url(/moodle/mod/usenet/fonts/fa-solid-900.svg#fontawesome) format("svg");
+  src: url(fonts/fa-solid-900.eot);
+  src: url(fonts/fa-solid-900.eot?#iefix) format("embedded-opentype"), url('./fonts/fa-solid-900.woff2') format("woff2"), url(fonts/fa-solid-900.woff) format("woff"), url(fonts/fa-solid-900.ttf) format("truetype"), url(fonts/fa-solid-900.svg#fontawesome) format("svg");
 }
 
 .fa, .fas {
