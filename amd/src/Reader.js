@@ -1,7 +1,7 @@
 /**
  * Newsgroup reader
- * @module     mod/newsmod/Reader
- * @class      newsmod
+ * @module     mod/usenet/Reader
+ * @class      usenet
  * @copyright  2020 Niels Seidel <niels.seidel@fernuni-hagen.de>
  * @license    MIT
  * @since      3.1
@@ -10,12 +10,12 @@
 
 define([
     'jquery',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min.js',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/identicon.min.js',
-    M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderMessageBody.js',
-    M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderPostContainer.js',
-    M.cfg.wwwroot + '/mod/newsmod/amd/src/VizBubble.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/build/axios.min.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/build/identicon.min.js',
+    M.cfg.wwwroot + '/mod/usenet/amd/src/ReaderMessageBody.js',
+    M.cfg.wwwroot + '/mod/usenet/amd/src/ReaderPostContainer.js',
+    M.cfg.wwwroot + '/mod/usenet/amd/src/VizBubble.js',
 ], function ($, Vue, axios, Identicon, MessageBodyContainer, PostContainer, BubbleChart) {
 
     /**
@@ -33,7 +33,7 @@ define([
     var Reader = function (Log, courseid, messageid, instanceName) {
 
         var app = new Vue({
-            el: 'newsmod-container',
+            el: 'usenet-container',
             data: function () {
                 return {
                     instanceName: 'Newsgroup',
@@ -164,29 +164,29 @@ define([
 
                     this.getgroupinfo().then(function (response) {
                         axios
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/fetchtree.php?id=" + courseid + "&start=" + app.start + "&end=" + app.end)
-                        .then(function (response) {
-                            if (app.check_for_error(response.data)) {
-                                app.errorMessages.push(response.data);
+                            .get(M.cfg.wwwroot + "/mod/usenet/php/fetchtree.php?id=" + courseid + "&start=" + app.start + "&end=" + app.end)
+                            .then(function (response) {
+                                if (app.check_for_error(response.data)) {
+                                    app.errorMessages.push(response.data);
 
-                            } else {
-                                app.treedata_viz = response.data.children;
-                                app.info = response;
-                                app.tree_data = response.data;
-                                app.gettree(response.data);
-                            }
+                                } else {
+                                    app.treedata_viz = response.data.children;
+                                    app.info = response;
+                                    app.tree_data = response.data;
+                                    app.gettree(response.data);
+                                }
 
-                        }).catch(function (error) {
-                            console.error(error);
-                        }).then(function () {
-                            app.hideloadingicon = true;
-                        });
+                            }).catch(function (error) {
+                                console.error(error);
+                            }).then(function () {
+                                app.hideloadingicon = true;
+                            });
                     });
                 },
 
                 getgroupinfo: function () {
                     return axios
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/groupinfo.php?id=" + courseid)
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/groupinfo.php?id=" + courseid)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 app.errorMessages.push(response.data);
@@ -225,7 +225,7 @@ define([
                     this.hideloadingiconRMB = false;
 
                     axios
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 app.errorMessages.push(response.data);
@@ -316,7 +316,7 @@ define([
                     Vue.set(this.post_list, arraypos, modpost);
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 app.errorMessages.push(response.data);
@@ -361,7 +361,7 @@ define([
 
                     //msgid = parseInt(msgid);
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 app.errorMessages.push(response.data);
@@ -382,7 +382,7 @@ define([
                     this.isanswering = false;
 
                     this.stateupdateRMB();
-                    
+
 
                 },
 
@@ -401,7 +401,7 @@ define([
                         this.arraypos = 0;
                         this.stateupdateview_selection();
                     }
-                    
+
                 },
 
                 PLnext: function () {
@@ -410,7 +410,7 @@ define([
                             let modpost = this.post_list[this.markedpost];
                             modpost.isSelected = false;
                         }
-                        
+
                         this.markedpost = -1;
                         this.post_list = this.post_list_sections[++this.view_section];
                         this.isreading = false;
@@ -419,7 +419,7 @@ define([
                         this.arraypos = 0;
                         this.stateupdateview_selection();
                     }
-                    
+
                 },
 
                 PLselect: function (page) {
@@ -427,7 +427,7 @@ define([
                         let modpost = this.post_list[this.markedpost];
                         modpost.isSelected = false;
                     }
-                    
+
                     this.markedpost = -1;
                     this.post_list = this.post_list_sections[page];
                     this.view_section = page;
@@ -500,11 +500,11 @@ define([
 
 
                     this.buildsections(this.threadlist, this.post_list_sections,
-                         this.post_list_section_size, this.post_list_section_reservespace);
+                        this.post_list_section_size, this.post_list_section_reservespace);
 
 
                     this.post_list = this.post_list_sections[0];
-                    
+
                 },
 
                 buildsections: function (threadlist, sectionlist, sectionsize, reserve_space) {
@@ -535,15 +535,15 @@ define([
                                 remainingspace = threadlist[i].length;
                                 reservespace = 0;
                             }
-                            
+
                         }
-                        
+
                         if (threadlist[i].length <= remainingspace) {
                             for (let j = 0; j < threadlist[i].length; j++) {
                                 sectionlist[sectionindex].push(threadlist[i][j]);
                             }
                             remainingspace -= threadlist[i].length;
-                        }   
+                        }
                     }
                 },
 
@@ -551,11 +551,11 @@ define([
                     if (typeof tree_data.children === 'undefined') {
                         console.error("tree_data.children not defined", tree_data);
                     }
-                        tree_data.children.forEach(threadhead => {
+                    tree_data.children.forEach(threadhead => {
 
-                            threadlist.push(this.buildthread(threadhead, 1));
+                        threadlist.push(this.buildthread(threadhead, 1));
 
-                        });
+                    });
                 },
 
                 buildthread: function (threadhead, margin, thread = 0) {
@@ -564,7 +564,7 @@ define([
                     }
                     thread.push(this.prepare_postdata(threadhead, margin));
 
-                    if (typeof threadhead.children !== 'undefined') { 
+                    if (typeof threadhead.children !== 'undefined') {
                         threadhead.children.forEach(val => {
 
 
@@ -584,18 +584,18 @@ define([
                     if (typeof tree_data.children === 'undefined') {
                         console.error("tree_data.children not defined", tree_data);
                     }
-                        tree_data.children.forEach(val => {
+                    tree_data.children.forEach(val => {
 
-                            let content = this.prepare_postdata(val, margin);
+                        let content = this.prepare_postdata(val, margin);
 
-                            this.post_list.push(content);
+                        this.post_list.push(content);
 
-                            if (val.children) {
-                                app.buildtree_classic(val, margin + 15);    //original margin val: margin + 25
-                            }
+                        if (val.children) {
+                            app.buildtree_classic(val, margin + 15);    //original margin val: margin + 25
+                        }
 
-                        });
-                    
+                    });
+
                 },
 
                 prepare_postdata: function (postdata_raw, margin = 1) {
@@ -649,7 +649,7 @@ define([
                         date: postdata_raw.date, subject: postdata_raw.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
                         isSelected: false, hidden: false, family: family, identicon: identiconstring
                     };
-                    
+
                     return content;
                 },
 
@@ -686,7 +686,7 @@ define([
                     this.hideloadingicon = false;
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/search.php?id=" + courseid + "&searchparam=" + this.searchstring)
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/search.php?id=" + courseid + "&searchparam=" + this.searchstring)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 //app.post_list.push(app.prepare_postdata(response.data));
@@ -726,19 +726,19 @@ define([
 
                     this.hideallposts();
 
-                    this.hiddenposts.splice(0);
+                    this.hiddenposts = []; 
 
                     this.statesearchresult = true;
                     this.searchresultmsg = searchresult.length;
-
+                    
                     for (let i = 0; i < searchresult.length; i++) {
-                        this.hiddenposts.push(this.findinarr(searchresult[i].messagenumber, this.post_list));
-                        let modpost = this.hiddenposts[i];
-                        if (typeof modpost.hidden !== 'undefined') {
+                        let modpost = this.findinarr(searchresult[i].messagenum, this.post_list);
+                        
+                        if (modpost !== undefined) {
                             modpost.hidden = false;
+                            this.hiddenposts.push(modpost);
                             Vue.set(this.post_list, modpost.arraypos, modpost);
-                        }
-                        else {
+                        } else {
                             console.error("error displaysearchresult");
                         }
                     }
@@ -843,7 +843,7 @@ define([
 
             }, // END app methods
             template: `
-                <div id="newsmod-container">
+                <div id="usenet-container">
                     <h3 class="mb-4"><img style="width:30px; height:30px;" src="pix/icon.svg"> {{ instanceName }}</h3>
                     <div class="d-flex align-items-center">
                             <button class="btn btn-primary btn-sm" :disabled="iscreatingtopic" v-on:click="newTopic" title="Eine neue Nachricht erstellen">

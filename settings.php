@@ -17,7 +17,7 @@
 /**
  * Plugin administration pages are defined here.
  *
- * @package     mod_newsmod
+ * @package     mod_usenet
  * @category    admin
  * @copyright   Rudolf Patzer <rpatzer@gmx.de>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 if ($ADMIN->fulltree) {
     // TODO: Define the plugin settings page.
     // https://docs.moodle.org/dev/Admin_settings
-    $settings->add(new admin_setting_configtext('newsmod/newsgroupserver', get_string('newsgroup', 'newsmod'), get_string('newsgroup', 'newsmod'), "feunews.fernuni-hagen.de"));
-    $settings->add(new admin_setting_configtext('newsmod/newsgroupusername', get_string('username', 'newsmod'), get_string('username', 'newsmod'), "username q*******"));
-    $settings->add(new admin_setting_configpasswordunmask('newsmod/newsgrouppassword', get_string('userpassword', 'newsmod'), get_string('userpassword', 'newsmod'), ""));
+    $settings->add(new admin_setting_configtext('usenet/newsgroupserver', get_string('newsgroup', 'usenet'), get_string('newsgroup', 'usenet'), "feunews.fernuni-hagen.de"));
+    $settings->add(new admin_setting_configtext('usenet/newsgroupusername', get_string('username', 'usenet'), get_string('username', 'usenet'), "username q*******"));
+    $settings->add(new admin_setting_configpasswordunmask('usenet/newsgrouppassword', get_string('userpassword', 'usenet'), get_string('userpassword', 'usenet'), ""));
 }

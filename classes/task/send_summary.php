@@ -1,6 +1,6 @@
 <?php
 
-namespace mod_newsmod\task;
+namespace mod_usenet\task;
 
 /**
  * An example of a scheduled task.
@@ -15,7 +15,7 @@ class send_summary extends \core\task\scheduled_task
      */
     public function get_name()
     {
-        return get_string('email_send', 'newsmod');
+        return get_string('email_send', 'usenet');
     }
 
     /**
@@ -28,7 +28,7 @@ class send_summary extends \core\task\scheduled_task
         // Apply olive oil.
         global $CFG,$DB;
 
-        require_once($CFG->dirroot . '/mod/newsmod/libconn.php');
+        require_once($CFG->dirroot . '/mod/usenet/libconn.php');
         $summary = $DB->get_records('user');
         $fp = fopen('./crontest.txt', 'w');
         $cachesummary = array();
@@ -40,7 +40,7 @@ class send_summary extends \core\task\scheduled_task
         $lastruntime = $DB->get_record_sql("
                 SELECT t.lastruntime
                 FROM {task_scheduled} t
-                where t.component = 'mod_newsmod'");
+                where t.component = 'mod_usenet'");
 
         if ($lastruntime->lastruntime>0) {
             $timetosearch=time();
@@ -56,7 +56,7 @@ class send_summary extends \core\task\scheduled_task
             $enrolled = $DB->get_records_sql("
 		SELECT nm.newsgroup, u.id ,u.email, u.firstname
 		FROM {course} c
-		JOIN {newsmod} nm ON nm.course = c.id
+		JOIN {usenet} nm ON nm.course = c.id
 		JOIN {context} ct ON c.id = ct.instanceid
 		JOIN {role_assignments} ra ON ra.contextid = ct.id
 		JOIN {user} u ON u.id = ra.userid
@@ -80,8 +80,8 @@ class send_summary extends \core\task\scheduled_task
                 $enrolledd = $DB->get_records_sql("
                       SELECT cm.id, nm.newsgroup FROM {modules} c
                       JOIN {course_modules} cm ON cm.module = c.id
-                      JOIN {newsmod} nm ON nm.id = cm.instance
-                      WHERE c.name = 'newsmod'");
+                      JOIN {usenet} nm ON nm.id = cm.instance
+                      WHERE c.name = 'usenet'");
                 $key = array_search($newsgr->newsgroup, array_column($enrolledd, 'newsgroup'));
                 $keys = array_slice($enrolledd, $key, 1);
 
@@ -105,7 +105,7 @@ class send_summary extends \core\task\scheduled_task
 
                 foreach ($cachesummary[$newsgr->newsgroup] as $message) {
                     $summarytext= $summarytext .'<tr><td height="10px">';
-                    $summarytext = $summarytext .  '<a class="searcher" href="'.$httppos .'/mod/newsmod/view.php?id='. $keys[0]->id .'&msgnr='. $message->uid .'">';
+                    $summarytext = $summarytext .  '<a class="searcher" href="'.$httppos .'/mod/usenet/view.php?id='. $keys[0]->id .'&msgnr='. $message->uid .'">';
                     //$summarytext = $summarytext . '<li class="node" style="list-style:none">';
                     //$summarytext = $summarytext .  '<svg width="100" height="100" data-jdenticon-value=">';
 
@@ -119,7 +119,7 @@ class send_summary extends \core\task\scheduled_task
 
 
 
-                    //print_r(new moodle_url("/mod/newsmod/messageid.php?id=" . $newsgr->id . "&msgnr=" . $message->uid));
+                    //print_r(new moodle_url("/mod/usenet/messageid.php?id=" . $newsgr->id . "&msgnr=" . $message->uid));
                     $summarytext = $summarytext . '<p>Betreff: '. htmlspecialchars($message->subject).'</p><p> Absender: ';
 
 

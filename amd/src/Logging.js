@@ -1,8 +1,8 @@
 /* eslint-disable valid-jsdoc */
 /**
- * @module     mod/newsmod/Logging
- * @package    mod_newsmod
- * @class      newsmod
+ * @module     mod/usenet/Logging
+ * @package    mod_usenet
+ * @class      usenet
  * @copyright  2020 Niels Seidel, niels.seidel@fernuni-hagen.de
  * @license    MIT
  * @since      3.1
@@ -14,7 +14,7 @@ define(['jquery', 'core/ajax'], function($, ajax) {
     var Log = function (utils, courseid, options) {
         this.utils = utils;
         this.courseid = courseid;
-        this.name = 'log_newsmod';
+        this.name = 'log_usenet';
         this.options = utils.mergeObjects({
             outputType: 0, // -1: no logging, 0: console.log(), 1: server log, 
             prefix: '',
@@ -111,7 +111,7 @@ define(['jquery', 'core/ajax'], function($, ajax) {
          */
         this.sendLog = function (entry) {
             ajax.call([{
-                methodname: 'mod_newsmod_log',
+                methodname: 'mod_usenet_log',
                 args: {
                     data: {
                         courseid: this.courseid,

@@ -1,7 +1,7 @@
 define([
     'jquery',
-    M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderPost.js',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js'
+    M.cfg.wwwroot + '/mod/usenet/amd/src/ReaderPost.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js'
 ], function ($, Post, Vue) {
 
 
@@ -54,7 +54,7 @@ define([
                             modpost.isSelected = false;
                             Vue.set(this.postlist, this.previouspost, modpost);
                         }
-                        else {console.log("oh noe");}
+                        else { console.log("oh noe"); }
                     }
                 },
 
@@ -67,6 +67,7 @@ define([
                 // Function ongetmsg called by event getmsg, getmsg-event is emitted by 'post' (child component)
 
                 ongetmsg: function (msgid, arraypos) {
+                    console.log('try to get msg ', msgid, arraypos)
 
                     this.$emit('displaymsg', msgid);
 
@@ -80,22 +81,23 @@ define([
                     // see https://vuejs.org/v2/guide/reactivity.html#Change-Detection-Caveats
                     //var modpost = this.postlist[arraypos];
                     var modpost = this.findinarr(msgid, this.postlist);
+
                     arraypos = this.postlist.indexOf(modpost);
                     modpost.isSelected = true;
                     modpost.unread = false;
                     Vue.set(this.postlist, arraypos, modpost);
 
-                    if (this.previouspost != -1)    // was there a post previously selected ?
-                    {
-                        if (this.previouspost != arraypos)  // is the user not clicking on the same post ?
-                        {
+                    if (this.previouspost != -1) {    // was there a post previously selected ?
+
+                        if (this.previouspost != arraypos) {  // is the user not clicking on the same post ?
+
                             if (typeof this.postlist[this.previouspost] !== 'undefined') {
                                 modpost = this.postlist[this.previouspost];
                                 modpost.isSelected = false;
                                 Vue.set(this.postlist, this.previouspost, modpost);
-                            }
-                        }
-                    }
+                            } 
+                        } 
+                    } 
                     this.previouspost = arraypos;   // current post is next previouspost
                     window.scroll({
                         top: 200,

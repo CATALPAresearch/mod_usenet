@@ -1,5 +1,5 @@
 {
-  "name": "newsmod",
+  "name": "usenet",
   "version": "1.0.0",
   "description": "Usenet client for Moodle",
   "main": "Gruntfile.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.pi6.fernuni-hagen.de/aple/entwicklung/mod_newsmod/"
+    "url": "https://gitlab.pi6.fernuni-hagen.de/aple/entwicklung/mod_usenet/"
   },
   "keywords": [
     "usenet"
@@ -23,9 +23,12 @@
     "identicon": "^3.0.1"
   },
   "devDependencies": {
+    "grunt": "^1.3.0",
     "grunt-contrib-cssmin": "^3.0.0",
     "grunt-contrib-jshint": "^2.1.0",
+    "grunt-contrib-uglify": "^4.0.1",
     "grunt-terser": "^1.0.0",
-    "grunt-ts": "^6.0.0-beta.22"
+    "grunt-ts": "^6.0.0-beta.22",
+    "typescript": "^3.9.3"
   }
 }

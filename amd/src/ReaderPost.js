@@ -1,7 +1,7 @@
 define([
     'jquery',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/build/axios.min.js',
 ], function ($, Vue, axios) {
 
     /**
@@ -128,7 +128,7 @@ define([
                     axios   //returned data is already js object (axios automaticly converts json to js obj)
                         .get([
                             M.cfg.wwwroot +
-                            "/mod/newsmod/php/statuschange.php?id=" +
+                            "/mod/usenet/php/statuschange.php?id=" +
                             this.courseid +
                             "&msgnr=" +
                             this.content.messagenumber
@@ -176,10 +176,10 @@ define([
             template: `
                 <div class="post" :class="{hidden: content.hidden}" :style="{'padding-bottom': this.postpadding}">
                     <div class="node px-0" :column="content.margin" :class="{'font-weight-bold': content.unread}">
-                        <div class ="container-fluid px-0">
+                        <div class="container-fluid px-0">
                             <div class="row px-0 mx-0" :class="{'bg-info': content.isSelected}" >
                                 
-                                <div class="px-0  col-1 col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                                <div class="px-0 col-1 col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
                                     <i class="fas fa-sm pt-2 px-3" 
                                         :class="{'fa-caret-down': content.haschild, 'fa-caret-right': this.hiddenfamily}" 
                                         :style="poststylechildcnd"
@@ -199,7 +199,7 @@ define([
                                             {{content.personal}}
                                         </div>
                                     
-                                        <div class="col-6 order-3 order-md-2 col-xs-11 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-truncate px-0" :style="textindent" style="margin-left:25px;">
+                                        <div class="col-6 order-xs-3 order-md-2 col-xs-11 col-sm-6 col-md-11 col-lg-6 col-xl-6 text-truncate px-0" :style="textindent" style="margin-left:25px;">
                                             {{content.subject}}
                                         </div>
 

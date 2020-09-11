@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The main mod_newsmod configuration form.
+ * The main mod_usenet configuration form.
  *
- * @package     mod_newsmod
+ * @package     mod_usenet
  * @copyright   Rudolf Patzer <rpatzer@gmx.de>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,11 +29,11 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
 /**
  * Module instance settings form.
  *
- * @package    mod_newsmod
+ * @package    mod_usenet
  * @copyright  Rudolf Patzer <rpatzer@gmx.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_newsmod_mod_form extends moodleform_mod
+class mod_usenet_mod_form extends moodleform_mod
 {
 
     /**
@@ -49,7 +49,7 @@ class mod_newsmod_mod_form extends moodleform_mod
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         // Adding the standard "name" field.
-        $mform->addElement('text', 'name', get_string('newsmodname', 'mod_newsmod'), array('size' => '64'));
+        $mform->addElement('text', 'name', get_string('usenetname', 'mod_usenet'), array('size' => '64'));
 
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
@@ -59,10 +59,12 @@ class mod_newsmod_mod_form extends moodleform_mod
 
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        //$mform->addHelpButton('name', 'newsmodname', 'mod_newsmod');
-        $mform->addElement('text', 'newsgroup', get_string('newsgroup', 'mod_newsmod'), array('size'=>'64'));
+        //$mform->addHelpButton('name', 'usenetname', 'mod_usenet');
+        $mform->addElement('text', 'newsgroup', get_string('newsgroup', 'mod_usenet'), array('size'=>'64'));
         $mform->setType('newsgroup', PARAM_TEXT);
         $mform->addRule('newsgroup', null, 'required', null, 'client');
+        $mform->addHelpButton('newsgroup', 'newsgroup', 'mod_usenet');
+
         // Adding the standard "intro" and "introformat" fields.
         if ($CFG->branch >= 29) {
             $this->standard_intro_elements();
@@ -70,10 +72,10 @@ class mod_newsmod_mod_form extends moodleform_mod
             $this->add_intro_editor();
         }
 
-        // Adding the rest of mod_newsmod settings, spreading all them into this fieldset
+        // Adding the rest of mod_usenet settings, spreading all them into this fieldset
         // ... or adding more fieldsets ('header' elements) if needed for better logic.
-        $mform->addElement('static', 'label1', 'newsmodsettings', get_string('newsmodsettings', 'mod_newsmod'));
-        $mform->addElement('header', 'newsmodfieldset', get_string('newsmodfieldset', 'mod_newsmod'));
+        $mform->addElement('static', 'label1', 'usenetsettings', get_string('usenetsettings', 'mod_usenet'));
+        $mform->addElement('header', 'usenetfieldset', get_string('usenetfieldset', 'mod_usenet'));
 
         // Add standard elements.
         $this->standard_coursemodule_elements();

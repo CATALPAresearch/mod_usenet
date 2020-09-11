@@ -44,7 +44,7 @@
 
  */
 
-namespace newsmod_send\task;
+namespace usenet_send\task;
 
 
 

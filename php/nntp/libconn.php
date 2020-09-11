@@ -3,12 +3,12 @@ defined('MOODLE_INTERNAL')|| die;
 
 //error_reporting(E_ALL);
 
-require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
+require_once($CFG->dirroot . '/mod/usenet/php/nntp/socketcon.php');
 
     function summary($journal, $timetosearch)
     {
         global $CFG, $DB;
-        $localconfig = get_config('newsmod');
+        $localconfig = get_config('usenet');
         
         $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
         $result = nntp_headers_all($nntp, $journal->newsgroup);
@@ -25,7 +25,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
     function buildCache($journal)
     {
         global $CFG;
-        $localconfig = get_config('newsmod');
+        $localconfig = get_config('usenet');
         $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
         $result = nntp_headers_all($nntp, $journal->newsgroup);
         file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
@@ -35,7 +35,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
     {
         global $USER;
         $message = new \core\message\message();
-        $message->component = 'mod_newsmod'; // Name of your local plugin.
+        $message->component = 'mod_usenet'; // Name of your local plugin.
         $message->name = 'posts'; // Name of message provider.
         $message->userfrom = $USER;
         $message->userto = $email;
@@ -68,7 +68,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
     function generateJsonFromNews($journal)
     {
         global $CFG;
-        $localconfig = get_config('newsmod');
+        $localconfig = get_config('usenet');
         $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
         
         if (is_array($nntp) && array_key_exists('is_error', $nntp)) {    //error detected, theres error_feedback data structure here!
@@ -251,7 +251,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
     function markMessageRead($msgnr)
     {
         global $DB,$USER,$id;
-        if ($messageid = $DB->record_exists('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))) {
+        if ($messageid = $DB->record_exists('usenet__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))) {
         } else {
             $moduleinstanl = new stdClass();
             //$moduleinstanl->id = "3";
@@ -260,15 +260,15 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
             $moduleinstanl->courseid   = $id;
             $moduleinstanl->readstatus = true;
             $moduleinstanl->marked     = false;
-            $DB->insert_record('newsmod__messagestatus', $moduleinstanl);
+            $DB->insert_record('usenet__messagestatus', $moduleinstanl);
         }
     }
    /*  function loadMessageStatus($msgnr)
     {
         global $DB,$USER;
-        if ($messageid = $DB->record_exists('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))) {
+        if ($messageid = $DB->record_exists('usenet__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr))) {
             $moduleinstan = new stdClass();
-            $moduleinstan = $DB->get_record('newsmod__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr), '*', IGNORE_MISSING);
+            $moduleinstan = $DB->get_record('usenet__messagestatus', array('userid' => $USER->id, 'messageid' => $msgnr), '*', IGNORE_MISSING);
             if (!$moduleinstan->readstatus) {
                 $moduleinstan->readstatus=false;
             }
@@ -315,7 +315,7 @@ require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
     function msgSearch($journal, $param)
     {
         global $CFG;
-        $localconfig = get_config('newsmod');
+        $localconfig = get_config('usenet');
         $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
         
         return nntp_search($nntp, $journal->newsgroup, $param);

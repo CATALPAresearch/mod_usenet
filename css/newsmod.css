@@ -1,10 +1,10 @@
 /* This is file for custome css */
 
-.newsmod-container .control-bar btn, .newsmod-container .messagebody-container .control-bar btn {
+.usenet-container .control-bar btn, .usenet-container .messagebody-container .control-bar btn {
   margin-right: 10px;
 }
 
-.newsmod-container .control-bar .search {
+.usenet-container .control-bar .search {
   float: right;
 }
 
@@ -57,7 +57,7 @@
 /* Small devices (landscape phones, 576px and up) */
 
 @media (max-width: 576px) {
-  #newsmod-container h3 {
+  #usenet-container h3 {
     font-size: 1.2rem;
   }
 }

@@ -17,15 +17,15 @@
 /**
  * Plugin version and other meta-data are defined here.
  *
- * @package     mod_newsmod
+ * @package     mod_usenet
  * @copyright   Rudolf Patzer <rpatzer@gmx.de>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'mod_newsmod';
+$plugin->component = 'mod_usenet';
 $plugin->release = '0.2.0';
-$plugin->version = 2019060584;
+$plugin->version = 2019060585;
 $plugin->requires = 2016120300;
 $plugin->maturity = MATURITY_ALPHA;
