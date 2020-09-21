@@ -55,8 +55,32 @@ $PAGE->set_context($modulecontext);
 $PAGE->requires->css( '/mod/usenet/styles.css', true );
 
 echo $OUTPUT->header();
-echo '<usenet-container></usenet-container>';
 
-$PAGE->requires->js_call_amd('mod_usenet/usenet', 'init', array('course'=>$cm->id, 'msgnr'=>$msgnr, 'instanceName'=>$moduleinstance->name));
+if(access_control()){
+    echo '<usenet-container></usenet-container>';
+    $PAGE->requires->js_call_amd('mod_usenet/usenet', 'init', array('course'=>$cm->id, 'msgnr'=>$msgnr, 'instanceName'=>$moduleinstance->name));
+}else{
+    echo '<div class="alert alert-danger w-75" role="alert">';
+    echo '<h4>Kein Zugang</h4><br/>Wir können Ihnen zu dieser Ressource leider keinen Zugang gewähren, da Sie den Untersuchungen im Rahmen des Forschungsprojekt APLE nicht zugestimmt haben.';
+    $limit = new DateTime("2020-10-31 23:59:59");
+    $now = new DateTime();
+    if($now < $limit){
+        echo '<br/><br/><button class="btn btn-primary">Nachträglich der Teilnahme am Forschungsprojekt zustimmen</button><button class="btn btn-link" style="float:right;">Zurück zum Kurs</button>';
+    }
+    echo '</div>';
+}
 
 echo $OUTPUT->footer();
+
+
+function access_control(){
+    global $DB, $USER;
+    $version = 3;
+    $transaction = $DB->start_delegated_transaction();
+    $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "timemodified");
+    $transaction->allow_commit();
+    if(isset($res->timemodified) && $res->timemodified > 1000){
+        return true;
+    }
+    return false;
+}
