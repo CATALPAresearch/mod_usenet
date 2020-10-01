@@ -902,7 +902,7 @@ define([
                                 <i class="fa fa-list"></i>
                             </a>
                         </li>
-                        <li class="nav-item  pt-0">
+                        <li hidden class="nav-item  pt-0">
                             <a class="nav-link pt-0  pb-0" data-toggle="pill" href="#viewbubbles">
                                 <i class="fa fa-spinner"></i>
                             </a>
