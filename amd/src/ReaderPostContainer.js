@@ -54,7 +54,7 @@ define([
                             modpost.isSelected = false;
                             Vue.set(this.postlist, this.previouspost, modpost);
                         }
-                        else { console.log("oh noe"); }
+                        else { } // nothing to be done, just wait for data to load
                     }
                 },
 
@@ -67,7 +67,7 @@ define([
                 // Function ongetmsg called by event getmsg, getmsg-event is emitted by 'post' (child component)
 
                 ongetmsg: function (msgid, arraypos) {
-                    console.log('try to get msg ', msgid, arraypos)
+                    //console.log('try to get msg ', msgid, arraypos);
 
                     this.$emit('displaymsg', msgid);
 

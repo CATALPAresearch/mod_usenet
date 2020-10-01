@@ -597,9 +597,12 @@ function gettree($journal, $start, $end) {
 
     if (isset($cacheddata)) {
         $CacheNumberList = array_column($cacheddata, 'number');
-        $CacheNumberListLast = array_slice($CacheNumberList, -1, 1);
+        $CacheNumberListLast = array_slice($CacheNumberList, -1, 1)[0];
+        $CacheNumberListFirst = array_slice($CacheNumberList, 0, 1)[0];
 
-        if ($CacheNumberListLast[0] < $end) {
+        
+
+        if ($CacheNumberListLast < $end) {
             $newadditons = buildCache_partial($journal, $CacheNumberListLast[0] + 1, $end);
             if (is_array($newadditons) && array_key_exists('is_error', $newadditons)) {    //error detected, theres error_feedback data structure here!
                 return $newadditons;
@@ -607,9 +610,19 @@ function gettree($journal, $start, $end) {
             $cacheddata = array_merge($cacheddata, $newadditons);
         }
 
+
+
+        if ($CacheNumberListFirst < $start) {       // nothing to be downloaded, just delete old entries in cache
+            $key = array_search($start, $CacheNumberList);
+            $cacheddata = array_slice($cacheddata, $key);
+            setCache($journal, $cacheddata);
+        }
+
+
+
         $headers = process_headers($cacheddata);
 
-    } else {
+    } else {        // cache failed, open up connection and download it all
         $socket = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
     
         if (is_array($socket) && array_key_exists('is_error', $socket)) {    //error detected, theres error_feedback data structure here!
@@ -665,6 +678,7 @@ function gettree($journal, $start, $end) {
             $self["picturestatus"] = $userinfo->picture;
             $self["user_id"] = $userinfo->id;
             $self["date"] = $header->displaydate;
+            $self["timestamp"] = $header->date;
 
             if (isset($header->answers)) {
                 $self["children"] = agetchildren($header, $headers);
@@ -707,6 +721,8 @@ function agetchildren($header, $headers) {
             $self["picturestatus"] = $userinfo->picture;
             $self["user_id"] = $userinfo->id;
             $self["date"] = $child->displaydate;
+            $self["timestamp"] = $header->date;
+
 
             if (isset($child->answers)) {
                 $self["children"] = agetchildren($child, $headers);
@@ -1036,6 +1052,12 @@ function loadCachedData($journal)
         return $result;
     }
     return;
+}
+
+function setCache($journal, $data)
+{
+    global $CFG;
+    file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($data));
 }
 
 function buildCache_partial($journal, $start, $end) 

@@ -231,8 +231,8 @@ define([
                                 app.errorMessages.push(response.data);
 
                             } else {
+                                response.data.header = app.prepare_postdata(response.data.header);
                                 app.singlepostdata = response.data;
-                                app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
                             }
                         }).catch(function (error) {
                             console.error(error);
@@ -323,7 +323,7 @@ define([
 
                             } else {
                                 app.singlepostdata = response.data;
-                                app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                                response.data.header = app.prepare_postdata(response.data.header);
                             }
                         }).catch(function (error) {
                             console.error(error);
@@ -368,7 +368,7 @@ define([
 
                             } else {
                                 app.singlepostdata = response.data;
-                                app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                                response.data.header = app.prepare_postdata(response.data.header);
                             }
                         }).catch(function (error) {
                             console.error(error);
@@ -647,7 +647,7 @@ define([
                         picturestatus: postdata_raw.picturestatus, personal: postdata_raw.personal, sender: postdata_raw.sender,
                         user_id: postdata_raw.user_id, margin: margin, sequence: this.sequence++, messageid: postdata_raw.messageid, messagenumber: postdata_raw.number,
                         date: postdata_raw.date, subject: postdata_raw.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
-                        isSelected: false, hidden: false, family: family, identicon: identiconstring
+                        isSelected: false, hidden: false, family: family, identicon: identiconstring, timestamp: postdata_raw.timestamp
                     };
 
                     return content;

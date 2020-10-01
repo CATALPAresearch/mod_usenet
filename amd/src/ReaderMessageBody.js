@@ -58,12 +58,12 @@ define([
 
                 },
 
-                prevmsg: function () {   // Number=messageid
-                    this.$emit('prevmsg', this.postdata.header !== undefined ? this.postdata.header.number : 0);
+                prevmsg: function () {   
+                    this.$emit('prevmsg', this.postdata.header !== undefined ? this.postdata.header.messagenumber : 0);
                 },
 
                 nextmsg: function () {
-                    this.$emit('nextmsg', this.postdata.header !== undefined ? this.postdata.header.number : 0);
+                    this.$emit('nextmsg', this.postdata.header !== undefined ? this.postdata.header.messagenumber : 0);
                 },
 
                 hideParentMessageBody: function () {
@@ -203,11 +203,11 @@ define([
                             <div class="">
                                 <div>
                                     <div class="d-flex">
-                                        <img style="height:40px; width:40px;" :src="this.identiconstring"/>
+                                        <img style="height:40px; width:40px;" :src="postdata.header.identicon"/>
                                         <span class="mr-auto pt-1" >
-                                            <a :href="'mailto:' + postdata.header.from">{{postdata.header.name}}</a>
+                                            <a :href="'mailto:' + postdata.header.sender">{{postdata.header.personal}}</a>
                                         </span>
-                                        <span class="pt-1">{{ convertDate(postdata.header.date) }}</span>
+                                        <span class="pt-1">{{ convertDate(postdata.header.timestamp) }}</span>
                                     </div>
                                     <div class="bold">
                                         {{postdata.header.subject}}
