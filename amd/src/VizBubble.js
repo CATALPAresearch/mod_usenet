@@ -197,8 +197,6 @@ define([
                         forceSimulation.alphaTarget(0);
                     }
 
-
-
                     function ticked() {
                         bubbles
                             .attr("cx", function (d) {

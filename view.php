@@ -30,6 +30,9 @@ $id = optional_param('id', 0, PARAM_INT);
 $msgnr = optional_param('msgnr', 0, PARAM_INT);
 // ... module instance id.
 $n  = optional_param('n', 0, PARAM_INT);
+//
+$usenet = $PAGE->activityrecord;
+
 
 if ($id) {
     $cm             = get_coursemodule_from_id('usenet', $id, 0, false, MUST_EXIST);
@@ -56,16 +59,24 @@ $PAGE->requires->css( '/mod/usenet/styles.css', true );
 
 echo $OUTPUT->header();
 
+
+
+//echo $OUTPUT->box(format_module_intro('usenet', $PAGE, $cm->id), 'generalbox', 'intro');
+
+echo format_module_intro('usenet', $usenet, $cm->id);
+
+
 if(access_control()){
     echo '<usenet-container></usenet-container>';
     $PAGE->requires->js_call_amd('mod_usenet/usenet', 'init', array('course'=>$cm->id, 'msgnr'=>$msgnr, 'instanceName'=>$moduleinstance->name));
 }else{
+    //echo format_module_intro('usenet', $usenet, $cm->id);
     echo '<div class="alert alert-danger w-75" role="alert">';
     echo '<h4>Kein Zugang</h4><br/>Wir können Ihnen zu dieser Ressource leider keinen Zugang gewähren, da Sie den Untersuchungen im Rahmen des Forschungsprojekt APLE nicht zugestimmt haben.';
     $limit = new DateTime("2020-10-31 23:59:59");
     $now = new DateTime();
     if($now < $limit){
-        echo '<br/><br/><button class="btn btn-primary">Nachträglich der Teilnahme am Forschungsprojekt zustimmen</button><button class="btn btn-link" style="float:right;">Zurück zum Kurs</button>';
+        echo '<br/><br/><a href="/course/format/ladtopics/policy.php" class="btn btn-primary">Nachträglich der Teilnahme am Forschungsprojekt zustimmen</button><button class="btn btn-link" style="float:right;">Zurück zum Kurs</button>';
     }
     echo '</div>';
 }
@@ -75,7 +86,7 @@ echo $OUTPUT->footer();
 
 function access_control(){
     global $DB, $USER;
-    $version = 3;
+    $version = $_SERVER['HTTP_HOST'] == 'localhost' || '127.0.0.1' ? 1 : 3;
     $transaction = $DB->start_delegated_transaction();
     $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "timemodified");
     $transaction->allow_commit();
