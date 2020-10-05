@@ -24,7 +24,7 @@ define([
 
     return Vue.component('post',
         {
-            props: ['content', 'courseid', 'viewportsize'],
+            props: [ 'content', 'courseid', 'viewportsize', 'log' ],
 
             data: function () {
                 return {
@@ -43,11 +43,6 @@ define([
                     textindent: {
                         'text-indent': this.content.margin + 'px'
                     },
-
-                    postpadding: '0px',         // postpadding is a reactive var used in :style="{'padding-bottom': this.postpadding}"
-                    // and '0px' is just the initial value for padding
-                    paddingSVPval: '5px',       // paddingSmallViewPortval
-                    paddingOVPval: '0px'        // paddingOtherViewPortval
                 };
             },
 
@@ -59,7 +54,6 @@ define([
                 // then insert a small bottom padding to posts
                 // also, do a bunch of other stuff for mobile users
                 if (this.viewportsize == 'mobile') {
-                    this.postpadding = this.paddingSVPval;
                     this.textindent = 'text-indent: 0px';
                     let borderwidth = 0;
                     if (this.content.family) {
@@ -68,22 +62,16 @@ define([
                     this.borderstyle = 'border-left: solid black ' + borderwidth + 'px';
                 }
                 else {
-                    this.postpadding = this.paddingOVPval;
+
                     this.textindent = 'text-indent: ' + this.content.margin + 'px';
                     this.borderstyle = 'border-left: solid black 0px';
                 }
 
             },
-            /*
-                        destroyed() {
-                            window.removeEventListener("resize", this.Windowresizehandler);
-                        },
-            */
 
             watch: {
                 viewportsize: function () {
                     if (this.viewportsize == 'mobile') {
-                        this.postpadding = this.paddingSVPval;
                         this.textindent = 'text-indent: 0px';
                         let borderwidth = 0;
                         if (this.content.family) {
@@ -92,7 +80,6 @@ define([
                         this.borderstyle = 'border-left: solid black ' + borderwidth + 'px';
                     }
                     else {
-                        this.postpadding = this.paddingOVPval;
                         this.textindent = 'text-indent: ' + this.content.margin + 'px';
                         this.borderstyle = 'border-left: solid black 0px';
                     }
@@ -136,7 +123,7 @@ define([
                 },
                 displayMessage: function (messagenumber, arraypos) {
                     this.$emit('getmsg', messagenumber, arraypos)
-                    this.log('message_list_click', { message_id: messagenumber, message_pos: arraypos })
+                    this.$emit('log', 'message_list_click', { message_id: messagenumber, message_pos: arraypos })
                 },
                 hideChildren: function () {
                     if (this.hiddenfamily == false) {
@@ -147,7 +134,7 @@ define([
                         this.$emit('showChildren', this.content.family);
                     }
                     this.$emit('setSelected', this.content.messagenumber);
-                    this.$emit('log', 'message_children_' + this.hiddenfamily ? 'shown' : 'hidden', { message_id: this.content.messagenumber }
+                    this.$emit('log', 'message_children_' + this.hiddenfamily ? 'shown' : 'hidden', { message_id: this.content.messagenumber });
                 },
 
                 // Called by container 'ReaderPostContainer'
@@ -171,7 +158,7 @@ define([
             },
 
             template: `
-                <div class="post" :class="{hidden: content.hidden}" :style="{'padding-bottom': this.postpadding}">
+                <div class="post" :class="{hidden: content.hidden}">
                     <div class="node px-0" :column="content.margin" :class="{'font-weight-bold': content.unread}">
                         <div class="container-fluid px-0">
                             <div class="row px-0 mx-0" :class="{'bg-info': content.isSelected}" >
@@ -196,11 +183,11 @@ define([
                                             {{content.personal}}
                                         </div>
                                     
-                                        <div class="col-6 order-xs-3 order-md-2 col-xs-11 col-sm-6 col-md-11 col-lg-6 col-xl-6 text-truncate px-0" :style="textindent" style="margin-left:25px;">
+                                        <div class="col-6 order-xs-3 order-md-2 col-xs-11 col-sm-6 col-md-11 col-lg-6 col-xl-6 text-truncate px-0" :style="textindent"><!-- style="margin-left:25px;"-->
                                             {{content.subject}}
                                         </div>
 
-                                        <div class="col-2 order-2 order-md-3 col-xs-4 col-sm-2 col-md-2 col-lg-2 col-xl-2 px-0" data-date-format="DD.MM.YYYY">
+                                        <div class="col-3 order-2 order-md-3 col-xs-4 col-sm-3 col-md-3 col-lg-3 col-xl-3 px-0" data-date-format="DD.MM.YYYY">
                                             <span style="font-size:0.9em">{{content.calctime}}</span>
                                             <i class="far fa-star poststyle d-xs-block" :class="{starmarked: content.marked, fas: content.marked }"
                                         v-on:click="toggleMarkedMessage" title="Favoriten markieren"/>

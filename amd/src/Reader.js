@@ -29,7 +29,7 @@ define([
     
     */
 
-    var Reader = function (Logger, courseid, messageid, instanceName) {
+    var Reader = function (the_logger, courseid, messageid, instanceName) {
 
         var app = new Vue({
             el: 'usenet-container',
@@ -140,8 +140,8 @@ define([
 
             },
             methods: {
-                log(key, values) {
-                    Logger.add(key, values)
+                logger(action, value) {
+                    the_logger.add(action, value)
                 },
                 hideMessageBody: function () {
                     this.showMessageBody = false;
@@ -233,7 +233,10 @@ define([
 
                             } else {
                                 app.singlepostdata = response.data;
-                                app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                                if (app.singlepostdata.header.from && app.singlepostdata.header.name){
+                                    app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                                }
+                                
                             }
                         }).catch(function (error) {
                             console.error(error);
@@ -396,7 +399,7 @@ define([
 
                         this.markedpost = -1;
                         this.post_list = this.post_list_sections[--this.view_section];
-                        this.log('postlist_previous_click', { postlist_section: this.view_section });
+                        this.logger('postlist_previous_click', { postlist_section: this.view_section });
                         this.isreading = false;
                         this.isanswering = false;
                         this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
@@ -415,7 +418,7 @@ define([
 
                         this.markedpost = -1;
                         this.post_list = this.post_list_sections[++this.view_section];
-                        this.log('postlist_next_click', { postlist_section: this.view_section });
+                        this.logger('postlist_next_click', { postlist_section: this.view_section });
                         this.isreading = false;
                         this.isanswering = false;
                         this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
@@ -433,7 +436,7 @@ define([
 
                     this.markedpost = -1;
                     this.post_list = this.post_list_sections[page];
-                    this.log('postlist_seclect_click', { postlist_section: page });
+                    this.logger('postlist_seclect_click', { postlist_section: page });
                     this.view_section = page;
                     this.isreading = false;
                     this.isanswering = false;
@@ -679,7 +682,7 @@ define([
                     this.iscreatingtopic = true;
                     this.isreading = false;
                     this.isanswering = false;
-                    this.log('new_message_click', {});
+                    this.logger('new_message_click', {});
                     // not working: this.$nextTick(() => this.$refs.newMessageSubject.focus())
                 },
 
@@ -689,7 +692,7 @@ define([
 
                     this.statesearchresult = false;
                     this.hideloadingicon = false;
-                    this.log('search_submit', { search_term: this.searchstring });
+                    this.logger('search_submit', { search_term: this.searchstring });
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/usenet/php/search.php?id=" + courseid + "&searchparam=" + this.searchstring)
                         .then(function (response) {
@@ -699,7 +702,7 @@ define([
                                 //app.displayerrormsg = true;
                             } else {
                                 app.displaysearchresult('', response.data);
-                                this.log('search_result', { search_term: this.searchstring, result_length: response.data.length });
+                                this.logger('search_result', { search_term: this.searchstring, result_length: response.data.length });
                                 console.log('SEARCH', response.data);
                             }
                         })
@@ -731,7 +734,7 @@ define([
 
                 hideSearchResults: function(){
                     this.showallposts();
-                    this.log('search_results_close', {});
+                    this.logger('search_results_close', {});
                 },
 
                 displaysearchresult: function (options, searchresult) {
@@ -772,7 +775,7 @@ define([
                 },
                 // TODO: make sure all elements are reset, also look at onansweredmsg
                 refresh: function () {
-                    this.log('refresh_messages_click', {});
+                    this.logger('refresh_messages_click', {});
                     this.hideloadingicon = false;
                     this.statesearchresult = false;
 
@@ -849,49 +852,46 @@ define([
                     app.errorMessages.push();
                 }
 
+            },
 
-
-
-
-            }, // END app methods
             template: `
                 <div id="usenet-container">
                     <h3 class="mb-4"><img style="width:30px; height:30px;" src="pix/icon.svg"> {{ instanceName }}</h3>
                     <div class="d-flex align-items-center">
-                            <button class="btn btn-primary btn-sm" :disabled="iscreatingtopic" v-on:click="newTopic" title="Eine neue Nachricht erstellen">
-                                <i class="fa fa-pen"></i>
-                                Neue Nachricht
-                            </button>
+                        <button class="btn btn-primary btn-sm" :disabled="iscreatingtopic" v-on:click="newTopic" title="Eine neue Nachricht erstellen">
+                            <i class="fa fa-pen"></i>
+                            Neue Nachricht
+                        </button>
 
-                            <button class="btn btn-light btn-sm" v-on:click="refresh" title="Neue Nachrichten abholen">
-                                    <i class="fa fa-sync"></i>
-                                    <span class="d-none d-md-inline">aktualisieren</span>
-                            </button>
+                        <button class="btn btn-light btn-sm" v-on:click="refresh" title="Neue Nachrichten abholen">
+                            <i class="fa fa-sync"></i>
+                            <span class="d-none d-md-inline">aktualisieren</span>
+                        </button>
 
-                            <div class="mr-auto px-2">
-                                <div class="d-flex">
-                                    <div>
-                                        <a class="page-link" :class="{disabled: !statesview_section.CanSelectPrev}" v-on:click="displayPreviousPostlist" 
-                                            href="#" title="Vorherige Seite">
-                                            <i class="fa fa-chevron-left"></i>
-                                        </a>
-                                    </div>
-                                    <a v-for="(el, index) in post_list_sections"
-                                        class="page-link"
-                                        href="#"
-                                        v-on:click="selectPostlist(index)"
-                                        :class="{'bg-info': view_section == index}"
-                                        >
-                                        {{index+1}}
+                        <div class="mr-auto px-2">
+                            <div class="d-flex">
+                                <div>
+                                    <a class="page-link" :class="{disabled: !statesview_section.CanSelectPrev}" v-on:click="displayPreviousPostlist" 
+                                        href="#" title="Vorherige Seite">
+                                        <i class="fa fa-chevron-left"></i>
                                     </a>
-                                    <div>
-                                        <a class="page-link" :class="{disabled: !statesview_section.CanSelectNext}" v-on:click="displayNextPostlist" 
-                                            href="#" title="Nächste Seite">
-                                            <i class="fa fa-chevron-right"></i>
-                                        </a>
-                                    </div>
+                                </div>
+                                <a v-for="(el, index) in post_list_sections"
+                                    class="page-link"
+                                    href="#"
+                                    v-on:click="selectPostlist(index)"
+                                    :class="{'bg-info': view_section == index}"
+                                    >
+                                    {{index+1}}
+                                </a>
+                                <div>
+                                    <a class="page-link" :class="{disabled: !statesview_section.CanSelectNext}" v-on:click="displayNextPostlist" 
+                                        href="#" title="Nächste Seite">
+                                        <i class="fa fa-chevron-right"></i>
+                                    </a>
                                 </div>
                             </div>
+                        </div>
 
                         <div class="search d-flex">
                             <input 
@@ -908,18 +908,21 @@ define([
                         </div>
                         
                     </div>
+
+                    <!-- The tabs should shown if alternative visualization are available. -->
                     <ul class="nav nav-tabs mt-3">
-                        <li class="nav-item pt-0">
-                            <a class="nav-link  pt-0 pb-0 active" v-on:click="log('list_view_select',{})" data-toggle="pill" href="#viewlist">
+                        <li hidden class="nav-item pt-0">
+                            <a class="nav-link  pt-0 pb-0 active" v-on:click="logger('list_view_select',{})" data-toggle="pill" href="#viewlist">
                                 <i class="fa fa-list"></i>
                             </a>
                         </li>
                         <li hidden class="nav-item  pt-0">
-                            <a class="nav-link pt-0  pb-0"  v-on:click="log('bubble_view_select',{})" data-toggle="pill" href="#viewbubbles">
+                            <a class="nav-link pt-0  pb-0"  v-on:click="logger('bubble_view_select',{})" data-toggle="pill" href="#viewbubbles">
                                 <i class="fa fa-spinner"></i>
                             </a>
                         </li>
                     </ul>
+
                     <div class="tab-content">
                         <div class="container-fluid px-2 border-left tab-pane active" id="viewlist">
                             <div class="pt-4 pl-0">
@@ -940,15 +943,15 @@ define([
                                             v-on:prevmsg="onprevmsg" 
                                             v-on:nextmsg="onnextmsg"
                                             v-on:hideMessageBody="hideMessageBody"
-                                            v-on:log="log"
+                                            @log="logger"
                                             >
                                         </messagebody-container>
                                     </div>
                                 -->
                                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 border-right" id="tree" style="overflow-y:auto; overflow-x:hidden; margin-bottom:3px; height: auto" >
-                                        <div v-for="error in errorMessages" class="alert">
+                                        <div v-for="error in errorMessages" class="alert alert-danger">
                                             {{ error.errordescr }}
-                                            <button type="button" class="close" v-on:click="log('error_alert_close', { error_message: error.errordescr })" data-dismiss="alert" aria-label="Close">
+                                            <button type="button" class="close" v-on:click="logger('error_alert_close', { error_message: error.errordescr })" data-dismiss="alert" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
@@ -966,7 +969,7 @@ define([
                                             :viewportsize = "viewportsize"
                                             v-on:displaymsg="ondisplaymsg"
                                             v-on:setSelected="setSelected"
-                                            v-on:log="log"
+                                            @log="logger"
                                             >
                                         </post-container>
                                     </div>
@@ -987,7 +990,7 @@ define([
                                             v-on:prevmsg="onprevmsg" 
                                             v-on:nextmsg="onnextmsg"
                                             v-on:hideMessageBody="hideMessageBody"
-                                            v-on:log="log"
+                                            @log="logger"
                                             >
                                         </messagebody-container>
                                     </div>
@@ -998,7 +1001,7 @@ define([
                             v-bind:treedata="treedata_viz" 
                             class="tab-pane fade" 
                             id="viewbubbles"
-                            v-on:log="log"
+                            @log="logger"
                             ></viz-bubble>
                     </div>
                 </div>

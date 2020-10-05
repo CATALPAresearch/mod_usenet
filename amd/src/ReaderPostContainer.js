@@ -3,7 +3,7 @@
  *
  * @module     mod_usenet
  * @class      Post Container
- * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de>
+ * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de> AND Konstantin Friedrich
  * @license    GNU GPLv3
  */
 
@@ -24,7 +24,6 @@ define([
                 'viewportsize',
                 'log'
             ],
-
 
             data: function () {
                 return {
@@ -71,13 +70,13 @@ define([
 
             },
 
-            methods:
-            {
-
+            methods: {
+                logger:function(action, value){
+                    this.$emit('log', action, value);
+                },
                 // Function ongetmsg called by event getmsg, getmsg-event is emitted by 'post' (child component)
 
                 ongetmsg: function (msgid, arraypos) {
-                    console.log('try to get msg ', msgid, arraypos)
 
                     this.$emit('displaymsg', msgid);
 
@@ -117,7 +116,7 @@ define([
                     //document.body.scrollTop = 200;
                     //document.documentElement.scrollTop = 200;
 
-                }, // END event method ongetmsg
+                }, 
 
                 // This function calls function of child members
                 hideChildren: function (family) {
@@ -139,7 +138,6 @@ define([
                     this.traversefamily(family, memberid);
 
                     for (var i = 0; i < memberid.length; i++) {
-
                         let inte = parseInt(memberid[i]);
                         this.$refs[inte][0].showself();
                     }
@@ -186,7 +184,7 @@ define([
                                     v-on:hideChildren='hideChildren'
                                     v-on:showChildren='showChildren'
                                     v-on:setSelected='setSelectedUP'
-                                    
+                                    @log='logger'
                                     >
                                 </post>
                             </div>`

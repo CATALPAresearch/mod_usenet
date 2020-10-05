@@ -86,7 +86,7 @@ echo $OUTPUT->footer();
 
 function access_control(){
     global $DB, $USER;
-    $version = 3;// local_niels: 11  aple: 3
+    $version = 11;// local_niels: 11  aple: 3
     $transaction = $DB->start_delegated_transaction();
     $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "status");
     $transaction->allow_commit();

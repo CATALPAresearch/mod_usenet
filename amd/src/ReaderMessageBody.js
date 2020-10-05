@@ -3,7 +3,7 @@
  *
  * @module     mod_usenet
  * @class      Message body
- * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de>
+ * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de> AND Konstantin Friedrich
  * @license    GNU GPLv3
  */
 define([
@@ -48,6 +48,9 @@ define([
             },
 
             methods: {
+                logger: function (action, value) {
+                    this.$emit('log', action, value);
+                },
 
                 replyMessage: function () {
 
