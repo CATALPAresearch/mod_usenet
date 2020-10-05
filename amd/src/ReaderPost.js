@@ -1,3 +1,11 @@
+/**
+ *
+ *
+ * @module     mod_usenet
+ * @class      Post
+ * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de>
+ * @license    GNU GPLv3
+ */
 define([
     'jquery',
     M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
@@ -101,30 +109,12 @@ define([
                         value;
                 },
 
-                /*  Windowresizehandler: function() {
-                     if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
-                         this.postpadding=this.paddingSVPval;
-                         this.textindent='text-indent: 0px';
-                         let borderwidth=0;
-                         if (this.content.family) {
-                             borderwidth=this.flatten(this.content.family).length;
-                         }
-                         this.borderstyle='border-left: solid black ' + borderwidth + 'px';
-                         this.SVP=true;
-                     }
-                     else {
-                         this.postpadding=this.paddingOVPval;
-                         this.textindent='text-indent: ' + this.content.margin + 'px';
-                         this.borderstyle='border-left: solid black 0px'; 
-                         this.SVP=false;
-                     }
-                 }, */
-
                 setcourseid: function (id) {
                     this.courseid = id;
                 },
 
-                togglemarked: function () {
+                toggleMarkedMessage: function () {
+
                     axios   //returned data is already js object (axios automaticly converts json to js obj)
                         .get([
                             M.cfg.wwwroot +
@@ -141,16 +131,23 @@ define([
                     else {
                         this.content.marked = true;
                     }
+
+                    this.$emit('log', 'message_mark_' + this.content.marked ? 'marked' : 'unmarked', { message_id: this.content.messagenumber, message_author: this.message.personal })
                 },
-                hidefamily: function () {
+                displayMessage: function (messagenumber, arraypos) {
+                    this.$emit('getmsg', messagenumber, arraypos)
+                    this.log('message_list_click', { message_id: messagenumber, message_pos: arraypos })
+                },
+                hideChildren: function () {
                     if (this.hiddenfamily == false) {
                         this.hiddenfamily = true;
-                        this.$emit('hidefamily', this.content.family);
+                        this.$emit('hideChildren', this.content.family);
                     } else {
                         this.hiddenfamily = false;
-                        this.$emit('showfamily', this.content.family);
+                        this.$emit('showChildren', this.content.family);
                     }
                     this.$emit('setSelected', this.content.messagenumber);
+                    this.$emit('log', 'message_children_' + this.hiddenfamily ? 'shown' : 'hidden', { message_id: this.content.messagenumber }
                 },
 
                 // Called by container 'ReaderPostContainer'
@@ -183,7 +180,7 @@ define([
                                     <i class="fas fa-sm pt-2 px-3" 
                                         :class="{'fa-caret-down': content.haschild, 'fa-caret-right': this.hiddenfamily}" 
                                         :style="poststylechildcnd"
-                                        v-on:click="hidefamily" 
+                                        v-on:click="hideChildren" 
                                         title="Diskussion ein- oder ausklappen"
                                         />
                                 </div>
@@ -192,10 +189,10 @@ define([
                                     class="px-0 col-11 col-xs-11 col-sm-11 col-md-11 col-lg-11 col-xl-11" 
                                     style="display:inline-block;"
                                     >
-                                    <div class="row poststyle mb-xs-2" v-on:click="$emit('getmsg', content.messagenumber, content.arraypos)">
+                                    <div class="row poststyle mb-xs-2" v-on:click="displayMessage(content.messagenumber, content.arraypos)">
                                         
                                         <div class="col-3 order-1 order-sm-1 col-xs-8 col-sm-3 col-md-3 col-lg-3 col-xl-3 text-truncate px-0">
-                                            <img class="" style="width:20px; height:20px;" :src="this.content.identicon" :title="this.content.personal"/>
+                                            <img style="width:20px; height:20px;" :src="this.content.identicon" :title="this.content.personal"/>
                                             {{content.personal}}
                                         </div>
                                     
@@ -206,7 +203,7 @@ define([
                                         <div class="col-2 order-2 order-md-3 col-xs-4 col-sm-2 col-md-2 col-lg-2 col-xl-2 px-0" data-date-format="DD.MM.YYYY">
                                             <span style="font-size:0.9em">{{content.calctime}}</span>
                                             <i class="far fa-star poststyle d-xs-block" :class="{starmarked: content.marked, fas: content.marked }"
-                                        v-on:click="togglemarked" title="Favoriten markieren"/>
+                                        v-on:click="toggleMarkedMessage" title="Favoriten markieren"/>
                                         </div>
                                     </div>
                                 </div>

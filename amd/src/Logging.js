@@ -20,7 +20,7 @@ define(['jquery', 'core/ajax'], function($, ajax) {
             prefix: '',
             loggerServiceUrl: null,
             loggerServiceParams: { "data": {} },
-            context: 'default-context'
+            context: 'mod_usenet'
         }, options);
 
         this.ip = '';
@@ -100,6 +100,7 @@ define(['jquery', 'core/ajax'], function($, ajax) {
                     break;
                 case 1:
                     this.sendLog(logEntry);
+                    console.log(logEntry); 
                     break;
                 default:
                     // Do nothing

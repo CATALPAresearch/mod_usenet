@@ -1,3 +1,11 @@
+/**
+ * 
+ *
+ * @module     mod_usenet
+ * @class      Message body
+ * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de>
+ * @license    GNU GPLv3
+ */
 define([
     'jquery',
     M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
@@ -16,7 +24,8 @@ define([
                 'identiconstring', 
                 'viewportsize', 
                 'hideloadingicon',
-                'statesRMB'
+                'statesRMB',
+                'log'
             ],
 
             data: function () {
@@ -40,7 +49,7 @@ define([
 
             methods: {
 
-                onanswerbuttonclick: function () {
+                replyMessage: function () {
 
                     this.isreading = false; // smell
                     this.isanswering = true;
@@ -58,19 +67,21 @@ define([
 
                 },
 
-                prevmsg: function () {   // Number=messageid
+                previousMessage: function () {   // Number=messageid
                     this.$emit('prevmsg', this.postdata.header !== undefined ? this.postdata.header.number : 0);
                 },
 
-                nextmsg: function () {
+                nextMessage: function () {
                     this.$emit('nextmsg', this.postdata.header !== undefined ? this.postdata.header.number : 0);
                 },
 
                 hideParentMessageBody: function () {
                     this.$emit('hideMessageBody');
+                    this.$emit('log', 'message_body_panel_close', {})
                 },
 
                 submitNewMessage: function () {
+                    this.$emit('log', 'message_body_panel_submit_new', {});
                     const params = new URLSearchParams();
                     params.append('userInput', this.textarea_usrinput);
                     params.append('subject', this.usrinput_subject);
@@ -185,22 +196,22 @@ define([
                     <template v-else>
                         <div class="border-bottom ml-3 mb-1 pl-1 pb-1">
                             <div class="mx-0 mb-3 control-bar" :class="{hidden: postdata.header.is_error}">
-                                <button class="btn btn-sm btn-outline-primary mr-3" :hidden="isanswering" v-on:click="onanswerbuttonclick" title="Beitrag beantworten">
+                                <button class="btn btn-sm btn-outline-primary mr-3" :hidden="isanswering" v-on:click="replyMessage" title="Beitrag beantworten">
                                     <i class="fa fa-reply"></i>
                                     Antworten
                                 </button>
-                                <button class="btn btn-sm btn-light mr-0" :disabled = "!statesRMB.CanSelectPrev" v-on:click="prevmsg" title="Die vorherige Nachricht anzeigen">
+                                <button class="btn btn-sm btn-light mr-0" :disabled = "!statesRMB.CanSelectPrev" v-on:click="previousMessage" title="Die vorherige Nachricht anzeigen">
                                     <i class="fa fa-chevron-left"></i>
                                 </button>
                                 <span class="mx-0">Nachricht</span>
-                                <button class="btn btn-sm btn-light ml-0" :disabled = "!statesRMB.CanSelectNext" v-on:click="nextmsg" title="Die nächste Nachricht anzeigen">
+                                <button class="btn btn-sm btn-light ml-0" :disabled = "!statesRMB.CanSelectNext" v-on:click="nextMessage" title="Die nächste Nachricht anzeigen">
                                     <i class="fa fa-chevron-right"></i>    
                                 </button>
                                 <button type="button" class="close ml-auto align-self-center d-block d-sm-none" aria-label="Close" v-on:click="hideParentMessageBody">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="">
+                            <div>
                                 <div>
                                     <div class="d-flex">
                                         <img style="height:40px; width:40px;" :src="this.identiconstring"/>

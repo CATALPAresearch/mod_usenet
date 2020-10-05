@@ -1,3 +1,12 @@
+/**
+ * 
+ *
+ * @module     mod_usenet
+ * @class      Post Container
+ * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de>
+ * @license    GNU GPLv3
+ */
+
 define([
     'jquery',
     M.cfg.wwwroot + '/mod/usenet/amd/src/ReaderPost.js',
@@ -12,7 +21,8 @@ define([
                 'markedpost',
                 'courseid',
                 'showloadingicon',
-                'viewportsize'
+                'viewportsize',
+                'log'
             ],
 
 
@@ -110,7 +120,7 @@ define([
                 }, // END event method ongetmsg
 
                 // This function calls function of child members
-                onhidefamily: function (family) {
+                hideChildren: function (family) {
 
                     var memberid = [];
 
@@ -123,7 +133,7 @@ define([
                     }
                 },
 
-                onshowfamily: function (family) {
+                showChildren: function (family) {
                     var memberid = [];
 
                     this.traversefamily(family, memberid);
@@ -169,13 +179,15 @@ define([
                                 <post v-for='singlepost in postlist' 
                                     v-bind:content='singlepost' 
                                     v-bind:key = 'singlepost.messagenumber'
+                                    v-bind:courseid = 'courseid'
                                     :viewportsize = 'viewportsize'
                                     :ref='singlepost.messagenumber'
                                     v-on:getmsg='ongetmsg'
-                                    v-on:hidefamily='onhidefamily'
-                                    v-on:showfamily='onshowfamily'
+                                    v-on:hideChildren='hideChildren'
+                                    v-on:showChildren='showChildren'
                                     v-on:setSelected='setSelectedUP'
-                                    v-bind:courseid = 'courseid'>
+                                    
+                                    >
                                 </post>
                             </div>`
         }); // END component post-container

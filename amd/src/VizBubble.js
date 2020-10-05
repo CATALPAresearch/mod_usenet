@@ -1,3 +1,11 @@
+/**
+ *
+ *
+ * @module     mod_usenet
+ * @class      Visualize messages in abubble chart
+ * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de>
+ * @license    GNU GPLv3
+ */
 define([
     'jquery',
     M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
@@ -7,7 +15,7 @@ define([
 
     return Vue.component('post',
         {
-            props: ['treedata'],
+            props: ['treedata', 'log'],
 
             data: function () {
                 return {

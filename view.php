@@ -49,6 +49,7 @@ if ($id) {
 require_login($course, true, $cm);
 
 $modulecontext = context_module::instance($cm->id);
+$course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
 
 
 $PAGE->set_url('/mod/usenet/view.php', array('id' => $cm->id));
@@ -65,7 +66,6 @@ echo $OUTPUT->header();
 
 echo format_module_intro('usenet', $usenet, $cm->id);
 
-
 if(access_control()){
     echo '<usenet-container></usenet-container>';
     $PAGE->requires->js_call_amd('mod_usenet/usenet', 'init', array('course'=>$cm->id, 'msgnr'=>$msgnr, 'instanceName'=>$moduleinstance->name));
@@ -76,7 +76,7 @@ if(access_control()){
     $limit = new DateTime("2020-10-31 23:59:59");
     $now = new DateTime();
     if($now < $limit){
-        echo '<br/><br/><a href="/course/format/ladtopics/policy.php" class="btn btn-primary">Nachträglich der Teilnahme am Forschungsprojekt zustimmen</button><button class="btn btn-link" style="float:right;">Zurück zum Kurs</button>';
+        echo '<br/><br/><a href="/course/format/ladtopics/policy.php" target="new" class="btn btn-primary">Nachträglich der Teilnahme am Forschungsprojekt zustimmen</a><a href="/course/view.php?id='.$course->id.'" class="btn btn-link" style="float:right;">Zurück zum Kurs</a>';
     }
     echo '</div>';
 }
@@ -86,11 +86,11 @@ echo $OUTPUT->footer();
 
 function access_control(){
     global $DB, $USER;
-    $version = $_SERVER['HTTP_HOST'] == 'localhost' || '127.0.0.1' ? 1 : 3;
+    $version = 3;// local_niels: 11  aple: 3
     $transaction = $DB->start_delegated_transaction();
-    $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "timemodified");
+    $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "status");
     $transaction->allow_commit();
-    if(isset($res->timemodified) && $res->timemodified > 1000){
+    if(isset($res->status) && (int)$res->status == 1){
         return true;
     }
     return false;
