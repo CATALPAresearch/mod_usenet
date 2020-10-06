@@ -106,19 +106,27 @@ define([
                                     class="px-0 col-11 col-xs-11 col-sm-11 col-md-11 col-lg-11 col-xl-11" 
                                     style="display:inline-block;"
                                     >
-                                    <div class="row poststyle mb-xs-2" v-on:click="displayMessage(content.messagenumber, content.arraypos, $event)">
+                                    <div class="row poststyle mb-xs-2">
                                         
-                                        <div :style="textindent" class="col-3 order-1 order-sm-1 col-xs-7 col-sm-3 col-md-3 col-lg-3 col-xl-3 text-truncate px-0">
+                                        <div 
+                                            :style="textindent" 
+                                            class="col-3 order-1 order-sm-1 col-xs-7 col-sm-3 col-md-3 col-lg-3 col-xl-3 text-truncate px-0"
+                                            v-on:click="displayMessage(content.messagenumber, content.arraypos, $event)"
+                                            >
                                             <img style="width:20px; height:20px;" :src="this.content.identicon" :title="this.content.personal"/>
                                             {{content.personal}}
                                         </div>
                                     
-                                        <div class="col-6 order-xs-3 order-md-2 col-xs-11 col-sm-6 col-md-11 col-lg-6 col-xl-6 text-truncate px-0"  style="left:4px;">
+                                        <div 
+                                            class="col-6 order-xs-3 order-md-2 col-xs-11 col-sm-6 col-md-11 col-lg-6 col-xl-6 text-truncate px-0"
+                                            style="left:4px;"
+                                            v-on:click="displayMessage(content.messagenumber, content.arraypos, $event)"
+                                            >
                                             {{content.subject}}
                                         </div>
 
                                         <div class="col-3 order-2 order-md-3 col-xs-5 col-sm-3 col-md-3 col-lg-3 col-xl-3 px-0" data-date-format="DD.MM.YYYY">
-                                            <span style="font-size:0.9em">{{content.calctime}}</span>
+                                            <span v-on:click="displayMessage(content.messagenumber, content.arraypos, $event)" style="font-size:0.9em">{{content.calctime}}</span>
                                             <i class="far fa-star poststyle d-xs-block" :class="{starmarked: content.marked, fas: content.marked }"
                                         v-on:click="toggleMarkedMessage($event)" title="Favoriten markieren"/>
                                         </div>
