@@ -143,7 +143,7 @@ define([
                 <div>
                     <!-- Create new message -->
                     <template v-if="iscreatingtopic">
-                        <div class="border-bottom ml-3 mb-1 pl-1 pb-1">
+                        <div class="border-bottom ml-1 ml-md-3 mb-3 mb-md-1 pl-0 pl-md-1 pb-1">
                             <div class="mb-2 pl-1 pb-1">
                                 <div class="mx-0 control-bar">
                                     <span class="bold">Neue Nachricht verfassen</span>
@@ -168,7 +168,7 @@ define([
 
                     <!-- Read or reply to a message -->
                     <template v-else>
-                        <div class="border-bottom ml-3 mb-1 pl-1 pb-1">
+                        <div class="border-bottom ml-1 ml-md-3 mb-1 pl-1 pb-1">
                             <div class="mx-0 mb-3 control-bar"><!-- :class="{hidden: postdata.header.is_error}" -->
                                 <button class="btn btn-sm btn-outline-primary mr-3" :hidden="isanswering" v-on:click="replyMessage" title="Beitrag beantworten">
                                     <i class="fa fa-reply"></i>
