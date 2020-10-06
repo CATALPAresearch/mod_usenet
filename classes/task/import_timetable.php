@@ -1,6 +1,6 @@
 <?php
 
-namespace mod_newsmod\task;
+namespace mod_usenet\task;
 
 class import_timetable extends \core\task\scheduled_task{
 public function get_name(){

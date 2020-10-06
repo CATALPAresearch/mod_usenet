@@ -9,14 +9,14 @@ require_once("../../../config.php");
 $id = required_param('id', PARAM_INT);
 $msgnr = required_param('msgnr', PARAM_INT);
 $sender = optional_param('sender', 0, PARAM_TEXT);
-if (!$cm = get_coursemodule_from_id('newsmod', $id)) {
+if (!$cm = get_coursemodule_from_id('usenet', $id)) {
     print_error("Course Module ID was incorrect");
 }
 
 if (!$course = $DB->get_record("course", array("id" => $cm->course))) {
     print_error("Course is misconfigured");
 }
-$journal = $DB->get_record("newsmod", array("id" => $cm->instance));
+$journal = $DB->get_record("usenet", array("id" => $cm->instance));
 
 
 $context = context_module::instance($cm->id);
@@ -24,62 +24,74 @@ if (!isloggedin()) {
     header('Temporary-Header: True', true, 401);
 }
 require_login($course, false, $cm);
-// require_capability('mod/newsmod:addentries', $context);
+// require_capability('mod/usenet:addentries', $context);
 
-if (! $journal = $DB->get_record("newsmod", array("id" => $cm->instance))) {
+if (! $journal = $DB->get_record("usenet", array("id" => $cm->instance))) {
     print_error("Course module is incorrect");
 }
 
 
 
 //Header
-$PAGE->set_url('/mod/newsmod/edit.php', array('id' => $id));
+$PAGE->set_url('/mod/usenet/edit.php', array('id' => $id));
 $PAGE->navbar->add(get_string('edit'));
 $PAGE->set_title(format_string($journal->name));
 $PAGE->set_heading($course->fullname);
 $data = new stdClass();
-$localconfig = get_config('newsmod');
+$localconfig = get_config('usenet');
 
 
-require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
+require_once($CFG->dirroot . '/mod/usenet/php/nntp/socketcon.php');
 
-if ($msgnr < 0) {       //if msgnr is negative, then an error message is requested, else its just a normal request
-    $returnmsg = [
-        "header" => error_handler(($msgnr * -1)),
-        "messagebody" => $error_catalogue[($msgnr * -1)][2]
-    ];
+
+$nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
+
+
+if (is_array($nntp) && array_key_exists('is_error',$nntp)) {    //error detected, theres error_feedback data structure here!
+    $returnmsg = $nntp;
 }
 else {
-
-    $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
-
-
-    if (array_key_exists('is_error',$nntp)) {    //error detected, theres error_feedback data structure here!
-        $returnmsg = $nntp;
+    $header = nntp_header($nntp, $journal->newsgroup, $msgnr);
+    if (array_key_exists('is_error', $header)) {
+        $returnmsg = $header;
     }
     else {
-        $header = nntp_header($nntp, $journal->newsgroup, $msgnr);
-        if (array_key_exists('is_error', $header)) {
-            $returnmsg = $header;
+        $messagebody = nntp_fetchbody($nntp, $journal->newsgroup, $msgnr);
+        if (is_array($messagebody) && array_key_exists('is_error', $messagebody)) {
+            $returnmsg = $body;
         }
         else {
-            $messagebody = nntp_fetchbody($nntp, $journal->newsgroup, $msgnr);
-            if (array_key_exists('is_error', $messagebody)) {
-                $returnmsg = $body;
-            }
-            else {
-                $returnmsg = [
-                    "header" => $header,
-                    "messagebody" => $messagebody
-                ];
-            
-                require_once($CFG->dirroot . '/mod/newsmod/php/nntp/libconn.php');
-                markMessageRead($msgnr);
-            }
+            require_once($CFG->dirroot . '/mod/usenet/php/nntp/libconn.php');
+
+            $self = [];
+
+            $statusread = @loadMessageStatus($header->number);
+            $userinfo = @getUserIdByEmail($header->from);
+
+
+            $self["name"] = $header->subject;
+            $self["number"] = $header->number;
+            $self["messageid"] = $header->id;
+            $self["threadhead"] = false;
+            $self["personal"] = $header->name;
+            $self["sender"] = addcslashes(str_replace('\\', '', $header->from), "\"");
+            $self["messagestatus"] = $statusread->readstatus;
+            $self["markedstatus"] = $statusread->marked;
+            $self["picturestatus"] = $userinfo->picture;
+            $self["user_id"] = $userinfo->id;
+            $self["date"] = $header->displaydate;
+            $self["timestamp"] = $header->date;
+
+            $returnmsg = [
+                "header" => $self,
+                "messagebody" => $messagebody
+            ];
+        
+            markMessageRead($msgnr);
         }
     }
 }
-header('Content-Type: application/json');
+
 echo json_encode($returnmsg);
 
 
@@ -97,7 +109,7 @@ if (!$user = $DB->get_record('user', ['email' => $header->from])) {
 */
 //print_r($user);
 
-//require_once($CFG->dirroot . '/mod/newsmod/src/image-master/src/Intervention/Image/autoload.php');
+//require_once($CFG->dirroot . '/mod/usenet/src/image-master/src/Intervention/Image/autoload.php');
 //var itendi = new Identicon(btoa("'.$header->from[0]->mailbox."@".$header->from[0]->host .'"),options).toString();
 
 

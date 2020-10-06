@@ -22,15 +22,15 @@ defined('MOODLE_INTERNAL') || die;
 require_once("$CFG->libdir/externallib.php");
 
 /**
- * newsmod external functions
+ * usenet external functions
  *
- * @package    mod_newsmod
+ * @package    mod_usenet
  * @category   external
  * @copyright  2020 Niels Seidel <niels.seidel@fernuni-hagen.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      Moodle 3.5
  */
-class mod_newsmod_external extends external_api {
+class mod_usenet_external extends external_api {
 
     
     /**
@@ -60,12 +60,12 @@ class mod_newsmod_external extends external_api {
         global $CFG, $DB, $USER;
         
         $r = new stdClass();
-        $r->name='mod_newsmod';
-        $r->component='mod_newsmod';
-        $r->eventname='\mod_newsmod\event\course_module_' . $data['action'];
+        $r->name='mod_usenet';
+        $r->component='mod_usenet';
+        $r->eventname='\mod_usenet\event\course_module_' . $data['action'];
         $r->action=$data['action'];
         $r->target='course_module';
-        $r->objecttable='newsmod';
+        $r->objecttable='usenet';
         $r->objectid=0;
         $r->crud='r';
         $r->edulevel=2;

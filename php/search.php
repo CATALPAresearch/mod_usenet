@@ -9,14 +9,14 @@ $searchparam = optional_param('searchparam', 0, PARAM_TEXT);
 $msgnr = optional_param('msgnr', 0, PARAM_INT);
 $markedstatus = optional_param('marked', 0, PARAM_INT);
 $sender = optional_param('sender', 0, PARAM_TEXT);
-if (!$cm = get_coursemodule_from_id('newsmod', $id)) {
+if (!$cm = get_coursemodule_from_id('usenet', $id)) {
     print_error("Course Module ID was incorrect");
 }
 
 if (!$course = $DB->get_record("course", array("id" => $cm->course))) {
     print_error("Course is misconfigured");
 }
-$journal = $DB->get_record("newsmod", array("id" => $cm->instance));
+$journal = $DB->get_record("usenet", array("id" => $cm->instance));
 
 
 $context = context_module::instance($cm->id);
@@ -24,19 +24,19 @@ if (!isloggedin()) {
     header('Temporary-Header: True', true, 401);
 }
 require_login($course, false, $cm);
-// require_capability('mod/newsmod:addentries', $context);
+// require_capability('mod/usenet:addentries', $context);
 
-if (! $journal = $DB->get_record("newsmod", array("id" => $cm->instance))) {
+if (! $journal = $DB->get_record("usenet", array("id" => $cm->instance))) {
     print_error("Course module is incorrect");
 }
 
 //Header
-$PAGE->set_url('/mod/newsmod/edit.php', array('id' => $id));
+$PAGE->set_url('/mod/usenet/edit.php', array('id' => $id));
 $PAGE->navbar->add(get_string('edit'));
 $PAGE->set_title(format_string($journal->name));
 $PAGE->set_heading($course->fullname);
 $data = new stdClass();
-$localconfig = get_config('newsmod');
+$localconfig = get_config('usenet');
 
 
 if (!$user = $DB->get_record('user', ['email' => $sender])) {
@@ -46,13 +46,12 @@ if (!$user = $DB->get_record('user', ['email' => $sender])) {
     $user->firstname = $sender;
     $user->lastname = "";
 }
-require_once($CFG->dirroot . '/mod/newsmod/php/nntp/libconn.php');
+require_once($CFG->dirroot . '/mod/usenet/php/nntp/libconn.php');
 
 $searchresult = msgSearch($journal, $searchparam);
 
 
 if ($searchresult) {
-    header('Content-Type: application/json');
     echo json_encode($searchresult);
 } else {
     header('HTTP/1.1 204 No Content', true, 204);

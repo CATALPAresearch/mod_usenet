@@ -12,7 +12,7 @@
 define([
     'jquery',
     'core/ajax',
-    M.cfg.wwwroot + "/mod/newsmod/lib/src/d3.v5.js"
+    M.cfg.wwwroot + "/mod/usenet/lib/src/d3.v5.js"
 ], function ($, ajax, d3) {
 
     var Utils = function () {
@@ -27,7 +27,7 @@ define([
         this.get_ws = function (ws, params, cb, external) {
             external = external === undefined ? false : external;
             ajax.call([{
-                methodname: external ? ws : 'mod_newsmod_' + ws,
+                methodname: external ? ws : 'mod_usenet_' + ws,
                 args: params,
                 done: function (msg) {
                     if (msg.hasOwnProperty('exception')) {

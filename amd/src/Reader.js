@@ -1,7 +1,7 @@
 /**
  * Newsgroup reader
- * @module     mod/newsmod/Reader
- * @class      newsmod
+ * @module     mod/usenet/Reader
+ * @class      usenet
  * @copyright  2020 Niels Seidel <niels.seidel@fernuni-hagen.de>
  * @license    MIT
  * @since      3.1
@@ -10,12 +10,12 @@
 
 define([
     'jquery',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/vue.min.js',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/axios.min.js',
-    M.cfg.wwwroot + '/mod/newsmod/lib/build/identicon.min.js',
-    M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderMessageBody.js',
-    M.cfg.wwwroot + '/mod/newsmod/amd/src/ReaderPostContainer.js',
-    M.cfg.wwwroot + '/mod/newsmod/amd/src/VizBubble.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/build/axios.min.js',
+    M.cfg.wwwroot + '/mod/usenet/lib/build/identicon.min.js',
+    M.cfg.wwwroot + '/mod/usenet/amd/src/ReaderMessageBody.js',
+    M.cfg.wwwroot + '/mod/usenet/amd/src/ReaderPostContainer.js',
+    M.cfg.wwwroot + '/mod/usenet/amd/src/VizBubble.js',
 ], function ($, Vue, axios, Identicon, MessageBodyContainer, PostContainer, BubbleChart) {
 
     /**
@@ -30,12 +30,14 @@ define([
     
     */
 
-    var Reader = function (Log, courseid, messageid) {
+    var Reader = function (Log, courseid, messageid, instanceName) {
 
         var app = new Vue({
-            el: 'newsmod-container',
+            el: 'usenet-container',
             data: function () {
                 return {
+                    instanceName: 'Newsgroup',
+                    showMessageBody: false,
                     searchstring: '',
                     searchresult: [],
                     hiddenposts: [],        // Stores array pos of searchresult items in array post_list
@@ -44,10 +46,15 @@ define([
                     content: [],
                     tree_data: '',
                     treedata_viz: {},           // data just for viz_bubble
-                    sequence: 1,
+                    sequence: 0,
                     arraypos: 0,
                     post_list: [],
+                    post_list_sections: [],      // neatly divided sections of post_list are here
+                    post_list_section_size: 50,
+                    post_list_section_reservespace: 10,  // Buffer space for threads that cant fit into remaining section_size space
+                    view_section: 0,
                     singlepostdata: [],
+                    threadlist: [],
                     msgbodycontainerdisplay: 'none',
                     isreading: false,
                     isanswering: false,
@@ -63,6 +70,19 @@ define([
                     newsgroup_name: '',
                     newsgroup_postquantity: 0,
                     fetch_postquantity: 50,         // Quantity to load and display in one go
+                    start: '0',
+                    end: '0',
+                    errorMessages: [],
+                    searchresultmsg: '',
+                    statesearchresult: false,
+                    statesRMB: {                // States for ReaderMessageBody
+                        CanSelectNext: true,
+                        CanSelectPrev: true
+                    },
+                    statesview_section: {                // States for ReaderMessageBody
+                        CanSelectNext: true,
+                        CanSelectPrev: false
+                    }
                 };
             },
 
@@ -73,7 +93,7 @@ define([
             },
 
             created: function () {
-
+                this.instanceName = instanceName;
                 /**
                  * Initialisation of variables with empty values
                  * to prevent "undefined variable" error messages
@@ -95,7 +115,7 @@ define([
 
 
                 window.addEventListener("resize", this.Windowresizehandler);
-                
+
 
                 if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
                     this.viewportsize = 'mobile';
@@ -112,48 +132,26 @@ define([
 
 
             mounted: function () {
-                const h = messageid; // !!??
-                const f = courseid;
-                const g = 0;
-                let id = 0;
 
-                this.getgroupinfo();
 
-                this.hideloadingicon = false;
+                this.initiatecontact();
 
-                //returned data is already js object (axios automaticly converts json to js obj)
-                axios
-                    .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + courseid)
-                    .then(function (response) {
-                        if (app.check_for_error(response.data)) {
-                            app.post_list.push(app.prepare_postdata(response.data));
-            
-                        } else {
-                        app.treedata_viz = response.data.children;
-                        app.info = response;
-                        app.tree_data = response.data;
-                        app.buildtree(response.data, 1);
-                        }
-
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                    .then(function() {
-                        app.hideloadingicon = true;
-                    });
             },
 
             computed: {
 
             },
             methods: {
-                Windowresizehandler: function() {
+                hideMessageBody: function () {
+                    this.showMessageBody = false;
+                },
+                Windowresizehandler: function () {
                     if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
                         this.viewportsize = 'mobile';
                         if (this.msgbodycontainerdisplay == '') {       // msgbodycontainer is used (its set to 'hide' if not used)
                             this.showmodal = true;
                         }
-                        
+
                     }
                     else {
                         this.viewportsize = 'other';
@@ -161,25 +159,53 @@ define([
                     }
                 },
 
-                getgroupinfo: function() {
-                    axios
-                    .get(M.cfg.wwwroot + "/mod/newsmod/php/groupinfo.php?id=" + courseid)
-                    .then(function (response) {
-                        if (app.check_for_error(response.data)) {
-                            app.post_list.push(app.prepare_postdata(response.data));
-            
-                        } else {
-                            app.processgroupinfo(response.data);
-                        }
+                initiatecontact: function () {
+                    this.hideloadingicon = false;
 
-                    }).catch(function (error) {
-                        console.log(error);
+                    this.getgroupinfo().then(function (response) {
+                        axios
+                            .get(M.cfg.wwwroot + "/mod/usenet/php/fetchtree.php?id=" + courseid + "&start=" + app.start + "&end=" + app.end)
+                            .then(function (response) {
+                                if (app.check_for_error(response.data)) {
+                                    app.errorMessages.push(response.data);
+
+                                } else {
+                                    app.treedata_viz = response.data.children;
+                                    app.info = response;
+                                    app.tree_data = response.data;
+                                    app.gettree(response.data);
+                                }
+
+                            }).catch(function (error) {
+                                console.error(error);
+                            }).then(function () {
+                                app.hideloadingicon = true;
+                            });
                     });
                 },
 
-                processgroupinfo: function(groupinfo) {
+                getgroupinfo: function () {
+                    return axios
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/groupinfo.php?id=" + courseid)
+                        .then(function (response) {
+                            if (app.check_for_error(response.data)) {
+                                app.errorMessages.push(response.data);
+
+                            } else {
+                                app.processgroupinfo(response.data);
+                            }
+
+                        }).catch(function (error) {
+                            console.error(error);
+                        });
+                },
+
+                processgroupinfo: function (groupinfo) {
                     app.newsgroup_name = groupinfo.groupname;
                     app.newsgroup_postquantity = groupinfo.lastarticle - groupinfo.firstarticle + 1;
+
+                    app.start = parseInt(groupinfo.firstarticle);
+                    app.end = parseInt(groupinfo.lastarticle);
                 },
 
 
@@ -188,57 +214,61 @@ define([
                 },
                 findinarr: function (key, inputArray) {
                     for (let i = 0; i < inputArray.length; i++) {
-                        if (inputArray[i].messageid === key) {
+                        if (inputArray[i].messagenumber === key) {
                             return inputArray[i];
                         }
                     }
                 },
 
-                ondisplaymsg: function (msgid) {
-
+                ondisplaymsg: function (messagenum) {
+                    this.showMessageBody = true;
                     this.hideloadingiconRMB = false;
 
-                    axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
-                        .then(function(response) {
+                    axios
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
+                        .then(function (response) {
                             if (app.check_for_error(response.data)) {
-                                app.post_list.push(app.prepare_postdata(response.data));
-                
+                                app.errorMessages.push(response.data);
+
                             } else {
+                                response.data.header = app.prepare_postdata(response.data.header);
                                 app.singlepostdata = response.data;
-                                app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
                             }
-                        }).catch(function(error) {
-                            console.log(error);
-                        }).then(function() {
+                        }).catch(function (error) {
+                            console.error(error);
+                        }).then(function () {
                             app.hideloadingiconRMB = true;
                         });
 
-                      
-                    this.msgbodycontainerdisplay = '';      // Set display to "visible"
+
+                    this.msgbodycontainerdisplay = ''; // Set display to "visible"
                     this.iscreatingtopic = false;
                     this.isreading = true;
                     this.isanswering = false;
 
-                    let post = this.findinarr(msgid, this.post_list);
+                    let post = this.findinarr(messagenum, this.post_list);
 
-                    let arraypos = post.arraypos;
+
+                    let arraypos = this.post_list.indexOf(post);
                     this.markedpost = arraypos;
-                    
+
                     if (this.viewportsize == 'mobile') {
                         this.showmodal = true;
                     }
 
+                    this.stateupdateRMB();
+
 
                 },
 
-                setSelected: function(arraypos) {
-                    this.markedpost = arraypos;
+                setSelected: function (messagenumber) {
+                    let post = this.findinarr(messagenumber, this.post_list);
+                    this.markedpost = this.post_list.indexOf(post);
                 },
 
                 /**
                  * 
-                 * @param {*} msgid
+                 * @param {*} messagenum
                  * 
                  * function is called from button click "(Show) Previous message"
                  * Shows previous message in thread
@@ -246,7 +276,7 @@ define([
                  * Notes:
                  * 
                  * When the page is first loaded, a json data structure is fetched
-                 * from the server (headers of postings) and is processed into an array post_data in buildtree(), along with
+                 * from the server (headers of postings) and is processed into an array post_data in gettree(), along with
                  * the corresponding position on the array
                  * 
                  * When user clicks on a post however, post data (header and body) is fetched from server,
@@ -267,40 +297,37 @@ define([
                  * Future todo:
                  *      only fetch body from server and attach it to element on array post_list
                  */
-                onprevmsg: function (msgid) {
+                onprevmsg: function (messagenum) {
 
                     this.hideloadingiconRMB = false;
 
-                    let post = this.findinarr(msgid, this.post_list);
+                    let post = this.findinarr(messagenum, this.post_list);
 
-                    let arraypos = post.arraypos;
+                    let arraypos = this.post_list.indexOf(post);
 
                     arraypos -= 1;
                     this.markedpost = arraypos;
 
 
-                    msgid = this.post_list[arraypos].messageid;
+                    messagenum = this.post_list[arraypos].messagenumber;
 
-                    let modpost = this.findinarr(msgid, this.post_list);                // Set next message to visible if it was hidden
+                    let modpost = this.findinarr(messagenum, this.post_list);                // Set next message to visible if it was hidden
                     modpost.hidden = false;
                     Vue.set(this.post_list, arraypos, modpost);
 
-                    console.log(arraypos);
-                    console.log(msgid);
-
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
-                        .then(function(response) {
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
+                        .then(function (response) {
                             if (app.check_for_error(response.data)) {
-                                app.post_list.push(app.prepare_postdata(response.data));
-                
+                                app.errorMessages.push(response.data);
+
                             } else {
                                 app.singlepostdata = response.data;
-                                app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                                response.data.header = app.prepare_postdata(response.data.header);
                             }
-                        }).catch(function(error) {
-                            console.log(error);
-                        }).then(function() {
+                        }).catch(function (error) {
+                            console.error(error);
+                        }).then(function () {
                             app.hideloadingiconRMB = true;
                         });
                     this.msgbodycontainerdisplay = '';      // Set display to "visible"
@@ -308,46 +335,44 @@ define([
                     this.isreading = true;
                     this.isanswering = false;
 
+                    this.stateupdateRMB();
+
+
 
                 },
 
-                onnextmsg: function (msgid) {
+                onnextmsg: function (messagenum) {
 
                     this.hideloadingiconRMB = false;
 
-                    let post = this.findinarr(msgid, this.post_list);
+                    let post = this.findinarr(messagenum, this.post_list);
 
-                    console.log(post.arraypos);
-                    let arraypos = post.arraypos;
+                    let arraypos = this.post_list.indexOf(post);
 
                     arraypos += 1;
 
                     this.markedpost = arraypos;         // Variable is transmitted to "post-container"
 
-                    msgid = this.post_list[arraypos].messageid;
+                    messagenum = this.post_list[arraypos].messagenumber;
 
-                    let modpost = this.findinarr(msgid, this.post_list);                // Set next message to visible if it was hidden
+                    let modpost = this.findinarr(messagenum, this.post_list);                // Set next message to visible if it was hidden
                     modpost.hidden = false;
                     Vue.set(this.post_list, arraypos, modpost);
 
-                    console.log(arraypos);
-                    console.log(msgid);
-
-
                     //msgid = parseInt(msgid);
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/messageid.php?id=" + courseid + "&msgnr=" + msgid)
-                        .then(function(response) {
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
+                        .then(function (response) {
                             if (app.check_for_error(response.data)) {
-                                app.post_list.push(app.prepare_postdata(response.data));
-                
+                                app.errorMessages.push(response.data);
+
                             } else {
                                 app.singlepostdata = response.data;
-                                app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                                response.data.header = app.prepare_postdata(response.data.header);
                             }
-                        }).catch(function(error) {
-                            console.log(error);
-                        }).then(function() {
+                        }).catch(function (error) {
+                            console.error(error);
+                        }).then(function () {
                             app.hideloadingiconRMB = true;
                         });
 
@@ -355,9 +380,96 @@ define([
                     this.iscreatingtopic = false;
                     this.isreading = true;
                     this.isanswering = false;
-                    
-                    
+
+                    this.stateupdateRMB();
+
+
                 },
+
+                PLprev: function () {
+                    if (this.view_section > 0) {
+                        if (this.markedpost != -1) {
+                            let modpost = this.post_list[this.markedpost];
+                            modpost.isSelected = false;
+                        }
+
+                        this.markedpost = -1;
+                        this.post_list = this.post_list_sections[--this.view_section];
+                        this.isreading = false;
+                        this.isanswering = false;
+                        this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
+                        this.arraypos = 0;
+                        this.stateupdateview_selection();
+                    }
+
+                },
+
+                PLnext: function () {
+                    if (this.view_section < this.post_list_sections.length - 1) {
+                        if (this.markedpost != -1) {
+                            let modpost = this.post_list[this.markedpost];
+                            modpost.isSelected = false;
+                        }
+
+                        this.markedpost = -1;
+                        this.post_list = this.post_list_sections[++this.view_section];
+                        this.isreading = false;
+                        this.isanswering = false;
+                        this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
+                        this.arraypos = 0;
+                        this.stateupdateview_selection();
+                    }
+
+                },
+
+                PLselect: function (page) {
+                    if (this.markedpost != -1) {
+                        let modpost = this.post_list[this.markedpost];
+                        modpost.isSelected = false;
+                    }
+
+                    this.markedpost = -1;
+                    this.post_list = this.post_list_sections[page];
+                    this.view_section = page;
+                    this.isreading = false;
+                    this.isanswering = false;
+                    this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
+                    this.arraypos = 0;
+                    this.stateupdateview_selection();
+                },
+
+                stateupdateview_selection: function () {
+                    if (this.view_section <= 0) {
+                        Vue.set(this.statesview_section, "CanSelectPrev", false);
+                    }
+                    else {
+                        Vue.set(this.statesview_section, "CanSelectPrev", true);
+                    }
+
+                    if (this.view_section >= this.post_list_sections.length - 1) {
+                        Vue.set(this.statesview_section, "CanSelectNext", false);
+                    }
+                    else {
+                        Vue.set(this.statesview_section, "CanSelectNext", true);
+                    }
+                },
+
+                stateupdateRMB: function () {
+                    if (this.markedpost <= 0) {
+                        Vue.set(this.statesRMB, "CanSelectPrev", false);
+                    }
+                    else {
+                        Vue.set(this.statesRMB, "CanSelectPrev", true);
+                    }
+
+                    if (this.markedpost >= this.post_list_sections[this.view_section].length - 1) {
+                        Vue.set(this.statesRMB, "CanSelectNext", false);
+                    }
+                    else {
+                        Vue.set(this.statesRMB, "CanSelectNext", true);
+                    }
+                },
+
                 /**
                  * Refresh post
                  */
@@ -366,48 +478,127 @@ define([
                     this.hideloadingicon = false;
 
                     app.post_list.splice(0);    //unset content array
+                    this.post_list_sections.splice(0);
+                    this.threadlist.splice(0);
                     this.arraypos = 0;          //reset index counter of content
                     this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
                     this.isanswering = false;
                     this.iscreatingtopic = false;
                     this.isreading = false;
-
-                    if (this.viewportsize == 'mobile') {
-                        this.showmodal = false;
-                    }
-
+                    let _this = this;
                     // Timeout of 2 seconds. Reason: After user posted a message, page gets refreshed with new data
                     // but server might not have the new message available yet, depending on server load (?)
                     setTimeout(function () {
+                        app.refresh();
+                    }, (2000));
 
-                        axios   //returned data is already js object (axios automaticly converts json to js obj)
-                            .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + app.courseid)
-                            .then(function(response) {
-                                if (app.check_for_error(response.data)) {
-                                    app.post_list.push(app.prepare_postdata(response.data));
-                    
-                                } else {
-                                    app.info = response;
-                                    app.tree_data = response.data;
-                                    app.buildtree(response.data, 1);
-                                }
-                            }).catch(function(error) {
-                                console.log(error);
-                            }).then(function() {
-                                app.hideloadingicon = true;
-                            });
-
-                    }, (2 * 1000));
-
-                    
                 },
 
-                closemodal: function() {
-                    this.showmodal = false;
-                    this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
+                gettree: function (tree_data) {
+
+                    this.buildthread_starter(tree_data, this.threadlist);
+
+
+                    this.buildsections(this.threadlist, this.post_list_sections,
+                        this.post_list_section_size, this.post_list_section_reservespace);
+
+
+                    this.post_list = this.post_list_sections[0];
+
                 },
 
-                prepare_postdata: function(postdata_raw, margin = 1) {
+                buildsections: function (threadlist, sectionlist, sectionsize, reserve_space) {
+                    var remainingspace = sectionsize;
+                    var reservespace = reserve_space;
+                    var sectionindex = 0;
+                    sectionlist[sectionindex] = [];
+                    for (let i = 0; i < threadlist.length; i++) {
+
+                        if (threadlist[i].length > sectionsize) {    // is the thread larger than slots are available on a single section ?
+                            for (let j = 0; j < threadlist[i].length; j++) {
+                                sectionlist[sectionindex].push(threadlist[i][j]);
+                            }
+                            sectionindex++;
+                            sectionlist[sectionindex] = [];
+                            remainingspace = sectionsize;
+                            reservespace = reserve_space;
+                            continue;
+                        }
+
+                        if (threadlist[i].length > remainingspace) {
+                            if (threadlist[i].length > remainingspace + reservespace) {
+                                sectionindex++;
+                                sectionlist[sectionindex] = [];
+                                remainingspace = sectionsize;
+                                reservespace = reserve_space;
+                            } else {
+                                remainingspace = threadlist[i].length;
+                                reservespace = 0;
+                            }
+
+                        }
+
+                        if (threadlist[i].length <= remainingspace) {
+                            for (let j = 0; j < threadlist[i].length; j++) {
+                                sectionlist[sectionindex].push(threadlist[i][j]);
+                            }
+                            remainingspace -= threadlist[i].length;
+                        }
+                    }
+                },
+
+                buildthread_starter: function (tree_data, threadlist) {
+                    if (typeof tree_data.children === 'undefined') {
+                        console.error("tree_data.children not defined", tree_data);
+                    }
+                    tree_data.children.forEach(threadhead => {
+
+                        threadlist.push(this.buildthread(threadhead, 1));
+
+                    });
+                },
+
+                buildthread: function (threadhead, margin, thread = 0) {
+                    if (thread == 0) {
+                        thread = [];
+                    }
+                    thread.push(this.prepare_postdata(threadhead, margin));
+
+                    if (typeof threadhead.children !== 'undefined') {
+                        threadhead.children.forEach(val => {
+
+
+                            if (val.children) {
+                                app.buildthread(val, margin + 15, thread);    //original margin val: margin + 25
+                            } else {
+                                thread.push(this.prepare_postdata(val, margin + 15));
+                            }
+
+                        });
+                    }
+                    return thread;
+                },
+
+
+                buildtree_classic: function (tree_data, margin) {
+                    if (typeof tree_data.children === 'undefined') {
+                        console.error("tree_data.children not defined", tree_data);
+                    }
+                    tree_data.children.forEach(val => {
+
+                        let content = this.prepare_postdata(val, margin);
+
+                        this.post_list.push(content);
+
+                        if (val.children) {
+                            app.buildtree_classic(val, margin + 15);    //original margin val: margin + 25
+                        }
+
+                    });
+
+                },
+
+                prepare_postdata: function (postdata_raw, margin = 1) {
 
                     var marked = postdata_raw.markedstatus != '0' ? true : false;
                     var unread = postdata_raw.messagestatus == '0' ? true : false;
@@ -426,14 +617,14 @@ define([
                         identiconstring = this.getidenticon(postdata_raw.sender + postdata_raw.personal);
 
                     }
-                    
+
                     if (postdata_raw.children) {
                         childpresent = true;
                     }
                     else {
                         childpresent = false;
                     }
-                    
+
                     if (!postdata_raw.children) {
                         var childornot = "hidden";
                     }
@@ -454,26 +645,12 @@ define([
                     var content = {
                         marked: marked, unread: unread, markedhtml: marked,
                         picturestatus: postdata_raw.picturestatus, personal: postdata_raw.personal, sender: postdata_raw.sender,
-                        user_id: postdata_raw.user_id, margin: margin, sequence: this.sequence++, messageid: postdata_raw.messageid,
+                        user_id: postdata_raw.user_id, margin: margin, sequence: this.sequence++, messageid: postdata_raw.messageid, messagenumber: postdata_raw.number,
                         date: postdata_raw.date, subject: postdata_raw.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
-                        isSelected: false, hidden: false, family: family, identicon: identiconstring
+                        isSelected: false, hidden: false, family: family, identicon: identiconstring, timestamp: postdata_raw.timestamp
                     };
 
                     return content;
-                },
-
-                buildtree: function (tree_data, margin) {
-                
-                    tree_data.children.forEach(val => {
-
-                        let content = this.prepare_postdata(val, margin);
-
-                        this.post_list.push(content);
-                        if (val.children) {
-                            app.buildtree(val, margin + 15);    //original margin val: margin + 25
-                        }
-
-                    });
                 },
 
                 getfamily: function (rootnode) {
@@ -483,7 +660,7 @@ define([
                         var childrenamount = rootnode.children.length;
 
                         for (let i = 0; i < childrenamount; i++) {
-                            children.push(rootnode.children[i].messageid);
+                            children.push(rootnode.children[i].number);
                             if (rootnode.children[i].children) {
                                 children.push(app.getfamily(rootnode.children[i]));
                             }
@@ -494,31 +671,35 @@ define([
 
                 newTopic: function () {
                     this.msgbodycontainerdisplay = '';
+                    this.showMessageBody = true;
                     this.iscreatingtopic = true;
                     this.isreading = false;
                     this.isanswering = false;
+                    // not working: this.$nextTick(() => this.$refs.newMessageSubject.focus())
                 },
 
                 search: function (options) {
 
                     this.hideallposts();
 
+                    this.statesearchresult = false;
                     this.hideloadingicon = false;
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/newsmod/php/search.php?id=" + courseid + "&searchparam=" + this.searchstring)
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/search.php?id=" + courseid + "&searchparam=" + this.searchstring)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
-                                app.post_list.push(app.prepare_postdata(response.data));
-                                app.displayerrormsg = true;
+                                //app.post_list.push(app.prepare_postdata(response.data));
+                                app.errorMessages.push(response.data);
+                                //app.displayerrormsg = true;
                             } else {
                                 app.displaysearchresult('', response.data);
                             }
                         })
                         .catch(error => (
-                            console.log(error)
+                            console.error(error)
                         ))
-                        .then(function() {
+                        .then(function () {
                             app.hideloadingicon = true;
                         });
                 },
@@ -537,24 +718,29 @@ define([
                         modpost.hidden = false;
                         Vue.set(this.post_list, i, modpost);
                     }
+                    // todo this cant stay here
+                    this.statesearchresult = false;
                 },
 
                 displaysearchresult: function (options, searchresult) {
 
                     this.hideallposts();
 
-                    for (let i = 0; i < searchresult.length; i++) {
-                        this.hiddenposts.push(this.findinarr(searchresult[i].messagenum, this.post_list));
-                        let modpost = this.hiddenposts[i];
-                        if (typeof modpost.hidden !== 'undefined') {
-                            modpost.hidden = false;
-                            Vue.set(this.post_list, modpost.arraypos, modpost);
-                        }
-                        else {
-                            console.log("err displaysearchresult");
-                        }
-                       
+                    this.hiddenposts = []; 
 
+                    this.statesearchresult = true;
+                    this.searchresultmsg = searchresult.length;
+                    
+                    for (let i = 0; i < searchresult.length; i++) {
+                        let modpost = this.findinarr(searchresult[i].messagenum, this.post_list);
+                        
+                        if (modpost !== undefined) {
+                            modpost.hidden = false;
+                            this.hiddenposts.push(modpost);
+                            Vue.set(this.post_list, modpost.arraypos, modpost);
+                        } else {
+                            console.error("error displaysearchresult");
+                        }
                     }
                     //this.hideloadingicon = true;
                 },
@@ -573,9 +759,10 @@ define([
 
                 },
                 // TODO: make sure all elements are reset, also look at onansweredmsg
-                refresh: function() {
+                refresh: function () {
 
                     this.hideloadingicon = false;
+                    this.statesearchresult = false;
 
                     this.isreading = false;
                     this.isanswering = false;
@@ -584,44 +771,25 @@ define([
                     this.arraypos = 0;
 
                     this.post_list.splice(0);
+                    this.post_list_sections.splice(0);
+                    this.threadlist.splice(0);
 
                     if (this.viewportsize == 'mobile') {
                         this.showmodal = false;
                     }
 
-                    axios
-                    .get(M.cfg.wwwroot + "/mod/newsmod/php/phpconn5.php?id=" + courseid)
-                    .then(function (response) {
-                        if (app.check_for_error(response.data)) {
-                            app.post_list.push(app.prepare_postdata(response.data));
-            
-                        } else {
-                        app.treedata_viz = response.data.children;
-                        app.info = response;
-                        app.tree_data = response.data;
-                        app.buildtree(response.data, 1);
-                        }
-
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                    .then(function() {
-                        app.hideloadingicon = true;
-                    });
-                    
+                    this.initiatecontact();
                 },
 
                 getidenticon: function (input) {
                     var options = {
-                        background: [255, 255, 255, 255], // rgba white
+                        background: [255, 255, 255, 0], // rgba white/transparent background
                         margin: 0.05, // 20% margin
                         size: 20, // 420px square
                         format: 'svg' // use SVG instead of PNG
                     };
-                    // TODO: fix feed
-                    
 
-                    var identiconhash = this.hash64(input, true); 
+                    var identiconhash = this.hash64(input, true);
                     var identicondata = new Identicon(identiconhash, options).toString();
                     return "data:image/svg+xml;base64," + identicondata;
                 },
@@ -636,7 +804,7 @@ define([
                  * @param {integer} [seed] optionally pass the hash of the previous chunk
                  * @returns {integer | string}
                  */
-                hash32: function(str, asString, seed) {
+                hash32: function (str, asString, seed) {
                     /*jshint bitwise:false */
                     var i, l,
                         hval = (seed === undefined) ? 0x811c9dc5 : seed;
@@ -645,81 +813,109 @@ define([
                         hval ^= str.charCodeAt(i);
                         hval += (hval << 1) + (hval << 4) + (hval << 7) + (hval << 8) + (hval << 24);
                     }
-                    if( asString ){
+                    if (asString) {
                         // Convert to 8 digit hex string
                         return ("0000000" + (hval >>> 0).toString(16)).substr(-8);
                     }
                     return hval >>> 0;
                 },
 
-                hash64: function(str, asString) {
+                hash64: function (str, asString) {
                     var h1 = this.hash32(str, asString);  // returns 32 bit (as 8 byte hex string)
                     return h1 + this.hash32(h1 + str, asString);  // 64 bit (as 16 byte hex string)
                 },
 
-                check_for_error: function(serverreturn) {
+                check_for_error: function (serverreturn) {
                     if (typeof serverreturn.is_error !== 'undefined') {
                         return true;
-
                     } else {
                         return false;
                     }
                 },
 
+                error_to_alert: function (error) {
+                    app.errorMessages.push();
+                }
 
-                
-                      
+
+
+
 
             }, // END app methods
             template: `
-                <div id="newsmod-container">
-                    <ul class="nav nav-pills">
-                        <li class="nav-item">
-                            <a class="nav-link active" data-toggle="pill" href="#home">Liste</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="pill" href="#menu1">Bubbles</a>
-                        </li>
-                    </ul>
-                    <div>
-                        <div class="form-inline">
-                            <button class="btn btn-outline-primary btn-sm" v-on:click="newTopic" title="Ein neues Thema erstellen">
+                <div id="usenet-container">
+                    <h3 class="mb-4"><img style="width:30px; height:30px;" src="pix/icon.svg"> {{ instanceName }}</h3>
+                    <div class="d-flex align-items-center">
+                            <button class="btn btn-primary btn-sm" :disabled="iscreatingtopic" v-on:click="newTopic" title="Eine neue Nachricht erstellen">
                                 <i class="fa fa-pen"></i>
-                                Neues Thema
+                                Neue Nachricht
                             </button>
 
                             <button class="btn btn-light btn-sm" v-on:click="refresh" title="Neue Nachrichten abholen">
                                     <i class="fa fa-sync"></i>
+                                    <span class="d-none d-md-inline">aktualisieren</span>
                             </button>
-                            <div class="search">
-                                <input class="form-control form-control-sm" v-model="searchstring" placeholder="Suchen..." v-on:click="resetsearchstring">
 
-                                <button class="btn btn-light btn-sm" type="submit" v-on:click="search" title="In allen Nachrichten suchen">
-                                    Suchen
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class = "tab-content">
-                        <div class="container-fluid px-0 tab-pane active" id="home" style = "height:auto;">
-                            <div class="px-0">
-                                <hr />
-                                <div class="row" >
-                                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="tree" style="overflow:scroll; margin-bottom:3px; height: 500px;" >
-                                        <post-container 
-                                            v-bind:courseid="courseid" 
-                                            v-bind:postlist="post_list" 
-                                            v-bind:markedpost="markedpost" 
-                                            :showloadingicon="hideloadingicon"
-                                            :viewportsize = "viewportsize"
-                                            v-on:displaymsg="ondisplaymsg"
-                                            v-on:setSelected="setSelected">
-                                        </post-container>
+                            <div class="mr-auto px-2">
+                                <div class="d-flex">
+                                    <div>
+                                        <a class="page-link" :class="{disabled: !statesview_section.CanSelectPrev}" v-on:click="PLprev" 
+                                            href="#" title="Vorherige Seite">
+                                            <i class="fa fa-chevron-left"></i>
+                                        </a>
                                     </div>
-                                    <div :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12', {modal: showmodal}]" id="treeinfo" 
-                                    style="padding-right:0px;">
-                                        <messagebody-container
-                                            v-bind:courseid="courseid" 
+                                    <a v-for="(el, index) in post_list_sections"
+                                        class="page-link"
+                                        href="#"
+                                        v-on:click="PLselect(index)"
+                                        :class="{'bg-info': view_section == index}"
+                                        >
+                                        {{index+1}}
+                                    </a>
+                                    <div>
+                                        <a class="page-link" :class="{disabled: !statesview_section.CanSelectNext}" v-on:click="PLnext" 
+                                            href="#" title="Nächste Seite">
+                                            <i class="fa fa-chevron-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        <div class="search d-flex">
+                            <input 
+                                class="form-control form-control-sm d-inline ml-2" 
+                                v-model="searchstring" 
+                                placeholder="Suchen..." 
+                                v-on:keyup.enter="search"
+                                :style="[ viewportsize==='mobile' ? {width:70+'%'} : {width:150+'px'} ]"
+                                >
+
+                            <button class="btn btn-light btn-sm" type="submit" v-on:click="search" title="In allen Nachrichten suchen">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                        
+                    </div>
+                    <ul class="nav nav-tabs mt-3">
+                        <li class="nav-item pt-0">
+                            <a class="nav-link  pt-0 pb-0 active" data-toggle="pill" href="#viewlist">
+                                <i class="fa fa-list"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item  pt-0">
+                            <a class="nav-link pt-0  pb-0" data-toggle="pill" href="#viewbubbles">
+                                <i class="fa fa-spinner"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="container-fluid px-2 border-left tab-pane active" id="viewlist">
+                            <div class="pt-4 pl-0">
+                                <div class="row" >
+                                <!--
+                                    <div v-if="showMessageBody" class="d-block d-sm-none">
+                                        <messagebody-container 
+                                            v-bind:courseid="courseid"
                                             v-bind:postdata="singlepostdata"
                                             :identiconstring = "identiconstring"
                                             :isused ="msgbodycontainerdisplay" 
@@ -731,13 +927,57 @@ define([
                                             v-on:answeredmsg="onansweredmsg"
                                             v-on:prevmsg="onprevmsg" 
                                             v-on:nextmsg="onnextmsg"
-                                            v-on:closemodal="closemodal">
+                                            v-on:hideMessageBody="hideMessageBody"
+                                            >
+                                        </messagebody-container>
+                                    </div>
+                                -->
+                                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 border-right" id="tree" style="overflow-y:auto; overflow-x:hidden; margin-bottom:3px; height: auto" >
+                                        <div v-for="error in errorMessages" class="alert">
+                                            {{ error.errordescr }}
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div v-if = "statesearchresult" class = "alert alert-success">
+                                            Ihre Suche hat {{ searchresultmsg }} Treffer erzielt
+                                            <button type="button" class="close" aria-label="Close" v-on:click = "showallposts">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <post-container 
+                                            v-bind:courseid="courseid" 
+                                            v-bind:postlist="post_list" 
+                                            v-bind:markedpost="markedpost" 
+                                            :showloadingicon="hideloadingicon"
+                                            :viewportsize = "viewportsize"
+                                            v-on:displaymsg="ondisplaymsg"
+                                            v-on:setSelected="setSelected">
+                                        </post-container>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-md-12 d-none d-sm-inline" id="treeinfo">
+                                        <!-- , {modal: showmodal} :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12']"-->
+                                        <messagebody-container 
+                                            v-bind:courseid="courseid" 
+                                            v-bind:postdata="singlepostdata"
+                                            :identiconstring = "identiconstring"
+                                            :isused ="msgbodycontainerdisplay" 
+                                            :isreading="isreading" 
+                                            :isanswering="isanswering" 
+                                            :iscreatingtopic="iscreatingtopic"
+                                            :viewportsize = "viewportsize"
+                                            :hideloadingicon = "hideloadingiconRMB"
+                                            :statesRMB = "statesRMB"
+                                            v-on:answeredmsg="onansweredmsg"
+                                            v-on:prevmsg="onprevmsg" 
+                                            v-on:nextmsg="onnextmsg"
+                                            v-on:hideMessageBody="hideMessageBody">
                                         </messagebody-container>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <viz-bubble v-bind:treedata="treedata_viz" class="tab-pane fade" id="menu1"></viz-bubble>
+                        <viz-bubble v-bind:treedata="treedata_viz" class="tab-pane fade" id="viewbubbles"></viz-bubble>
                     </div>
                 </div>
             `,

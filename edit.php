@@ -6,7 +6,7 @@ require_once("../../config.php");
 
 $id = required_param('id', PARAM_INT);
 
-if (!$cm = get_coursemodule_from_id('newsmod', $id)) {
+if (!$cm = get_coursemodule_from_id('usenet', $id)) {
     print_error("Course Module ID was incorrect");
 }
 
@@ -16,15 +16,15 @@ if (!$course = $DB->get_record("course", array("id" => $cm->course))) {
 
 $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
-// require_capability('mod/newsmod:addentries', $context);
+// require_capability('mod/usenet:addentries', $context);
 
 
-if (! $journal = $DB->get_record("newsmod", array("id" => $cm->instance))) {
+if (! $journal = $DB->get_record("usenet", array("id" => $cm->instance))) {
     print_error("Course module is incorrect");
 }
 
 //Header
-$PAGE->set_url('/mod/newsmod/edit.php', array('id' => $id));
+$PAGE->set_url('/mod/usenet/edit.php', array('id' => $id));
 $PAGE->navbar->add(get_string('edit'));
 $PAGE->set_title(format_string($journal->name));
 $PAGE->set_heading($course->fullname);

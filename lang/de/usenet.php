@@ -17,7 +17,7 @@
 /**
  * Plugin strings are defined here.
  *
- * @package     mod_newsmod
+ * @package     mod_usenet
  * @category    string
  * @copyright   Rudolf Patzer <rpatzer@gmx.de>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,13 +28,14 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'NewsgroupReader';
 $string['modulename'] = 'NewsgroupReader';
 $string['modulenameplural'] = 'NewsgroupReader';
-$string['newsmodname'] = 'Instanz Name';
-$string['newsmodsettings']= "Einstellungen";
-$string['newsmodfieldset']="Felder";
-$string['modulename_help'] = '<p>Die Aktivität \'Newsmod\' ermöglicht es, den Teilnehmern/innen auf die Newsgroups des jeweiligen Kurses zuzugreifen. </p><p>Anwendungsbeispiele sind u.a.<ul><li>Beiträge lesen</li><li>Beiträge verfassen</li></ul></p>';
+$string['usenetname'] = 'Instanz Name';
+$string['usenetsettings']= "Einstellungen";
+$string['usenetfieldset']="Felder";
+$string['modulename_help'] = '<p>Die Aktivität \'usenet\' ermöglicht es, den Teilnehmern/innen auf die Newsgroups des jeweiligen Kurses zuzugreifen. </p><p>Anwendungsbeispiele sind u.a.<ul><li>Beiträge lesen</li><li>Beiträge verfassen</li></ul></p>';
 $string['pluginadministration'] = 'Newsgroup module administration';
 $string['username'] = 'Loginname Newsserver';
 $string['userpassword'] = 'Loginpassword Newsserver';
 $string['newsgroup'] = 'Addresse der Newsgroup';
+$string['newsgroup_help'] = 'Zum Beispiel <ul><li>misc.test<li></li>feu.cafe<li></li>feu.informatik.kurs.1801</li></ul>';
 $string['email_send'] = 'Newsgroup Scheduled Summary';
 $string['messageprovider:submission'] = 'Benachrichtigen über Neue Beiträge';
