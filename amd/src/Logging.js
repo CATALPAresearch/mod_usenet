@@ -16,7 +16,7 @@ define(['jquery', 'core/ajax'], function($, ajax) {
         this.courseid = courseid;
         this.name = 'log_usenet';
         this.options = utils.mergeObjects({
-            outputType: 0, // -1: no logging, 0: console.log(), 1: server log, 
+            outputType: 1, // -1: no logging, 0: console.log(), 1: server log, 
             prefix: '',
             loggerServiceUrl: null,
             loggerServiceParams: { "data": {} },
@@ -100,7 +100,6 @@ define(['jquery', 'core/ajax'], function($, ajax) {
                     break;
                 case 1:
                     this.sendLog(logEntry);
-                    console.log(logEntry.action, logEntry.value); 
                     break;
                 default:
                     // Do nothing
@@ -125,7 +124,7 @@ define(['jquery', 'core/ajax'], function($, ajax) {
                     //console.log('ok', msg);
                 },
                 fail: function (e) {
-                    //console.error('fail',e);
+                    console.error('fail',e);
                 }
             }]);
         };

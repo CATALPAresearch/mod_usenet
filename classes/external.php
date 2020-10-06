@@ -83,10 +83,10 @@ class mod_usenet_external extends external_api {
         //$r->realuserid=NULL;
         
         $transaction = $DB->start_delegated_transaction();
-        $res = $DB->insert_records("logstore_standard_log", array($r)); // $CFG->prefix .
+        $res = $DB->insert_records("logstore_standard_log", array($r));
         $transaction->allow_commit();
         
-        return array('response'=> json_encode($r));
+        return array('response'=> json_encode($res));
     } 
     public static function log_is_allowed_from_ajax() { return true; }
     

@@ -68,12 +68,9 @@ class mod_usenet_mod_form extends moodleform_mod
         
 
         // Adding the standard "intro" and "introformat" fields.
-        if ($CFG->branch >= 29) {
-            $this->standard_intro_elements();
-        } else {
-            $this->add_intro_editor();
-        }
-
+        
+        $this->standard_intro_elements();
+       
         // Adding the rest of mod_usenet settings, spreading all them into this fieldset
         // ... or adding more fieldsets ('header' elements) if needed for better logic.
         $mform->addElement('static', 'label1', 'usenetsettings', get_string('usenetsettings', 'mod_usenet'));

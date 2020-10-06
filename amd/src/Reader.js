@@ -10,6 +10,7 @@
  * - modularize code 
  * - remove redundancies like axios
  * - remove states 
+ * - param courseid is the instance id 
  */
 
 define([
@@ -33,8 +34,8 @@ define([
     
     */
 
-    var Reader = function (the_logger, courseid, messageid, instanceName) {
-
+        var Reader = function (the_logger, courseid, messageid, instanceName, instance_id) {
+            
         var app = new Vue({
             el: 'usenet-container',
             data: function () {
@@ -64,6 +65,7 @@ define([
                     iscreatingtopic: false,
                     markedpost: -1,
                     courseid: courseid,
+                    instanceid: instance_id,
                     hideloadingicon: true,
                     hideloadingiconRMB: true,       // hideloadingiconReaderMessageBody
                     identiconstring: "",
@@ -113,11 +115,12 @@ define([
                 },
 
                 initiatecontact: function () {
+                    let _this = this;
                     this.hideloadingicon = false;
 
                     this.getgroupinfo().then(function (response) {
                         axios
-                            .get(M.cfg.wwwroot + "/mod/usenet/php/fetchtree.php?id=" + courseid + "&start=" + app.start + "&end=" + app.end)
+                            .get(M.cfg.wwwroot + "/mod/usenet/php/fetchtree.php?id=" + _this.instanceid + "&start=" + app.start + "&end=" + app.end)
                             .then(function (response) {
                                 if (app.check_for_error(response.data)) {
                                     app.errorMessages.push(response.data);
@@ -139,7 +142,7 @@ define([
 
                 getgroupinfo: function () {
                     return axios
-                        .get(M.cfg.wwwroot + "/mod/usenet/php/groupinfo.php?id=" + courseid)
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/groupinfo.php?id=" + this.instanceid)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 app.errorMessages.push(response.data);
@@ -178,7 +181,7 @@ define([
                     this.hideloadingiconRMB = false;
 
                     axios
-                        .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + this.instanceid + "&msgnr=" + messagenum)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 app.errorMessages.push(response.data);
@@ -269,7 +272,7 @@ define([
                     Vue.set(this.post_list, arraypos, modpost);
 
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + this.instanceid + "&msgnr=" + messagenum)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 app.errorMessages.push(response.data);
@@ -316,7 +319,7 @@ define([
 
                     //msgid = parseInt(msgid);
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + courseid + "&msgnr=" + messagenum)
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + this.instanceid + "&msgnr=" + messagenum)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 app.errorMessages.push(response.data);
@@ -645,7 +648,7 @@ define([
                     this.hideloadingicon = false;
                     this.logger('search_submit', { search_term: this.searchstring });
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
-                        .get(M.cfg.wwwroot + "/mod/usenet/php/search.php?id=" + courseid + "&searchparam=" + this.searchstring)
+                        .get(M.cfg.wwwroot + "/mod/usenet/php/search.php?id=" + this.instanceid + "&searchparam=" + this.searchstring)
                         .then(function (response) {
                             if (app.check_for_error(response.data)) {
                                 //app.post_list.push(app.prepare_postdata(response.data));
@@ -901,7 +904,7 @@ define([
                                             </button>
                                         </div>
                                         <post-container 
-                                            v-bind:courseid="courseid" 
+                                            v-bind:courseid="instanceid" 
                                             v-bind:postlist="post_list" 
                                             v-bind:markedpost="markedpost" 
                                             :showloadingicon="hideloadingicon"
@@ -918,7 +921,7 @@ define([
                                         d-inline"
                                         >
                                         <messagebody-container 
-                                            v-bind:courseid="courseid" 
+                                            v-bind:courseid="instanceid" 
                                             v-bind:postdata="singlepostdata"
                                             :identiconstring = "identiconstring"
                                             :isused ="msgbodycontainerdisplay" 

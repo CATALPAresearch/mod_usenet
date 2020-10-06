@@ -26,22 +26,22 @@ define([
             }
         });
 
-        var start = function (courseid, messageid, instanceName) {
+        var start = function (course_id, message_id, instance_name, instance_id) {
 
             require([], function () {
                 var utils = new Utils();
-                var log = new Log(utils, courseid, {
+                var log = new Log(utils, course_id, {
                     context: 'mod_usenet',
                     outputType: 1 // set to 1 in order to store logs to the database
                 });
-                new Reader(log, courseid, messageid, instanceName);
+                new Reader(log, course_id, message_id, instance_name, instance_id);
             });
         };
 
         return {
-            init: function (courseid, messageid, instanceName) {
+            init: function (course_id, message_id, instance_name, instance_id) {
                 try {
-                    start(courseid, messageid, instanceName);
+                    start(course_id, message_id, instance_name, instance_id);
                 } catch (e) {
                     console.error(e);
                 }
