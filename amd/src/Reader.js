@@ -8,14 +8,13 @@
  */
 
 define([
-    'jquery',
     M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
     M.cfg.wwwroot + '/mod/usenet/lib/build/axios.min.js',
     M.cfg.wwwroot + '/mod/usenet/lib/build/identicon.min.js',
     M.cfg.wwwroot + '/mod/usenet/amd/src/ReaderMessageBody.js',
     M.cfg.wwwroot + '/mod/usenet/amd/src/ReaderPostContainer.js',
     M.cfg.wwwroot + '/mod/usenet/amd/src/VizBubble.js',
-], function ($, Vue, axios, Identicon, MessageBodyContainer, PostContainer, BubbleChart) {
+], function (Vue, axios, Identicon, MessageBodyContainer, PostContainer, BubbleChart) {
 
     /**
      * Plot a timeline
@@ -101,15 +100,6 @@ define([
                  */
 
                 this.singlepostdata.header = { name: '', subject: '' };
-
-
-                // log interactions (example)
-                $('.nav-link-h4').click(function () {
-                    _this.log.add('toc_entry_open', { level: 'h4', target: $(this).attr('href') });
-                });
-                $('.nav-link-h3').click(function () {
-                    _this.log.add('toc_entry_open', { level: 'h3', target: $(this).attr('href') });
-                });
 
 
                 window.addEventListener("resize", this.Windowresizehandler);
@@ -233,6 +223,9 @@ define([
 
                             } else {
                                 app.singlepostdata = response.data;
+                                if (app.singlepostdata.header === undefined){
+                                    return;
+                                }
                                 if (app.singlepostdata.header.from && app.singlepostdata.header.name){
                                     app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
                                 }
@@ -327,7 +320,9 @@ define([
 
                             } else {
                                 app.singlepostdata = response.data;
-                                app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                                if (app.singlepostdata.header.from && app.singlepostdata.header.name){
+                                    app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                                }
                             }
                         }).catch(function (error) {
                             console.error(error);
@@ -399,7 +394,7 @@ define([
 
                         this.markedpost = -1;
                         this.post_list = this.post_list_sections[--this.view_section];
-                        this.logger('postlist_previous_click', { postlist_section: this.view_section });
+                        this.logger('messagelist_previous_click', { postlist_section: this.view_section });
                         this.isreading = false;
                         this.isanswering = false;
                         this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
@@ -418,7 +413,7 @@ define([
 
                         this.markedpost = -1;
                         this.post_list = this.post_list_sections[++this.view_section];
-                        this.logger('postlist_next_click', { postlist_section: this.view_section });
+                        this.logger('messagelist_next_click', { postlist_section: this.view_section });
                         this.isreading = false;
                         this.isanswering = false;
                         this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
@@ -687,7 +682,7 @@ define([
                 },
 
                 search: function (options) {
-
+                    let _this = this;
                     this.hideallposts();
 
                     this.statesearchresult = false;
@@ -702,7 +697,7 @@ define([
                                 //app.displayerrormsg = true;
                             } else {
                                 app.displaysearchresult('', response.data);
-                                this.logger('search_result', { search_term: this.searchstring, result_length: response.data.length });
+                                _this.logger('search_result', { search_term: this.searchstring, result_length: response.data.length });
                                 console.log('SEARCH', response.data);
                             }
                         })
@@ -725,8 +720,10 @@ define([
                 showallposts: function () {
                     for (let i = 0; i < this.post_list.length; i++) {
                         let modpost = this.post_list[i];
-                        modpost.hidden = false;
-                        Vue.set(this.post_list, i, modpost);
+                        if(modpost){
+                            modpost.hidden = false;
+                            Vue.set(this.post_list, i, modpost);
+                        }
                     }
                     // todo this cant stay here
                     this.statesearchresult = false;

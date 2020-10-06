@@ -7,10 +7,9 @@
  * @license    GNU GPLv3
  */
 define([
-    'jquery',
     M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
     M.cfg.wwwroot + '/mod/usenet/lib/build/axios.min.js',
-], function ($, Vue, axios) {
+], function (Vue, axios) {
 
     /**
      *  @param content created in buildtree(...) 

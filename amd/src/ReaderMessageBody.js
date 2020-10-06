@@ -7,10 +7,9 @@
  * @license    GNU GPLv3
  */
 define([
-    'jquery',
     M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
     M.cfg.wwwroot + '/mod/usenet/lib/build/axios.min.js'
-], function ($, Vue, axios) {
+], function (Vue, axios) {
 
     return Vue.component('messagebody-container',
         {
@@ -153,9 +152,6 @@ define([
                         this.ismobile = false;
                     }
                 },
-                statesRMB: function () {
-
-                },
                 /**
                  * When user requests a new message to display in textarea of ReaderMessageBody,
                  * then show the loading icon and delete previous content
@@ -198,7 +194,7 @@ define([
                     <!-- Read single message -->
                     <template v-else>
                         <div class="border-bottom ml-3 mb-1 pl-1 pb-1">
-                            <div class="mx-0 mb-3 control-bar" :class="{hidden: postdata.header.is_error}">
+                            <div class="mx-0 mb-3 control-bar"><!-- :class="{hidden: postdata.header.is_error}" -->
                                 <button class="btn btn-sm btn-outline-primary mr-3" :hidden="isanswering" v-on:click="replyMessage" title="Beitrag beantworten">
                                     <i class="fa fa-reply"></i>
                                     Antworten
@@ -215,7 +211,7 @@ define([
                                 </button>
                             </div>
                             <div>
-                                <div>
+                                <div v-if="postdata.header !== undefined">
                                     <div class="d-flex">
                                         <img style="height:40px; width:40px;" :src="this.identiconstring"/>
                                         <span class="mr-auto pt-1" >
