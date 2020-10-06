@@ -589,10 +589,9 @@ define([
                     }
                     var calctime = new Date(postdata_raw.date);
                     var options = {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit'
+                        year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric'
                     };
+                   
                     calctime = new Date(postdata_raw.date).toLocaleDateString('de-DE', options) ? new Date(postdata_raw.date).toLocaleDateString('de-DE', options) : "";
                     var absender = postdata_raw.personal ? postdata_raw.personal : postdata_raw.sender;
                     //var timestamp = '<div class="sender elipse col-xl-3 col-sm-3"><a href="mailto:' + postdata_raw.sender + '?subject=' + postdata_raw.name + '">' + absender + '</a></div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">' + calctime + '</div>';
@@ -822,14 +821,14 @@ define([
                         <div class="mr-auto px-2">
                             <div class="d-flex">
                                 <div>
-                                    <a class="page-link py-1 px-2" :class="{disabled: !statesview_section.CanSelectPrev}" v-on:click="displayPreviousPostlist($event)" 
+                                    <a class="page-link py-1 px-2 my-0" :class="{disabled: !statesview_section.CanSelectPrev}" v-on:click="displayPreviousPostlist($event)" 
                                         href="#" title="Vorherige Seite">
                                         <i class="fa fa-chevron-left"></i>
                                     </a>
                                 </div>
-                                <div class="d-none d-sm-block">
+                                <div class="d-none d-sm-inline m-0 p-0">
                                     <a v-for="(el, index) in post_list_sections"
-                                        class="page-link py-1 px-2"
+                                        class="page-link d-inline py-1 px-2 my-0"
                                         href="#"
                                         v-on:click="selectPostlist(index, $event)"
                                         :class="{'bg-info': view_section == index}"
@@ -838,7 +837,7 @@ define([
                                     </a>
                                 </div>
                                 <div>
-                                    <a class="page-link py-1 px-2" :class="{disabled: !statesview_section.CanSelectNext}" v-on:click="displayNextPostlist($event)" 
+                                    <a class="page-link py-1 px-2 my-0" :class="{disabled: !statesview_section.CanSelectNext}" v-on:click="displayNextPostlist($event)" 
                                         href="#" title="Nächste Seite">
                                         <i class="fa fa-chevron-right"></i>
                                     </a>

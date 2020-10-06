@@ -60,6 +60,15 @@
   #usenet-container h3 {
     font-size: 1.2rem;
   }
+  .card-body {
+    padding: 0.5rem;
+  }
+  .card-body #usenet-container {
+    font-size: 0.9em;
+  }
+  .card-body #tree col-* {
+    padding: 0.5rem;
+  }
 }
 
 /* Medium devices (tablets, 768px and up) The navbar toggle appears at this breakpoint */

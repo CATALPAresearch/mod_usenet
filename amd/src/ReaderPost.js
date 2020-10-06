@@ -43,8 +43,11 @@ define([
             methods:
             {
                 
-                toggleMarkedMessage: function () {
-
+                toggleMarkedMessage: function (event) {
+                    event.preventDefault();
+                    this.content.marked = !this.content.marked;
+                    this.$emit('log', 'message_mark_' + this.content.marked ? 'marked' : 'unmarked', { message_id: this.content.messagenumber, message_author: this.message.personal })
+                    // TODO: Why do we get something from the server here?
                     axios.get([
                             M.cfg.wwwroot +
                             "/mod/usenet/php/statuschange.php?id=" +
@@ -53,18 +56,15 @@ define([
                             this.content.messagenumber
                         ].join())
                         .then();
-
-                    this.content.marked = !this.content.marked;
-
-                    this.$emit('log', 'message_mark_' + this.content.marked ? 'marked' : 'unmarked', { message_id: this.content.messagenumber, message_author: this.message.personal })
                 },
 
-                displayMessage: function (messagenumber, arraypos) {
+                displayMessage: function (messagenumber, arraypos, event) {
                     this.$emit('getmsg', messagenumber, arraypos)
                     this.$emit('log', 'message_list_click', { message_id: messagenumber, message_pos: arraypos })
+                    event.preventDefault();
                 },
-                
-                hideChildren: function () {
+
+                hideChildren: function (event) { 
                     if (this.hiddenChildren == false) {
                         this.hiddenChildren = true;
                         this.$emit('hideChildren', this.content.children);
@@ -74,6 +74,7 @@ define([
                     }
                     this.$emit('setSelected', this.content.messagenumber);
                     this.$emit('log', 'message_children_' + this.hiddenChildren ? 'shown' : 'hidden', { message_id: this.content.messagenumber });
+                    event.preventDefault();
                 },
 
                 // Called by container 'ReaderPostContainer'
@@ -81,6 +82,7 @@ define([
                     this.content.hidden = true;
 
                 },
+                // Called by container 'ReaderPostContainer'
                 showself: function () {
                     this.content.hidden = false;
                 }
@@ -93,9 +95,10 @@ define([
                         <div class="container-fluid px-0">
                             <div class="row px-0 mx-0" :class="{'bg-info': content.isSelected}" >
                                 <div class="px-0 col-1 col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
-                                    <i class="fas fa-sm pt-2 px-3" 
-                                        :class="{'fa-caret-down': content.haschild, 'fa-caret-right': this.hiddenChildren}" 
-                                        v-on:click="hideChildren" 
+                                    <i class="fas fa-sm pt-2 px-sm-3 pr-xs-2 pl-xs-3 p-1" 
+                                        :class="{'fa-chevron-down': content.haschild, 'fa-chevron-right': this.hiddenChildren}" 
+                                        style="cursor:pointer"
+                                        v-on:click="hideChildren($event)" 
                                         title="Diskussion ein- oder ausklappen"
                                         />
                                 </div>
@@ -103,21 +106,21 @@ define([
                                     class="px-0 col-11 col-xs-11 col-sm-11 col-md-11 col-lg-11 col-xl-11" 
                                     style="display:inline-block;"
                                     >
-                                    <div class="row poststyle mb-xs-2" v-on:click="displayMessage(content.messagenumber, content.arraypos)">
+                                    <div class="row poststyle mb-xs-2" v-on:click="displayMessage(content.messagenumber, content.arraypos, $event)">
                                         
-                                        <div class="col-3 order-1 order-sm-1 col-xs-8 col-sm-3 col-md-3 col-lg-3 col-xl-3 text-truncate px-0">
+                                        <div :style="textindent" class="col-3 order-1 order-sm-1 col-xs-7 col-sm-3 col-md-3 col-lg-3 col-xl-3 text-truncate px-0">
                                             <img style="width:20px; height:20px;" :src="this.content.identicon" :title="this.content.personal"/>
                                             {{content.personal}}
                                         </div>
                                     
-                                        <div class="col-6 order-xs-3 order-md-2 col-xs-11 col-sm-6 col-md-11 col-lg-6 col-xl-6 text-truncate px-0" :style="textindent"><!-- style="margin-left:25px;"-->
+                                        <div class="col-6 order-xs-3 order-md-2 col-xs-11 col-sm-6 col-md-11 col-lg-6 col-xl-6 text-truncate px-0"  style="left:4px;">
                                             {{content.subject}}
                                         </div>
 
-                                        <div class="col-3 order-2 order-md-3 col-xs-4 col-sm-3 col-md-3 col-lg-3 col-xl-3 px-0" data-date-format="DD.MM.YYYY">
+                                        <div class="col-3 order-2 order-md-3 col-xs-5 col-sm-3 col-md-3 col-lg-3 col-xl-3 px-0" data-date-format="DD.MM.YYYY">
                                             <span style="font-size:0.9em">{{content.calctime}}</span>
                                             <i class="far fa-star poststyle d-xs-block" :class="{starmarked: content.marked, fas: content.marked }"
-                                        v-on:click="toggleMarkedMessage" title="Favoriten markieren"/>
+                                        v-on:click="toggleMarkedMessage($event)" title="Favoriten markieren"/>
                                         </div>
                                     </div>
                                 </div>

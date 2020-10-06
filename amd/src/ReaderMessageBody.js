@@ -113,15 +113,7 @@ define([
 
                     this.$emit('answeredmsg');
 
-                },
-
-                convertDate: function (date) {
-                    date = date * 1000;
-                    var options = {
-                        year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric'
-                    };
-                    return new Date(date).toLocaleDateString('de-DE', options) ? new Date(date).toLocaleDateString('de-DE', options) : "";
-                },
+                }
             },
 
             watch: {
@@ -201,7 +193,7 @@ define([
                                         <span class="mr-auto pt-1" >
                                             <a :href="'mailto:' + postdata.header.sender">{{postdata.header.personal}}</a>
                                         </span>
-                                        <span class="pt-1">{{ convertDate(postdata.header.timestamp) }}</span>
+                                        <span class="pt-1">{{ postdata.header.calctime }}</span>
                                     </div>
                                     <div class="bold">
                                         {{postdata.header.subject}}
