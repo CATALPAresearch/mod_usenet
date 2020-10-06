@@ -8,7 +8,7 @@ Usenet is a moodle plugin for reading and writing newsgroup messages.
 * [x] migrate to vue.js
 * [x] integrate into production
 * [x] redesign for mobile use
-* [ ] Preparations for production: code review, clean up, hardening, usability tests
+* [x] Preparations for production: code review, clean up, hardening, usability tests
 * [ ] support usage by advanced message visualizations and NLP methods 
 
 ## Installation
@@ -17,7 +17,12 @@ Usenet is a moodle plugin for reading and writing newsgroup messages.
 * Follow the install instruction at moodle
 * change usenet username and password at ´http://<your-moodle-path>/admin/settings.php?section=modsettingusenet´ 
 
-After installation:
+**Caution**
+
+Currently we hardcoded a blocking mechanism which needs to be disabled in `view.php`, line 69 and 87, e.g. by returning `true` at the function `access_control()` on line 87. 
+
+**Setup and configuration**
+
 add connection informations to plugin settings in your moodle
 admin ui. Whenever possible use ip adresses instead of dns-name for performance
 reasons.
@@ -25,12 +30,10 @@ reasons.
 After adding an instance of this plugin to your course enter correct newsgroup
 name.
 
-required moodle 3.29, php-imap
 
 NEWSGROUP SERVER
 
 feunews.fernuni-hagen.de
-
 
 Newsgroups tested with
 1.  misc.test
