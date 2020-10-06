@@ -1,14 +1,13 @@
 /* eslint-disable valid-jsdoc */
 /**
- * Javascript utils for the Moodle videodatabase
  *
- * @module     mod_videodatabase/videodatabase
- * @package    mod_videodatabase
- * @class      Utils
- * @copyright  2018 Niels Seidel, info@social-machinables.com
- * @license    MIT
- * @since      3.1
+ *
+ * @module     mod_usenet
+ * @class      Post Container
+ * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de>
+ * @license    GNU GPLv3
  */
+
 define([
     'jquery',
     'core/ajax',
