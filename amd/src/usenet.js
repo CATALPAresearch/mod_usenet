@@ -1,10 +1,12 @@
 /**
- * @module     mod/usenet
- * @class      usenet
- * @copyright  2020 Niels Seidel <niels.seidel@fernuni-hagen.de>
- * @license    MIT
- * @since      3.1
+ *
+ *
+ * @module     mod_usenet
+ * @class      Post Container
+ * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de>
+ * @license    GNU GPLv3
  */
+
 define([
     M.cfg.wwwroot + '/mod/usenet/amd/src/Reader.js',
     M.cfg.wwwroot + '/mod/usenet/amd/src/Utils.js',
@@ -30,7 +32,7 @@ define([
                 var utils = new Utils();
                 var log = new Log(utils, courseid, {
                     context: 'mod_usenet',
-                    outputType: 0 // set to 1 in order to store logs to the database
+                    outputType: 1 // set to 1 in order to store logs to the database
                 });
                 new Reader(log, courseid, messageid, instanceName);
             });

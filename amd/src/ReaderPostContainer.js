@@ -1,8 +1,16 @@
+/**
+ * 
+ *
+ * @module     mod_usenet
+ * @class      Post Container
+ * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de> AND Konstantin Friedrich
+ * @license    GNU GPLv3
+ */
+
 define([
-    'jquery',
     M.cfg.wwwroot + '/mod/usenet/amd/src/ReaderPost.js',
     M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js'
-], function ($, Post, Vue) {
+], function (Post, Vue) {
 
 
     return Vue.component('post-container',
@@ -12,9 +20,8 @@ define([
                 'markedpost',
                 'courseid',
                 'showloadingicon',
-                'viewportsize'
+                'log'
             ],
-
 
             data: function () {
                 return {
@@ -61,13 +68,13 @@ define([
 
             },
 
-            methods:
-            {
-
+            methods: {
+                logger:function(action, value){
+                    this.$emit('log', action, value);
+                },
+                
                 // Function ongetmsg called by event getmsg, getmsg-event is emitted by 'post' (child component)
-
                 ongetmsg: function (msgid, arraypos) {
-                    //console.log('try to get msg ', msgid, arraypos);
 
                     this.$emit('displaymsg', msgid);
 
@@ -107,41 +114,38 @@ define([
                     //document.body.scrollTop = 200;
                     //document.documentElement.scrollTop = 200;
 
-                }, // END event method ongetmsg
+                }, 
 
                 // This function calls function of child members
-                onhidefamily: function (family) {
-
+                hideChildren: function (children) {
                     var memberid = [];
 
-                    this.traversefamily(family, memberid);
+                    this.traverseChildren(children, memberid);
 
                     for (var i = 0; i < memberid.length; i++) {
-
                         let inte = parseInt(memberid[i]);
                         this.$refs[inte][0].hideself();
                     }
                 },
 
-                onshowfamily: function (family) {
+                showChildren: function (children) {
                     var memberid = [];
 
-                    this.traversefamily(family, memberid);
+                    this.traverseChildren(children, memberid);
 
                     for (var i = 0; i < memberid.length; i++) {
-
                         let inte = parseInt(memberid[i]);
                         this.$refs[inte][0].showself();
                     }
                 },
 
-                traversefamily: function (family, memberid) {
+                traverseChildren: function (children, memberid) {
 
-                    for (var i = 0; i < family.length; i++) {
-                        if (Array.isArray(family[i])) {
-                            this.traversefamily(family[i], memberid);
+                    for (var i = 0; i < children.length; i++) {
+                        if (Array.isArray(children[i])) {
+                            this.traverseChildren(children[i], memberid);
                         } else {
-                            memberid.push(family[i]);
+                            memberid.push(children[i]);
                         }
                     }
 
@@ -162,21 +166,24 @@ define([
                 },
             }, // END component methods
 
-            template: `<div class="post-container">
-                                <div :class="{'hidden': showloadingicon, 'text-center': true, 'my-2': true}" style="opacity:0.5;">
-                                    <i class="fas fa-circle-o-notch fa-spin fa-3x"/>
-                                </div>
-                                <post v-for='singlepost in postlist' 
-                                    v-bind:content='singlepost' 
-                                    v-bind:key = 'singlepost.messagenumber'
-                                    :viewportsize = 'viewportsize'
-                                    :ref='singlepost.messagenumber'
-                                    v-on:getmsg='ongetmsg'
-                                    v-on:hidefamily='onhidefamily'
-                                    v-on:showfamily='onshowfamily'
-                                    v-on:setSelected='setSelectedUP'
-                                    v-bind:courseid = 'courseid'>
-                                </post>
-                            </div>`
-        }); // END component post-container
+            template: `
+                <div class="post-container">
+                    <div :class="{'hidden': showloadingicon, 'text-center': true, 'my-2': true}" style="opacity:0.5;">
+                        <i class="fas fa-circle-o-notch fa-spin fa-3x"/>
+                    </div>
+                    <post v-for='singlepost in postlist' 
+                        v-bind:content='singlepost' 
+                        v-bind:key = 'singlepost.messagenumber'
+                        v-bind:courseid = 'courseid'
+                        :ref='singlepost.messagenumber'
+                        v-on:getmsg='ongetmsg'
+                        v-on:hideChildren='hideChildren'
+                        v-on:showChildren='showChildren'
+                        v-on:setSelected='setSelectedUP'
+                        @log='logger'
+                        >
+                    </post>
+                </div>
+                `
+        }); 
 });

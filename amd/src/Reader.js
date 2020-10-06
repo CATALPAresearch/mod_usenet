@@ -1,22 +1,25 @@
 /**
- * Newsgroup reader
- * @module     mod/usenet/Reader
- * @class      usenet
- * @copyright  2020 Niels Seidel <niels.seidel@fernuni-hagen.de>
- * @license    MIT
- * @since      3.1
+ *
+ *
+ * @module     mod_usenet
+ * @class      Post Container
+ * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de>, Konstantin Friedrich
+ * @license    GNU GPLv3
+ * 
+ * TODO:
+ * - modularize code 
+ * - remove redundancies like axios
+ * - remove states 
  */
 
-
 define([
-    'jquery',
     M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
     M.cfg.wwwroot + '/mod/usenet/lib/build/axios.min.js',
     M.cfg.wwwroot + '/mod/usenet/lib/build/identicon.min.js',
     M.cfg.wwwroot + '/mod/usenet/amd/src/ReaderMessageBody.js',
     M.cfg.wwwroot + '/mod/usenet/amd/src/ReaderPostContainer.js',
     M.cfg.wwwroot + '/mod/usenet/amd/src/VizBubble.js',
-], function ($, Vue, axios, Identicon, MessageBodyContainer, PostContainer, BubbleChart) {
+], function (Vue, axios, Identicon, MessageBodyContainer, PostContainer, BubbleChart) {
 
     /**
      * Plot a timeline
@@ -30,7 +33,7 @@ define([
     
     */
 
-    var Reader = function (Log, courseid, messageid, instanceName) {
+    var Reader = function (the_logger, courseid, messageid, instanceName) {
 
         var app = new Vue({
             el: 'usenet-container',
@@ -64,7 +67,6 @@ define([
                     hideloadingicon: true,
                     hideloadingiconRMB: true,       // hideloadingiconReaderMessageBody
                     identiconstring: "",
-                    viewportsize: 'none',
                     showmodal: false,
                     displayerrormsg: false,
                     newsgroup_name: '',
@@ -94,69 +96,20 @@ define([
 
             created: function () {
                 this.instanceName = instanceName;
-                /**
-                 * Initialisation of variables with empty values
-                 * to prevent "undefined variable" error messages
-                 * 
-                 */
-
                 this.singlepostdata.header = { name: '', subject: '' };
-
-
-                Log.add('hello_world', { level: 'fun', target: 'vue is in place' });
-
-                // log interactions (example)
-                $('.nav-link-h4').click(function () {
-                    Log.add('toc_entry_open', { level: 'h4', target: $(this).attr('href') });
-                });
-                $('.nav-link-h3').click(function () {
-                    Log.add('toc_entry_open', { level: 'h3', target: $(this).attr('href') });
-                });
-
-
-                window.addEventListener("resize", this.Windowresizehandler);
-
-
-                if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
-                    this.viewportsize = 'mobile';
-                }
-                else {
-                    this.viewportsize = 'other';
-                }
-
             },
 
-            destroyed() {
-                window.removeEventListener("resize", this.Windowresizehandler);
-            },
-
-
+        
             mounted: function () {
-
-
                 this.initiatecontact();
-
             },
 
-            computed: {
-
-            },
             methods: {
+                logger(action, value) {
+                    the_logger.add(action, value)
+                },
                 hideMessageBody: function () {
                     this.showMessageBody = false;
-                },
-                Windowresizehandler: function () {
-                    if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
-                        this.viewportsize = 'mobile';
-                        if (this.msgbodycontainerdisplay == '') {       // msgbodycontainer is used (its set to 'hide' if not used)
-                            this.showmodal = true;
-                        }
-
-                    }
-                    else {
-                        this.viewportsize = 'other';
-                        this.showmodal = false;
-                    }
                 },
 
                 initiatecontact: function () {
@@ -233,6 +186,13 @@ define([
                             } else {
                                 response.data.header = app.prepare_postdata(response.data.header);
                                 app.singlepostdata = response.data;
+                                if (app.singlepostdata.header === undefined){
+                                    return;
+                                }
+                                if (app.singlepostdata.header.from && app.singlepostdata.header.name){
+                                    app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                                }
+                                
                             }
                         }).catch(function (error) {
                             console.error(error);
@@ -248,17 +208,10 @@ define([
 
                     let post = this.findinarr(messagenum, this.post_list);
 
-
                     let arraypos = this.post_list.indexOf(post);
                     this.markedpost = arraypos;
 
-                    if (this.viewportsize == 'mobile') {
-                        this.showmodal = true;
-                    }
-
                     this.stateupdateRMB();
-
-
                 },
 
                 setSelected: function (messagenumber) {
@@ -323,7 +276,9 @@ define([
 
                             } else {
                                 app.singlepostdata = response.data;
-                                response.data.header = app.prepare_postdata(response.data.header);
+                                if (app.singlepostdata.header.from && app.singlepostdata.header.name){
+                                    app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                                }
                             }
                         }).catch(function (error) {
                             console.error(error);
@@ -386,7 +341,7 @@ define([
 
                 },
 
-                PLprev: function () {
+                displayPreviousPostlist: function (event) {
                     if (this.view_section > 0) {
                         if (this.markedpost != -1) {
                             let modpost = this.post_list[this.markedpost];
@@ -395,16 +350,17 @@ define([
 
                         this.markedpost = -1;
                         this.post_list = this.post_list_sections[--this.view_section];
+                        this.logger('messagelist_previous_click', { postlist_section: this.view_section });
                         this.isreading = false;
                         this.isanswering = false;
                         this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
                         this.arraypos = 0;
                         this.stateupdateview_selection();
                     }
-
+                    event.preventDefault();
                 },
 
-                PLnext: function () {
+                displayNextPostlist: function (event) {
                     if (this.view_section < this.post_list_sections.length - 1) {
                         if (this.markedpost != -1) {
                             let modpost = this.post_list[this.markedpost];
@@ -413,16 +369,17 @@ define([
 
                         this.markedpost = -1;
                         this.post_list = this.post_list_sections[++this.view_section];
+                        this.logger('messagelist_next_click', { postlist_section: this.view_section });
                         this.isreading = false;
                         this.isanswering = false;
                         this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
                         this.arraypos = 0;
                         this.stateupdateview_selection();
                     }
-
+                    event.preventDefault();
                 },
 
-                PLselect: function (page) {
+                selectPostlist: function (page, event) {
                     if (this.markedpost != -1) {
                         let modpost = this.post_list[this.markedpost];
                         modpost.isSelected = false;
@@ -430,12 +387,14 @@ define([
 
                     this.markedpost = -1;
                     this.post_list = this.post_list_sections[page];
+                    this.logger('postlist_seclect_click', { postlist_section: page });
                     this.view_section = page;
                     this.isreading = false;
                     this.isanswering = false;
                     this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
                     this.arraypos = 0;
                     this.stateupdateview_selection();
+                    event.preventDefault();
                 },
 
                 stateupdateview_selection: function () {
@@ -637,9 +596,9 @@ define([
                     calctime = new Date(postdata_raw.date).toLocaleDateString('de-DE', options) ? new Date(postdata_raw.date).toLocaleDateString('de-DE', options) : "";
                     var absender = postdata_raw.personal ? postdata_raw.personal : postdata_raw.sender;
                     //var timestamp = '<div class="sender elipse col-xl-3 col-sm-3"><a href="mailto:' + postdata_raw.sender + '?subject=' + postdata_raw.name + '">' + absender + '</a></div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">' + calctime + '</div>';
-                    var family;
+                    let children;
                     if (postdata_raw.children) {
-                        family = this.getfamily(postdata_raw);
+                        children = this.getChildren(postdata_raw);
                     }
 
                     var content = {
@@ -647,13 +606,13 @@ define([
                         picturestatus: postdata_raw.picturestatus, personal: postdata_raw.personal, sender: postdata_raw.sender,
                         user_id: postdata_raw.user_id, margin: margin, sequence: this.sequence++, messageid: postdata_raw.messageid, messagenumber: postdata_raw.number,
                         date: postdata_raw.date, subject: postdata_raw.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
-                        isSelected: false, hidden: false, family: family, identicon: identiconstring, timestamp: postdata_raw.timestamp
+                        isSelected: false, hidden: false, children: children, identicon: identiconstring
                     };
 
                     return content;
                 },
 
-                getfamily: function (rootnode) {
+                getChildren: function (rootnode) {
                     var children = [];
 
                     if (rootnode.children) {
@@ -662,7 +621,7 @@ define([
                         for (let i = 0; i < childrenamount; i++) {
                             children.push(rootnode.children[i].number);
                             if (rootnode.children[i].children) {
-                                children.push(app.getfamily(rootnode.children[i]));
+                                children.push(app.getChildren(rootnode.children[i]));
                             }
                         }
                     }
@@ -675,16 +634,17 @@ define([
                     this.iscreatingtopic = true;
                     this.isreading = false;
                     this.isanswering = false;
+                    this.logger('new_message_click', {});
                     // not working: this.$nextTick(() => this.$refs.newMessageSubject.focus())
                 },
 
                 search: function (options) {
-
+                    let _this = this;
                     this.hideallposts();
 
                     this.statesearchresult = false;
                     this.hideloadingicon = false;
-
+                    this.logger('search_submit', { search_term: this.searchstring });
                     axios   // Returned data is already js object (axios automaticly converts json to js obj)
                         .get(M.cfg.wwwroot + "/mod/usenet/php/search.php?id=" + courseid + "&searchparam=" + this.searchstring)
                         .then(function (response) {
@@ -694,6 +654,8 @@ define([
                                 //app.displayerrormsg = true;
                             } else {
                                 app.displaysearchresult('', response.data);
+                                _this.logger('search_result', { search_term: _this.searchstring, result_length: response.data.length, results: response.data.map(function(d){ return d.messagenum; }) });
+                                console.log('SEARCH', response.data);
                             }
                         })
                         .catch(error => (
@@ -715,11 +677,18 @@ define([
                 showallposts: function () {
                     for (let i = 0; i < this.post_list.length; i++) {
                         let modpost = this.post_list[i];
-                        modpost.hidden = false;
-                        Vue.set(this.post_list, i, modpost);
+                        if(modpost){
+                            modpost.hidden = false;
+                            Vue.set(this.post_list, i, modpost);
+                        }
                     }
                     // todo this cant stay here
                     this.statesearchresult = false;
+                },
+
+                hideSearchResults: function(){
+                    this.showallposts();
+                    this.logger('search_results_close', {});
                 },
 
                 displaysearchresult: function (options, searchresult) {
@@ -760,7 +729,7 @@ define([
                 },
                 // TODO: make sure all elements are reset, also look at onansweredmsg
                 refresh: function () {
-
+                    this.logger('refresh_messages_click', {});
                     this.hideloadingicon = false;
                     this.statesearchresult = false;
 
@@ -774,10 +743,7 @@ define([
                     this.post_list_sections.splice(0);
                     this.threadlist.splice(0);
 
-                    if (this.viewportsize == 'mobile') {
-                        this.showmodal = false;
-                    }
-
+                    
                     this.initiatecontact();
                 },
 
@@ -837,49 +803,48 @@ define([
                     app.errorMessages.push();
                 }
 
+            },
 
-
-
-
-            }, // END app methods
             template: `
                 <div id="usenet-container">
                     <h3 class="mb-4"><img style="width:30px; height:30px;" src="pix/icon.svg"> {{ instanceName }}</h3>
                     <div class="d-flex align-items-center">
-                            <button class="btn btn-primary btn-sm" :disabled="iscreatingtopic" v-on:click="newTopic" title="Eine neue Nachricht erstellen">
-                                <i class="fa fa-pen"></i>
-                                Neue Nachricht
-                            </button>
+                        <button class="btn btn-primary btn-sm" :disabled="iscreatingtopic" v-on:click="newTopic" title="Eine neue Nachricht erstellen">
+                            <i class="fa fa-pen"></i>
+                            <span class="d-none d-sm-inline">Neue Nachricht</span>
+                        </button>
 
-                            <button class="btn btn-light btn-sm" v-on:click="refresh" title="Neue Nachrichten abholen">
-                                    <i class="fa fa-sync"></i>
-                                    <span class="d-none d-md-inline">aktualisieren</span>
-                            </button>
+                        <button class="btn btn-light btn-sm" v-on:click="refresh" title="Neue Nachrichten abholen">
+                            <i class="fa fa-sync"></i>
+                            <span class="d-none d-md-inline">aktualisieren</span>
+                        </button>
 
-                            <div class="mr-auto px-2">
-                                <div class="d-flex">
-                                    <div>
-                                        <a class="page-link" :class="{disabled: !statesview_section.CanSelectPrev}" v-on:click="PLprev" 
-                                            href="#" title="Vorherige Seite">
-                                            <i class="fa fa-chevron-left"></i>
-                                        </a>
-                                    </div>
+                        <div class="mr-auto px-2">
+                            <div class="d-flex">
+                                <div>
+                                    <a class="page-link py-1 px-2" :class="{disabled: !statesview_section.CanSelectPrev}" v-on:click="displayPreviousPostlist($event)" 
+                                        href="#" title="Vorherige Seite">
+                                        <i class="fa fa-chevron-left"></i>
+                                    </a>
+                                </div>
+                                <div class="d-none d-sm-block">
                                     <a v-for="(el, index) in post_list_sections"
-                                        class="page-link"
+                                        class="page-link py-1 px-2"
                                         href="#"
-                                        v-on:click="PLselect(index)"
+                                        v-on:click="selectPostlist(index, $event)"
                                         :class="{'bg-info': view_section == index}"
                                         >
                                         {{index+1}}
                                     </a>
-                                    <div>
-                                        <a class="page-link" :class="{disabled: !statesview_section.CanSelectNext}" v-on:click="PLnext" 
-                                            href="#" title="Nächste Seite">
-                                            <i class="fa fa-chevron-right"></i>
-                                        </a>
-                                    </div>
+                                </div>
+                                <div>
+                                    <a class="page-link py-1 px-2" :class="{disabled: !statesview_section.CanSelectNext}" v-on:click="displayNextPostlist($event)" 
+                                        href="#" title="Nächste Seite">
+                                        <i class="fa fa-chevron-right"></i>
+                                    </a>
                                 </div>
                             </div>
+                        </div>
 
                         <div class="search d-flex">
                             <input 
@@ -887,7 +852,7 @@ define([
                                 v-model="searchstring" 
                                 placeholder="Suchen..." 
                                 v-on:keyup.enter="search"
-                                :style="[ viewportsize==='mobile' ? {width:70+'%'} : {width:150+'px'} ]"
+                                style="width:90px"
                                 >
 
                             <button class="btn btn-light btn-sm" type="submit" v-on:click="search" title="In allen Nachrichten suchen">
@@ -896,18 +861,21 @@ define([
                         </div>
                         
                     </div>
+
+                    <!-- The tabs should shown if alternative visualization are available. -->
                     <ul class="nav nav-tabs mt-3">
-                        <li class="nav-item pt-0">
-                            <a class="nav-link  pt-0 pb-0 active" data-toggle="pill" href="#viewlist">
+                        <li hidden class="nav-item pt-0">
+                            <a class="nav-link  pt-0 pb-0 active" v-on:click="logger('list_view_select',{})" data-toggle="pill" href="#viewlist">
                                 <i class="fa fa-list"></i>
                             </a>
                         </li>
-                        <li class="nav-item  pt-0">
-                            <a class="nav-link pt-0  pb-0" data-toggle="pill" href="#viewbubbles">
+                        <li hidden class="nav-item  pt-0">
+                            <a class="nav-link pt-0  pb-0"  v-on:click="logger('bubble_view_select',{})" data-toggle="pill" href="#viewbubbles">
                                 <i class="fa fa-spinner"></i>
                             </a>
                         </li>
                     </ul>
+
                     <div class="tab-content">
                         <div class="container-fluid px-2 border-left tab-pane active" id="viewlist">
                             <div class="pt-4 pl-0">
@@ -922,26 +890,26 @@ define([
                                             :isreading="isreading" 
                                             :isanswering="isanswering" 
                                             :iscreatingtopic="iscreatingtopic"
-                                            :viewportsize = "viewportsize"
                                             :hideloadingicon = "hideloadingiconRMB"
                                             v-on:answeredmsg="onansweredmsg"
                                             v-on:prevmsg="onprevmsg" 
                                             v-on:nextmsg="onnextmsg"
                                             v-on:hideMessageBody="hideMessageBody"
+                                            @log="logger"
                                             >
                                         </messagebody-container>
                                     </div>
                                 -->
                                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 border-right" id="tree" style="overflow-y:auto; overflow-x:hidden; margin-bottom:3px; height: auto" >
-                                        <div v-for="error in errorMessages" class="alert">
+                                        <div v-for="error in errorMessages" class="alert alert-danger">
                                             {{ error.errordescr }}
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <button type="button" class="close" v-on:click="logger('error_alert_close', { error_message: error.errordescr })" data-dismiss="alert" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div v-if = "statesearchresult" class = "alert alert-success">
                                             Ihre Suche hat {{ searchresultmsg }} Treffer erzielt
-                                            <button type="button" class="close" aria-label="Close" v-on:click = "showallposts">
+                                            <button type="button" class="close" aria-label="Close" v-on:click="hideSearchResults()">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
@@ -950,9 +918,10 @@ define([
                                             v-bind:postlist="post_list" 
                                             v-bind:markedpost="markedpost" 
                                             :showloadingicon="hideloadingicon"
-                                            :viewportsize = "viewportsize"
                                             v-on:displaymsg="ondisplaymsg"
-                                            v-on:setSelected="setSelected">
+                                            v-on:setSelected="setSelected"
+                                            @log="logger"
+                                            >
                                         </post-container>
                                     </div>
                                     <div class="col-xl-6 col-lg-6 col-md-12 d-none d-sm-inline" id="treeinfo">
@@ -965,19 +934,25 @@ define([
                                             :isreading="isreading" 
                                             :isanswering="isanswering" 
                                             :iscreatingtopic="iscreatingtopic"
-                                            :viewportsize = "viewportsize"
                                             :hideloadingicon = "hideloadingiconRMB"
                                             :statesRMB = "statesRMB"
                                             v-on:answeredmsg="onansweredmsg"
                                             v-on:prevmsg="onprevmsg" 
                                             v-on:nextmsg="onnextmsg"
-                                            v-on:hideMessageBody="hideMessageBody">
+                                            v-on:hideMessageBody="hideMessageBody"
+                                            @log="logger"
+                                            >
                                         </messagebody-container>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <viz-bubble v-bind:treedata="treedata_viz" class="tab-pane fade" id="viewbubbles"></viz-bubble>
+                        <viz-bubble 
+                            v-bind:treedata="treedata_viz" 
+                            class="tab-pane fade" 
+                            id="viewbubbles"
+                            @log="logger"
+                            ></viz-bubble>
                     </div>
                 </div>
             `,

@@ -25,9 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'NewsgroupReader';
-$string['modulename'] = 'NewsgroupReader';
-$string['modulenameplural'] = 'NewsgroupReader';
+$string['pluginname'] = 'Usenet';
+$string['modulename'] = 'Usenet Reader';
+$string['modulenameplural'] = 'Usenet Readers';
 $string['usenetname'] = 'Instanz Name';
 $string['usenetsettings']= "Einstellungen";
 $string['usenetfieldset']="Felder";

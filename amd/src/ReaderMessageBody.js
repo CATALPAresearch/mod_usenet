@@ -1,8 +1,15 @@
+/**
+ * 
+ *
+ * @module     mod_usenet
+ * @class      Message body
+ * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de> AND Konstantin Friedrich
+ * @license    GNU GPLv3
+ */
 define([
-    'jquery',
     M.cfg.wwwroot + '/mod/usenet/lib/build/vue.min.js',
     M.cfg.wwwroot + '/mod/usenet/lib/build/axios.min.js'
-], function ($, Vue, axios) {
+], function (Vue, axios) {
 
     return Vue.component('messagebody-container',
         {
@@ -13,10 +20,10 @@ define([
                 'isanswering',
                 'iscreatingtopic',
                 'courseid',
-                'identiconstring', 
-                'viewportsize', 
+                'identiconstring',
                 'hideloadingicon',
-                'statesRMB'
+                'statesRMB',
+                'log'
             ],
 
             data: function () {
@@ -24,25 +31,18 @@ define([
                     textareacontent: '',
                     value: {},
                     usrinput_subject: '',
-                    textarea_usrinput: '',
-                    ismobile: false,
+                    textarea_usrinput: ''
                 };
             },
 
-            created: function () {
-                if (this.viewportsize == 'mobile') {
-                    this.ismobile = true;
-                }
-                else {
-                    this.ismobile = false;
-                }
-            },
-
             methods: {
+                logger: function (action, value) {
+                    this.$emit('log', action, value);
+                },
 
-                onanswerbuttonclick: function () {
+                replyMessage: function () {
 
-                    this.isreading = false; // smell
+                    this.isreading = false; // TODO: smell
                     this.isanswering = true;
 
                     // previous post is included in a reply
@@ -58,26 +58,30 @@ define([
 
                 },
 
-                prevmsg: function () {   
+                previousMessage: function () {   // Number=messageid
                     this.$emit('prevmsg', this.postdata.header !== undefined ? this.postdata.header.messagenumber : 0);
                 },
 
-                nextmsg: function () {
+                nextMessage: function () {
                     this.$emit('nextmsg', this.postdata.header !== undefined ? this.postdata.header.messagenumber : 0);
                 },
 
                 hideParentMessageBody: function () {
                     this.$emit('hideMessageBody');
+                    this.$emit('log', 'message_body_panel_close', {})
                 },
 
                 submitNewMessage: function () {
+                    this.$emit('log', 'message_body_panel_submit_new', {});
                     const params = new URLSearchParams();
                     params.append('userInput', this.textarea_usrinput);
                     params.append('subject', this.usrinput_subject);
 
                     axios   //returned data is already js object (axios automaticly converts json to js obj)
-                        .post(M.cfg.wwwroot + "/mod/usenet/php/posttest.php?id=" + this.courseid + "&msgnr=new",
-                            params)
+                        .post(
+                            M.cfg.wwwroot + "/mod/usenet/php/posttest.php?id=" + this.courseid + "&msgnr=new",
+                            params
+                            )
                         .then(response => (this.value = response));
 
                     this.$emit('answeredmsg');
@@ -94,6 +98,7 @@ define([
                     // thats why the classic approach of urlsearchparams() is needed 
                     const params = new URLSearchParams();
                     params.append('userInput', this.textarea_usrinput);
+                    
                     if (this.postdata.header === undefined) {
                         this.postdata.header = { subject: '', references: '', id: -1 };
                     }
@@ -129,17 +134,6 @@ define([
                     if (this.iscreatingtopic) {
                         this.textarea_usrinput = '';
                     }
-
-                },
-                viewportsize: function () {
-                    if (this.viewportsize == 'mobile') {
-                        this.ismobile = true;
-                    }
-                    else {
-                        this.ismobile = false;
-                    }
-                },
-                statesRMB: function () {
 
                 },
                 /**
@@ -184,24 +178,24 @@ define([
                     <!-- Read single message -->
                     <template v-else>
                         <div class="border-bottom ml-3 mb-1 pl-1 pb-1">
-                            <div class="mx-0 mb-3 control-bar" :class="{hidden: postdata.header.is_error}">
-                                <button class="btn btn-sm btn-outline-primary mr-3" :hidden="isanswering" v-on:click="onanswerbuttonclick" title="Beitrag beantworten">
+                            <div class="mx-0 mb-3 control-bar"><!-- :class="{hidden: postdata.header.is_error}" -->
+                                <button class="btn btn-sm btn-outline-primary mr-3" :hidden="isanswering" v-on:click="replyMessage" title="Beitrag beantworten">
                                     <i class="fa fa-reply"></i>
                                     Antworten
                                 </button>
-                                <button class="btn btn-sm btn-light mr-0" :disabled = "!statesRMB.CanSelectPrev" v-on:click="prevmsg" title="Die vorherige Nachricht anzeigen">
+                                <button class="btn btn-sm btn-light mr-0" :disabled = "!statesRMB.CanSelectPrev" v-on:click="previousMessage" title="Die vorherige Nachricht anzeigen">
                                     <i class="fa fa-chevron-left"></i>
                                 </button>
                                 <span class="mx-0">Nachricht</span>
-                                <button class="btn btn-sm btn-light ml-0" :disabled = "!statesRMB.CanSelectNext" v-on:click="nextmsg" title="Die nächste Nachricht anzeigen">
+                                <button class="btn btn-sm btn-light ml-0" :disabled = "!statesRMB.CanSelectNext" v-on:click="nextMessage" title="Die nächste Nachricht anzeigen">
                                     <i class="fa fa-chevron-right"></i>    
                                 </button>
                                 <button type="button" class="close ml-auto align-self-center d-block d-sm-none" aria-label="Close" v-on:click="hideParentMessageBody">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div class="">
-                                <div>
+                            <div>
+                                <div v-if="postdata.header !== undefined">
                                     <div class="d-flex">
                                         <img style="height:40px; width:40px;" :src="postdata.header.identicon"/>
                                         <span class="mr-auto pt-1" >
@@ -238,5 +232,5 @@ define([
                     </template>                        
                 </div>
             `,
-        });     // END component messagebody-container
+        });
 });

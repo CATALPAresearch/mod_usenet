@@ -27,9 +27,12 @@ require_once(__DIR__.'/lib.php');
 
 // Course_module ID, or
 $id = optional_param('id', 0, PARAM_INT);
-$msgnr = optional_param('msgnr', 0, PARAM_INT);
+$msgnr = optional_param('msgnr', 0, PARAM_INT); // TODO: This number does not exist
 // ... module instance id.
 $n  = optional_param('n', 0, PARAM_INT);
+//
+$usenet = $PAGE->activityrecord;
+
 
 if ($id) {
     $cm             = get_coursemodule_from_id('usenet', $id, 0, false, MUST_EXIST);
@@ -46,6 +49,7 @@ if ($id) {
 require_login($course, true, $cm);
 
 $modulecontext = context_module::instance($cm->id);
+$course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
 
 
 $PAGE->set_url('/mod/usenet/view.php', array('id' => $cm->id));
@@ -55,8 +59,39 @@ $PAGE->set_context($modulecontext);
 $PAGE->requires->css( '/mod/usenet/styles.css', true );
 
 echo $OUTPUT->header();
-echo '<usenet-container></usenet-container>';
 
-$PAGE->requires->js_call_amd('mod_usenet/usenet', 'init', array('course'=>$cm->id, 'msgnr'=>$msgnr, 'instanceName'=>$moduleinstance->name));
+
+
+//echo $OUTPUT->box(format_module_intro('usenet', $PAGE, $cm->id), 'generalbox', 'intro');
+
+echo format_module_intro('usenet', $usenet, $cm->id);
+
+if(access_control()){
+    echo '<usenet-container></usenet-container>';
+    $PAGE->requires->js_call_amd('mod_usenet/usenet', 'init', array('course'=>$cm->id, 'msgnr'=>$msgnr, 'instanceName'=>$moduleinstance->name));
+}else{
+    //echo format_module_intro('usenet', $usenet, $cm->id);
+    echo '<div class="alert alert-danger w-75" role="alert">';
+    echo '<h4>Kein Zugang</h4><br/>Wir können Ihnen zu dieser Ressource leider keinen Zugang gewähren, da Sie den Untersuchungen im Rahmen des Forschungsprojekt APLE nicht zugestimmt haben.';
+    $limit = new DateTime("2020-10-31 23:59:59");
+    $now = new DateTime();
+    if($now < $limit){
+        echo '<br/><br/><a href="/course/format/ladtopics/policy.php" target="new" class="btn btn-primary">Nachträglich der Teilnahme am Forschungsprojekt zustimmen</a><a href="/course/view.php?id='.$course->id.'" class="btn btn-link" style="float:right;">Zurück zum Kurs</a>';
+    }
+    echo '</div>';
+}
 
 echo $OUTPUT->footer();
+
+
+function access_control(){
+    global $DB, $USER;
+    $version = 11;// local_niels: 11  aple: 3
+    $transaction = $DB->start_delegated_transaction();
+    $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "status");
+    $transaction->allow_commit();
+    if(isset($res->status) && (int)$res->status == 1){
+        return true;
+    }
+    return false;
+}

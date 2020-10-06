@@ -20,7 +20,7 @@ define(['jquery', 'core/ajax'], function($, ajax) {
             prefix: '',
             loggerServiceUrl: null,
             loggerServiceParams: { "data": {} },
-            context: 'default-context'
+            context: 'mod_usenet'
         }, options);
 
         this.ip = '';
@@ -42,7 +42,7 @@ define(['jquery', 'core/ajax'], function($, ajax) {
                     //protocol: window.location.protocol,
                     //port: window.location.port,
                     host: window.location.host,
-                    pathname: window.location.pathname,
+                    pathname: window.location.href,
                     hash: window.location.hash,
                     tabId: window.name.split('=')[0] === "APLE-MOODLE" ? window.name.split('=')[1] : "unknown"
                 },
@@ -100,6 +100,7 @@ define(['jquery', 'core/ajax'], function($, ajax) {
                     break;
                 case 1:
                     this.sendLog(logEntry);
+                    console.log(logEntry.action, logEntry.value); 
                     break;
                 default:
                     // Do nothing
