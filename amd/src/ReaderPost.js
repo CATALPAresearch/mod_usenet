@@ -61,7 +61,7 @@ define([
                 displayMessage: function (messagenumber, arraypos, event) {
                     this.$emit('getmsg', messagenumber, arraypos)
                     this.$emit('log', 'message_list_click', { message_id: messagenumber, message_pos: arraypos })
-                    event.preventDefault();
+                    //event.preventDefault();
                 },
 
                 hideChildren: function (event) { 
@@ -95,7 +95,7 @@ define([
                         <div class="container-fluid px-0">
                             <div class="row px-0 mx-0" :class="{'bg-info': content.isSelected}" >
                                 <div class="px-0 col-1 col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
-                                    <i class="fas fa-sm pt-2 px-sm-3 pr-xs-2 pl-xs-3 p-1" 
+                                    <i class="fas fa-sm pt-2 px-sm-3 pr-xs-2 pl-xs-3 pl-md-2 p-1" 
                                         :class="{'fa-chevron-down': content.haschild, 'fa-chevron-right': this.hiddenChildren}" 
                                         style="cursor:pointer"
                                         v-on:click="hideChildren($event)" 

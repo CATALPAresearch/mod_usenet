@@ -879,34 +879,19 @@ define([
                         <div class="container-fluid px-2 border-left tab-pane active" id="viewlist">
                             <div class="pt-4 pl-0">
                                 <div class="row" >
-                                <!--
-                                    <div v-if="showMessageBody" class="d-block d-sm-none">
-                                        <messagebody-container 
-                                            v-bind:courseid="courseid"
-                                            v-bind:postdata="singlepostdata"
-                                            :identiconstring = "identiconstring"
-                                            :isused ="msgbodycontainerdisplay" 
-                                            :isreading="isreading" 
-                                            :isanswering="isanswering" 
-                                            :iscreatingtopic="iscreatingtopic"
-                                            :hideloadingicon = "hideloadingiconRMB"
-                                            v-on:answeredmsg="onansweredmsg"
-                                            v-on:prevmsg="onprevmsg" 
-                                            v-on:nextmsg="onnextmsg"
-                                            v-on:hideMessageBody="hideMessageBody"
-                                            @log="logger"
-                                            >
-                                        </messagebody-container>
-                                    </div>
-                                -->
-                                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 border-right" id="tree" style="overflow-y:auto; overflow-x:hidden; margin-bottom:3px; height: auto" >
+                                    <div 
+                                        id="tree" 
+                                        class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" 
+                                        class="order-2 order-xs-2 order-sm-2 order-md-2 order-lg-1 order-xl-1"
+                                        class="border-right"
+                                        style="overflow-y:auto; overflow-x:hidden; margin-bottom:3px; height: auto" >
                                         <div v-for="error in errorMessages" class="alert alert-danger">
                                             {{ error.errordescr }}
                                             <button type="button" class="close" v-on:click="logger('error_alert_close', { error_message: error.errordescr })" data-dismiss="alert" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
-                                        <div v-if = "statesearchresult" class = "alert alert-success">
+                                        <div v-if="statesearchresult" class="alert alert-success">
                                             Ihre Suche hat {{ searchresultmsg }} Treffer erzielt
                                             <button type="button" class="close" aria-label="Close" v-on:click="hideSearchResults()">
                                                 <span aria-hidden="true">&times;</span>
@@ -923,8 +908,11 @@ define([
                                             >
                                         </post-container>
                                     </div>
-                                    <div class="col-xl-6 col-lg-6 col-md-12 d-none d-sm-inline" id="treeinfo">
-                                        <!-- , {modal: showmodal} :class="['col-xl-6', 'col-lg-6', 'col-md-12', 'col-sm-12', 'col-12']"-->
+                                    <div v-if="showMessageBody" 
+                                        id="treeinfo"    
+                                        class="col-xl-6 col-lg-6 col-md-12 d-inline" 
+                                        class="order-1 order-xs-1 order-sm-1 order-md-1 order-lg-2 order-xl-2"
+                                        >
                                         <messagebody-container 
                                             v-bind:courseid="courseid" 
                                             v-bind:postdata="singlepostdata"
@@ -939,7 +927,7 @@ define([
                                             v-on:prevmsg="onprevmsg" 
                                             v-on:nextmsg="onnextmsg"
                                             v-on:hideMessageBody="hideMessageBody"
-                                            @log="logger"
+                                            v-on:log="logger"
                                             >
                                         </messagebody-container>
                                     </div>

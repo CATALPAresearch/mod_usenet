@@ -140,8 +140,7 @@ define([
             },
 
             template: `
-                <div :class="{'messagebody-container': true}" :style="{display: isused}">
-                   
+                <div> <!-- :class="{'messagebody-container': true}" :style="{display: isused}"-->
                     <!-- Create new message -->
                     <template v-if="iscreatingtopic">
                         <div class="border-bottom ml-3 mb-1 pl-1 pb-1">
@@ -167,7 +166,7 @@ define([
                     </template>
 
 
-                    <!-- Read single message -->
+                    <!-- Read or reply to a message -->
                     <template v-else>
                         <div class="border-bottom ml-3 mb-1 pl-1 pb-1">
                             <div class="mx-0 mb-3 control-bar"><!-- :class="{hidden: postdata.header.is_error}" -->
@@ -202,18 +201,18 @@ define([
                                 
                             </div>
                         </div>
-                    </template>
-                        
-
-                    <template v-if="! iscreatingtopic">
+                    
+                        <!-- Body for reading a message -->
                         <template v-if="isreading">
                             <div :class="{hidden: hideloadingicon, 'text-center': true, 'my-2': true}" style="opacity:0.5;">
                                 <i class="fas fa-circle-o-notch fa-spin fa-3x"/>
                             </div>
                             <div class="border-bottom ml-3 mb-3 pl-1 pb-3" :style="{'white-space': 'pre-line'}">
-                                {{textareacontent}}
+                               {{textareacontent}}
                             </div>
                         </template>
+
+                        <!-- Body for a reply message -->
                         <template v-else>
                             <div class="form-group ml-3 mb-3 pl-1 pb-3">
                                 <textarea ref="replyText" v-model="textarea_usrinput" :class="{'form-control': true, hidden: isreading}" cols=90 rows=10></textarea>

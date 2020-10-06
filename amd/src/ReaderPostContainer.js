@@ -176,10 +176,10 @@ define([
                         v-bind:key = 'singlepost.messagenumber'
                         v-bind:courseid = 'courseid'
                         :ref='singlepost.messagenumber'
-                        v-on:getmsg='ongetmsg'
-                        v-on:hideChildren='hideChildren'
-                        v-on:showChildren='showChildren'
-                        v-on:setSelected='setSelectedUP'
+                        @getmsg='ongetmsg'
+                        @hideChildren='hideChildren'
+                        @showChildren='showChildren'
+                        @setSelected='setSelectedUP'
                         @log='logger'
                         >
                     </post>

@@ -57,6 +57,9 @@
 /* Small devices (landscape phones, 576px and up) */
 
 @media (max-width: 576px) {
+  body#page-mod-usenet-view h1 {
+    font-size: 1.3em;
+  }
   #usenet-container h3 {
     font-size: 1.2rem;
   }
