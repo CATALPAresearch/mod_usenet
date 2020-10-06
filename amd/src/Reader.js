@@ -184,6 +184,7 @@ define([
                                 app.errorMessages.push(response.data);
 
                             } else {
+                                response.data.header = app.prepare_postdata(response.data.header);
                                 app.singlepostdata = response.data;
                                 if (app.singlepostdata.header === undefined){
                                     return;
@@ -322,7 +323,7 @@ define([
 
                             } else {
                                 app.singlepostdata = response.data;
-                                app.identiconstring = app.getidenticon(app.singlepostdata.header.from + app.singlepostdata.header.name);
+                                response.data.header = app.prepare_postdata(response.data.header);
                             }
                         }).catch(function (error) {
                             console.error(error);

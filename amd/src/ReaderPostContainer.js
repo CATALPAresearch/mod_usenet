@@ -61,7 +61,7 @@ define([
                             modpost.isSelected = false;
                             Vue.set(this.postlist, this.previouspost, modpost);
                         }
-                        else { console.log("oh noe"); }
+                        else { } // nothing to be done, just wait for data to load
                     }
                 },
 

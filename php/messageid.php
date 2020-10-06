@@ -61,12 +61,32 @@ else {
             $returnmsg = $body;
         }
         else {
+            require_once($CFG->dirroot . '/mod/usenet/php/nntp/libconn.php');
+
+            $self = [];
+
+            $statusread = @loadMessageStatus($header->number);
+            $userinfo = @getUserIdByEmail($header->from);
+
+
+            $self["name"] = $header->subject;
+            $self["number"] = $header->number;
+            $self["messageid"] = $header->id;
+            $self["threadhead"] = false;
+            $self["personal"] = $header->name;
+            $self["sender"] = addcslashes(str_replace('\\', '', $header->from), "\"");
+            $self["messagestatus"] = $statusread->readstatus;
+            $self["markedstatus"] = $statusread->marked;
+            $self["picturestatus"] = $userinfo->picture;
+            $self["user_id"] = $userinfo->id;
+            $self["date"] = $header->displaydate;
+            $self["timestamp"] = $header->date;
+
             $returnmsg = [
-                "header" => $header,
+                "header" => $self,
                 "messagebody" => $messagebody
             ];
         
-            require_once($CFG->dirroot . '/mod/usenet/php/nntp/libconn.php');
             markMessageRead($msgnr);
         }
     }
