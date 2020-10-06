@@ -42,22 +42,10 @@ define([
 
             methods:
             {
-                // Converts nested arrays to 1d array, so the total amount of children can be retrieved with .length
-                //  this function is used to determine border width at left side of posts, representing amount of children posts
-                flatten: function (value) {
-                    return Object.prototype.toString.call(value) === '[object Array]' ?
-                        [].concat.apply([], value.map(this.flatten)) :
-                        value;
-                },
-
-                setcourseid: function (id) {
-                    this.courseid = id;
-                },
-
+                
                 toggleMarkedMessage: function () {
 
-                    axios   //returned data is already js object (axios automaticly converts json to js obj)
-                        .get([
+                    axios.get([
                             M.cfg.wwwroot +
                             "/mod/usenet/php/statuschange.php?id=" +
                             this.courseid +
@@ -66,19 +54,16 @@ define([
                         ].join())
                         .then();
 
-                    if (this.content.marked) {
-                        this.content.marked = false;
-                    }
-                    else {
-                        this.content.marked = true;
-                    }
+                    this.content.marked = !this.content.marked;
 
                     this.$emit('log', 'message_mark_' + this.content.marked ? 'marked' : 'unmarked', { message_id: this.content.messagenumber, message_author: this.message.personal })
                 },
+
                 displayMessage: function (messagenumber, arraypos) {
                     this.$emit('getmsg', messagenumber, arraypos)
                     this.$emit('log', 'message_list_click', { message_id: messagenumber, message_pos: arraypos })
                 },
+                
                 hideChildren: function () {
                     if (this.hiddenChildren == false) {
                         this.hiddenChildren = true;
@@ -107,7 +92,6 @@ define([
                     <div class="node px-0" :column="content.margin" :class="{'font-weight-bold': content.unread}">
                         <div class="container-fluid px-0">
                             <div class="row px-0 mx-0" :class="{'bg-info': content.isSelected}" >
-                                
                                 <div class="px-0 col-1 col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
                                     <i class="fas fa-sm pt-2 px-3" 
                                         :class="{'fa-caret-down': content.haschild, 'fa-caret-right': this.hiddenChildren}" 
@@ -115,7 +99,6 @@ define([
                                         title="Diskussion ein- oder ausklappen"
                                         />
                                 </div>
-
                                 <div 
                                     class="px-0 col-11 col-xs-11 col-sm-11 col-md-11 col-lg-11 col-xl-11" 
                                     style="display:inline-block;"
@@ -138,7 +121,6 @@ define([
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>

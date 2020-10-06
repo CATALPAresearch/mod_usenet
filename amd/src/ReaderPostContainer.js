@@ -72,8 +72,8 @@ define([
                 logger:function(action, value){
                     this.$emit('log', action, value);
                 },
+                
                 // Function ongetmsg called by event getmsg, getmsg-event is emitted by 'post' (child component)
-
                 ongetmsg: function (msgid, arraypos) {
 
                     this.$emit('displaymsg', msgid);
@@ -118,13 +118,11 @@ define([
 
                 // This function calls function of child members
                 hideChildren: function (children) {
-
                     var memberid = [];
 
                     this.traverseChildren(children, memberid);
 
                     for (var i = 0; i < memberid.length; i++) {
-
                         let inte = parseInt(memberid[i]);
                         this.$refs[inte][0].hideself();
                     }
@@ -168,22 +166,24 @@ define([
                 },
             }, // END component methods
 
-            template: `<div class="post-container">
-                                <div :class="{'hidden': showloadingicon, 'text-center': true, 'my-2': true}" style="opacity:0.5;">
-                                    <i class="fas fa-circle-o-notch fa-spin fa-3x"/>
-                                </div>
-                                <post v-for='singlepost in postlist' 
-                                    v-bind:content='singlepost' 
-                                    v-bind:key = 'singlepost.messagenumber'
-                                    v-bind:courseid = 'courseid'
-                                    :ref='singlepost.messagenumber'
-                                    v-on:getmsg='ongetmsg'
-                                    v-on:hideChildren='hideChildren'
-                                    v-on:showChildren='showChildren'
-                                    v-on:setSelected='setSelectedUP'
-                                    @log='logger'
-                                    >
-                                </post>
-                            </div>`
-        }); // END component post-container
+            template: `
+                <div class="post-container">
+                    <div :class="{'hidden': showloadingicon, 'text-center': true, 'my-2': true}" style="opacity:0.5;">
+                        <i class="fas fa-circle-o-notch fa-spin fa-3x"/>
+                    </div>
+                    <post v-for='singlepost in postlist' 
+                        v-bind:content='singlepost' 
+                        v-bind:key = 'singlepost.messagenumber'
+                        v-bind:courseid = 'courseid'
+                        :ref='singlepost.messagenumber'
+                        v-on:getmsg='ongetmsg'
+                        v-on:hideChildren='hideChildren'
+                        v-on:showChildren='showChildren'
+                        v-on:setSelected='setSelectedUP'
+                        @log='logger'
+                        >
+                    </post>
+                </div>
+                `
+        }); 
 });

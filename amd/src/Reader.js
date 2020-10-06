@@ -3,8 +3,13 @@
  *
  * @module     mod_usenet
  * @class      Post Container
- * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de>
+ * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de>, Konstantin Friedrich
  * @license    GNU GPLv3
+ * 
+ * TODO:
+ * - modularize code 
+ * - remove redundancies like axios
+ * - remove states 
  */
 
 define([
@@ -91,31 +96,14 @@ define([
 
             created: function () {
                 this.instanceName = instanceName;
-                let _this = this;
-                /**
-                 * Initialisation of variables with empty values
-                 * to prevent "undefined variable" error messages
-                 * 
-                 */
-
                 this.singlepostdata.header = { name: '', subject: '' };
             },
 
-            destroyed() {
-                window.removeEventListener("resize", this.Windowresizehandler);
-            },
-
-
+        
             mounted: function () {
-
-
                 this.initiatecontact();
-
             },
 
-            computed: {
-
-            },
             methods: {
                 logger(action, value) {
                     the_logger.add(action, value)
@@ -219,15 +207,10 @@ define([
 
                     let post = this.findinarr(messagenum, this.post_list);
 
-
                     let arraypos = this.post_list.indexOf(post);
                     this.markedpost = arraypos;
 
-                    
-
                     this.stateupdateRMB();
-
-
                 },
 
                 setSelected: function (messagenumber) {

@@ -35,9 +35,6 @@ define([
                 };
             },
 
-            created: function () {
-            },
-
             methods: {
                 logger: function (action, value) {
                     this.$emit('log', action, value);
@@ -45,7 +42,7 @@ define([
 
                 replyMessage: function () {
 
-                    this.isreading = false; // smell
+                    this.isreading = false; // TODO: smell
                     this.isanswering = true;
 
                     // previous post is included in a reply
@@ -81,8 +78,10 @@ define([
                     params.append('subject', this.usrinput_subject);
 
                     axios   //returned data is already js object (axios automaticly converts json to js obj)
-                        .post(M.cfg.wwwroot + "/mod/usenet/php/posttest.php?id=" + this.courseid + "&msgnr=new",
-                            params)
+                        .post(
+                            M.cfg.wwwroot + "/mod/usenet/php/posttest.php?id=" + this.courseid + "&msgnr=new",
+                            params
+                            )
                         .then(response => (this.value = response));
 
                     this.$emit('answeredmsg');
@@ -233,5 +232,5 @@ define([
                     </template>                        
                 </div>
             `,
-        });     // END component messagebody-container
+        });
 });

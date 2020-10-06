@@ -27,7 +27,7 @@ require_once(__DIR__.'/lib.php');
 
 // Course_module ID, or
 $id = optional_param('id', 0, PARAM_INT);
-$msgnr = optional_param('msgnr', 0, PARAM_INT);
+$msgnr = optional_param('msgnr', 0, PARAM_INT); // TODO: This number does not exist
 // ... module instance id.
 $n  = optional_param('n', 0, PARAM_INT);
 //
