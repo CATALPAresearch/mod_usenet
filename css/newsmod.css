@@ -63,6 +63,9 @@
   #usenet-container h3 {
     font-size: 1.2rem;
   }
+  #usenet-container .border-xs-none {
+    border: none !important;
+  }
   .card-body {
     padding: 0.5rem;
   }

@@ -589,7 +589,7 @@ define([
                     }
                     var calctime = new Date(postdata_raw.date);
                     var options = {
-                        year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric'
+                        year: '2-digit', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric'
                     };
                    
                     calctime = new Date(postdata_raw.date).toLocaleDateString('de-DE', options) ? new Date(postdata_raw.date).toLocaleDateString('de-DE', options) : "";
@@ -879,7 +879,7 @@ define([
                     </ul>
 
                     <div class="tab-content">
-                        <div class="container-fluid px-2 border-left tab-pane active" id="viewlist">
+                        <div class="container-fluid px-2 border-left border-xs-none tab-pane active" id="viewlist">
                             <div class="pt-4 pl-0">
                                 <div class="row">
                                     <div 
@@ -913,7 +913,7 @@ define([
                                     </div>
                                     <div v-if="showMessageBody" 
                                         id="treeinfo"    
-                                        class="col-12 col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 
+                                        class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 
                                         order-1 order-xs-1 order-sm-1 order-md-1 order-lg-2 order-xl-2 
                                         d-inline"
                                         >
