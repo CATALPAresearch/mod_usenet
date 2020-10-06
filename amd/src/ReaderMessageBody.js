@@ -140,14 +140,14 @@ define([
             },
 
             template: `
-                <div> <!-- :class="{'messagebody-container': true}" :style="{display: isused}"-->
+                <div>
                     <!-- Create new message -->
                     <template v-if="iscreatingtopic">
                         <div class="border-bottom ml-3 mb-1 pl-1 pb-1">
                             <div class="mb-2 pl-1 pb-1">
                                 <div class="mx-0 control-bar">
                                     <span class="bold">Neue Nachricht verfassen</span>
-                                    <button type="button" class="close ml-auto align-self-center d-block d-sm-none" aria-label="Close" v-on:click="hideParentMessageBody">
+                                    <button type="button" class="close ml-auto align-self-center d-block d-lg-none" aria-label="Schließen" v-on:click="hideParentMessageBody">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
@@ -181,7 +181,7 @@ define([
                                 <button class="btn btn-sm btn-light ml-0" :disabled = "!statesRMB.CanSelectNext" v-on:click="nextMessage" title="Die nächste Nachricht anzeigen">
                                     <i class="fa fa-chevron-right"></i>    
                                 </button>
-                                <button type="button" class="close ml-auto align-self-center d-block d-sm-none" aria-label="Close" v-on:click="hideParentMessageBody">
+                                <button type="button" class="close ml-auto align-self-center d-block d-md-block d-sm-block d-lg-none" aria-label="Schließen" v-on:click="hideParentMessageBody">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>

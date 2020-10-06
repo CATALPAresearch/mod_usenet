@@ -837,7 +837,10 @@ define([
                                     </a>
                                 </div>
                                 <div>
-                                    <a class="page-link py-1 px-2 my-0" :class="{disabled: !statesview_section.CanSelectNext}" v-on:click="displayNextPostlist($event)" 
+                                    <a  
+                                        class="page-link py-1 px-2 my-0" 
+                                        :class="{disabled: !statesview_section.CanSelectNext}" 
+                                        v-on:click="displayNextPostlist($event)" 
                                         href="#" title="Nächste Seite">
                                         <i class="fa fa-chevron-right"></i>
                                     </a>
@@ -878,13 +881,13 @@ define([
                     <div class="tab-content">
                         <div class="container-fluid px-2 border-left tab-pane active" id="viewlist">
                             <div class="pt-4 pl-0">
-                                <div class="row" >
+                                <div class="row">
                                     <div 
-                                        id="tree" 
-                                        class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" 
-                                        class="order-2 order-xs-2 order-sm-2 order-md-2 order-lg-1 order-xl-1"
-                                        class="border-right"
-                                        style="overflow-y:auto; overflow-x:hidden; margin-bottom:3px; height: auto" >
+                                        id="tree"
+                                        class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 
+                                        order-2 order-xs-2 order-sm-2 order-md-2 order-lg-1 order-xl-1 
+                                        border-right"
+                                        style="overflow-y:auto; overflow-x:hidden; margin-bottom:3px; height:auto" >
                                         <div v-for="error in errorMessages" class="alert alert-danger">
                                             {{ error.errordescr }}
                                             <button type="button" class="close" v-on:click="logger('error_alert_close', { error_message: error.errordescr })" data-dismiss="alert" aria-label="Close">
@@ -904,14 +907,15 @@ define([
                                             :showloadingicon="hideloadingicon"
                                             v-on:displaymsg="ondisplaymsg"
                                             v-on:setSelected="setSelected"
-                                            @log="logger"
+                                            v-on:log="logger"
                                             >
                                         </post-container>
                                     </div>
                                     <div v-if="showMessageBody" 
                                         id="treeinfo"    
-                                        class="col-xl-6 col-lg-6 col-md-12 d-inline" 
-                                        class="order-1 order-xs-1 order-sm-1 order-md-1 order-lg-2 order-xl-2"
+                                        class="col-12 col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 
+                                        order-1 order-xs-1 order-sm-1 order-md-1 order-lg-2 order-xl-2 
+                                        d-inline"
                                         >
                                         <messagebody-container 
                                             v-bind:courseid="courseid" 
@@ -935,10 +939,10 @@ define([
                             </div>
                         </div>
                         <viz-bubble 
+                            id="viewbubbles"    
+                            class="tab-pane fade"
                             v-bind:treedata="treedata_viz" 
-                            class="tab-pane fade" 
-                            id="viewbubbles"
-                            @log="logger"
+                            v-on:log="logger"
                             ></viz-bubble>
                     </div>
                 </div>
