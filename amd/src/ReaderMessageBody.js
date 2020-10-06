@@ -20,8 +20,7 @@ define([
                 'isanswering',
                 'iscreatingtopic',
                 'courseid',
-                'identiconstring', 
-                'viewportsize', 
+                'identiconstring',
                 'hideloadingicon',
                 'statesRMB',
                 'log'
@@ -32,18 +31,11 @@ define([
                     textareacontent: '',
                     value: {},
                     usrinput_subject: '',
-                    textarea_usrinput: '',
-                    ismobile: false,
+                    textarea_usrinput: ''
                 };
             },
 
             created: function () {
-                if (this.viewportsize == 'mobile') {
-                    this.ismobile = true;
-                }
-                else {
-                    this.ismobile = false;
-                }
             },
 
             methods: {
@@ -107,6 +99,7 @@ define([
                     // thats why the classic approach of urlsearchparams() is needed 
                     const params = new URLSearchParams();
                     params.append('userInput', this.textarea_usrinput);
+                    
                     if (this.postdata.header === undefined) {
                         this.postdata.header = { subject: '', references: '', id: -1 };
                     }
@@ -143,14 +136,6 @@ define([
                         this.textarea_usrinput = '';
                     }
 
-                },
-                viewportsize: function () {
-                    if (this.viewportsize == 'mobile') {
-                        this.ismobile = true;
-                    }
-                    else {
-                        this.ismobile = false;
-                    }
                 },
                 /**
                  * When user requests a new message to display in textarea of ReaderMessageBody,

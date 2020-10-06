@@ -23,22 +23,13 @@ define([
 
     return Vue.component('post',
         {
-            props: [ 'content', 'courseid', 'viewportsize', 'log' ],
+            props: [ 'content', 'courseid', 'log' ],
 
             data: function () {
                 return {
                     isSelected: false,
-                    hiddenfamily: false,
+                    hiddenChildren: false,
                     identiconstring: "data:image/svg+xml;base64," + this.content.identicon,
-
-                    poststylechild: {
-                        cursor: 'pointer',
-                    },
-
-                    // TODO recode these 2 styles
-                    borderstyle: {
-                        'border-left': 'solid black 0px'
-                    },
                     textindent: {
                         'text-indent': this.content.margin + 'px'
                     },
@@ -46,43 +37,7 @@ define([
             },
 
             created() {
-                //window.addEventListener("resize", this.Windowresizehandler);
-                var borderwidth = 0;
-
-                // If the viewport is smaller than 576px (which is breakpoint for col-[number] class, very small screens)
-                // then insert a small bottom padding to posts
-                // also, do a bunch of other stuff for mobile users
-                if (this.viewportsize == 'mobile') {
-                    this.textindent = 'text-indent: 0px';
-                    let borderwidth = 0;
-                    if (this.content.family) {
-                        borderwidth = this.flatten(this.content.family).length;
-                    }
-                    this.borderstyle = 'border-left: solid black ' + borderwidth + 'px';
-                }
-                else {
-
-                    this.textindent = 'text-indent: ' + this.content.margin + 'px';
-                    this.borderstyle = 'border-left: solid black 0px';
-                }
-
-            },
-
-            watch: {
-                viewportsize: function () {
-                    if (this.viewportsize == 'mobile') {
-                        this.textindent = 'text-indent: 0px';
-                        let borderwidth = 0;
-                        if (this.content.family) {
-                            borderwidth = this.flatten(this.content.family).length;
-                        }
-                        this.borderstyle = 'border-left: solid black ' + borderwidth + 'px';
-                    }
-                    else {
-                        this.textindent = 'text-indent: ' + this.content.margin + 'px';
-                        this.borderstyle = 'border-left: solid black 0px';
-                    }
-                }
+                this.textindent = 'text-indent: ' + this.content.margin + 'px';
             },
 
             methods:
@@ -125,15 +80,15 @@ define([
                     this.$emit('log', 'message_list_click', { message_id: messagenumber, message_pos: arraypos })
                 },
                 hideChildren: function () {
-                    if (this.hiddenfamily == false) {
-                        this.hiddenfamily = true;
-                        this.$emit('hideChildren', this.content.family);
+                    if (this.hiddenChildren == false) {
+                        this.hiddenChildren = true;
+                        this.$emit('hideChildren', this.content.children);
                     } else {
-                        this.hiddenfamily = false;
-                        this.$emit('showChildren', this.content.family);
+                        this.hiddenChildren = false;
+                        this.$emit('showChildren', this.content.children);
                     }
                     this.$emit('setSelected', this.content.messagenumber);
-                    this.$emit('log', 'message_children_' + this.hiddenfamily ? 'shown' : 'hidden', { message_id: this.content.messagenumber });
+                    this.$emit('log', 'message_children_' + this.hiddenChildren ? 'shown' : 'hidden', { message_id: this.content.messagenumber });
                 },
 
                 // Called by container 'ReaderPostContainer'
@@ -147,15 +102,6 @@ define([
 
             },
 
-            computed: {
-                poststylechildcnd: function () {
-                    if (this.content.haschild) {
-                        return this.poststylechild;
-                    }
-
-                },
-            },
-
             template: `
                 <div class="post" :class="{hidden: content.hidden}">
                     <div class="node px-0" :column="content.margin" :class="{'font-weight-bold': content.unread}">
@@ -164,8 +110,7 @@ define([
                                 
                                 <div class="px-0 col-1 col-xs-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
                                     <i class="fas fa-sm pt-2 px-3" 
-                                        :class="{'fa-caret-down': content.haschild, 'fa-caret-right': this.hiddenfamily}" 
-                                        :style="poststylechildcnd"
+                                        :class="{'fa-caret-down': content.haschild, 'fa-caret-right': this.hiddenChildren}" 
                                         v-on:click="hideChildren" 
                                         title="Diskussion ein- oder ausklappen"
                                         />

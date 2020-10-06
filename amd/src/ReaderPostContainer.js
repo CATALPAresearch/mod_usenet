@@ -20,7 +20,6 @@ define([
                 'markedpost',
                 'courseid',
                 'showloadingicon',
-                'viewportsize',
                 'log'
             ],
 
@@ -118,11 +117,11 @@ define([
                 }, 
 
                 // This function calls function of child members
-                hideChildren: function (family) {
+                hideChildren: function (children) {
 
                     var memberid = [];
 
-                    this.traversefamily(family, memberid);
+                    this.traverseChildren(children, memberid);
 
                     for (var i = 0; i < memberid.length; i++) {
 
@@ -131,10 +130,10 @@ define([
                     }
                 },
 
-                showChildren: function (family) {
+                showChildren: function (children) {
                     var memberid = [];
 
-                    this.traversefamily(family, memberid);
+                    this.traverseChildren(children, memberid);
 
                     for (var i = 0; i < memberid.length; i++) {
                         let inte = parseInt(memberid[i]);
@@ -142,13 +141,13 @@ define([
                     }
                 },
 
-                traversefamily: function (family, memberid) {
+                traverseChildren: function (children, memberid) {
 
-                    for (var i = 0; i < family.length; i++) {
-                        if (Array.isArray(family[i])) {
-                            this.traversefamily(family[i], memberid);
+                    for (var i = 0; i < children.length; i++) {
+                        if (Array.isArray(children[i])) {
+                            this.traverseChildren(children[i], memberid);
                         } else {
-                            memberid.push(family[i]);
+                            memberid.push(children[i]);
                         }
                     }
 
@@ -177,7 +176,6 @@ define([
                                     v-bind:content='singlepost' 
                                     v-bind:key = 'singlepost.messagenumber'
                                     v-bind:courseid = 'courseid'
-                                    :viewportsize = 'viewportsize'
                                     :ref='singlepost.messagenumber'
                                     v-on:getmsg='ongetmsg'
                                     v-on:hideChildren='hideChildren'

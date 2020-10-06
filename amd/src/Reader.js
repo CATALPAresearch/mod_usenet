@@ -62,7 +62,6 @@ define([
                     hideloadingicon: true,
                     hideloadingiconRMB: true,       // hideloadingiconReaderMessageBody
                     identiconstring: "",
-                    viewportsize: 'none',
                     showmodal: false,
                     displayerrormsg: false,
                     newsgroup_name: '',
@@ -100,18 +99,6 @@ define([
                  */
 
                 this.singlepostdata.header = { name: '', subject: '' };
-
-
-                window.addEventListener("resize", this.Windowresizehandler);
-
-
-                if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
-                    this.viewportsize = 'mobile';
-                }
-                else {
-                    this.viewportsize = 'other';
-                }
-
             },
 
             destroyed() {
@@ -135,19 +122,6 @@ define([
                 },
                 hideMessageBody: function () {
                     this.showMessageBody = false;
-                },
-                Windowresizehandler: function () {
-                    if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) < 576) {
-                        this.viewportsize = 'mobile';
-                        if (this.msgbodycontainerdisplay == '') {       // msgbodycontainer is used (its set to 'hide' if not used)
-                            this.showmodal = true;
-                        }
-
-                    }
-                    else {
-                        this.viewportsize = 'other';
-                        this.showmodal = false;
-                    }
                 },
 
                 initiatecontact: function () {
@@ -249,9 +223,7 @@ define([
                     let arraypos = this.post_list.indexOf(post);
                     this.markedpost = arraypos;
 
-                    if (this.viewportsize == 'mobile') {
-                        this.showmodal = true;
-                    }
+                    
 
                     this.stateupdateRMB();
 
@@ -385,7 +357,7 @@ define([
 
                 },
 
-                displayPreviousPostlist: function () {
+                displayPreviousPostlist: function (event) {
                     if (this.view_section > 0) {
                         if (this.markedpost != -1) {
                             let modpost = this.post_list[this.markedpost];
@@ -401,10 +373,10 @@ define([
                         this.arraypos = 0;
                         this.stateupdateview_selection();
                     }
-
+                    event.preventDefault();
                 },
 
-                displayNextPostlist: function () {
+                displayNextPostlist: function (event) {
                     if (this.view_section < this.post_list_sections.length - 1) {
                         if (this.markedpost != -1) {
                             let modpost = this.post_list[this.markedpost];
@@ -420,10 +392,10 @@ define([
                         this.arraypos = 0;
                         this.stateupdateview_selection();
                     }
-
+                    event.preventDefault();
                 },
 
-                selectPostlist: function (page) {
+                selectPostlist: function (page, event) {
                     if (this.markedpost != -1) {
                         let modpost = this.post_list[this.markedpost];
                         modpost.isSelected = false;
@@ -438,6 +410,7 @@ define([
                     this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
                     this.arraypos = 0;
                     this.stateupdateview_selection();
+                    event.preventDefault();
                 },
 
                 stateupdateview_selection: function () {
@@ -639,9 +612,9 @@ define([
                     calctime = new Date(postdata_raw.date).toLocaleDateString('de-DE', options) ? new Date(postdata_raw.date).toLocaleDateString('de-DE', options) : "";
                     var absender = postdata_raw.personal ? postdata_raw.personal : postdata_raw.sender;
                     //var timestamp = '<div class="sender elipse col-xl-3 col-sm-3"><a href="mailto:' + postdata_raw.sender + '?subject=' + postdata_raw.name + '">' + absender + '</a></div><div  class="datetime message col-sm-2 col-xl-2" data-date-format="DD.MM.YYYY">' + calctime + '</div>';
-                    var family;
+                    let children;
                     if (postdata_raw.children) {
-                        family = this.getfamily(postdata_raw);
+                        children = this.getChildren(postdata_raw);
                     }
 
                     var content = {
@@ -649,13 +622,13 @@ define([
                         picturestatus: postdata_raw.picturestatus, personal: postdata_raw.personal, sender: postdata_raw.sender,
                         user_id: postdata_raw.user_id, margin: margin, sequence: this.sequence++, messageid: postdata_raw.messageid, messagenumber: postdata_raw.number,
                         date: postdata_raw.date, subject: postdata_raw.name, calctime: calctime, absender: absender, haschild: childpresent, arraypos: this.arraypos++,
-                        isSelected: false, hidden: false, family: family, identicon: identiconstring
+                        isSelected: false, hidden: false, children: children, identicon: identiconstring
                     };
 
                     return content;
                 },
 
-                getfamily: function (rootnode) {
+                getChildren: function (rootnode) {
                     var children = [];
 
                     if (rootnode.children) {
@@ -664,7 +637,7 @@ define([
                         for (let i = 0; i < childrenamount; i++) {
                             children.push(rootnode.children[i].number);
                             if (rootnode.children[i].children) {
-                                children.push(app.getfamily(rootnode.children[i]));
+                                children.push(app.getChildren(rootnode.children[i]));
                             }
                         }
                     }
@@ -697,7 +670,7 @@ define([
                                 //app.displayerrormsg = true;
                             } else {
                                 app.displaysearchresult('', response.data);
-                                _this.logger('search_result', { search_term: this.searchstring, result_length: response.data.length });
+                                _this.logger('search_result', { search_term: _this.searchstring, result_length: response.data.length, results: response.data.map(function(d){ return d.messagenum; }) });
                                 console.log('SEARCH', response.data);
                             }
                         })
@@ -786,10 +759,7 @@ define([
                     this.post_list_sections.splice(0);
                     this.threadlist.splice(0);
 
-                    if (this.viewportsize == 'mobile') {
-                        this.showmodal = false;
-                    }
-
+                    
                     this.initiatecontact();
                 },
 
@@ -857,7 +827,7 @@ define([
                     <div class="d-flex align-items-center">
                         <button class="btn btn-primary btn-sm" :disabled="iscreatingtopic" v-on:click="newTopic" title="Eine neue Nachricht erstellen">
                             <i class="fa fa-pen"></i>
-                            Neue Nachricht
+                            <span class="d-none d-sm-inline">Neue Nachricht</span>
                         </button>
 
                         <button class="btn btn-light btn-sm" v-on:click="refresh" title="Neue Nachrichten abholen">
@@ -868,21 +838,23 @@ define([
                         <div class="mr-auto px-2">
                             <div class="d-flex">
                                 <div>
-                                    <a class="page-link" :class="{disabled: !statesview_section.CanSelectPrev}" v-on:click="displayPreviousPostlist" 
+                                    <a class="page-link py-1 px-2" :class="{disabled: !statesview_section.CanSelectPrev}" v-on:click="displayPreviousPostlist($event)" 
                                         href="#" title="Vorherige Seite">
                                         <i class="fa fa-chevron-left"></i>
                                     </a>
                                 </div>
-                                <a v-for="(el, index) in post_list_sections"
-                                    class="page-link"
-                                    href="#"
-                                    v-on:click="selectPostlist(index)"
-                                    :class="{'bg-info': view_section == index}"
-                                    >
-                                    {{index+1}}
-                                </a>
+                                <div class="d-none d-sm-block">
+                                    <a v-for="(el, index) in post_list_sections"
+                                        class="page-link py-1 px-2"
+                                        href="#"
+                                        v-on:click="selectPostlist(index, $event)"
+                                        :class="{'bg-info': view_section == index}"
+                                        >
+                                        {{index+1}}
+                                    </a>
+                                </div>
                                 <div>
-                                    <a class="page-link" :class="{disabled: !statesview_section.CanSelectNext}" v-on:click="displayNextPostlist" 
+                                    <a class="page-link py-1 px-2" :class="{disabled: !statesview_section.CanSelectNext}" v-on:click="displayNextPostlist($event)" 
                                         href="#" title="Nächste Seite">
                                         <i class="fa fa-chevron-right"></i>
                                     </a>
@@ -896,7 +868,7 @@ define([
                                 v-model="searchstring" 
                                 placeholder="Suchen..." 
                                 v-on:keyup.enter="search"
-                                :style="[ viewportsize==='mobile' ? {width:70+'%'} : {width:150+'px'} ]"
+                                style="width:90px"
                                 >
 
                             <button class="btn btn-light btn-sm" type="submit" v-on:click="search" title="In allen Nachrichten suchen">
@@ -934,7 +906,6 @@ define([
                                             :isreading="isreading" 
                                             :isanswering="isanswering" 
                                             :iscreatingtopic="iscreatingtopic"
-                                            :viewportsize = "viewportsize"
                                             :hideloadingicon = "hideloadingiconRMB"
                                             v-on:answeredmsg="onansweredmsg"
                                             v-on:prevmsg="onprevmsg" 
@@ -963,7 +934,6 @@ define([
                                             v-bind:postlist="post_list" 
                                             v-bind:markedpost="markedpost" 
                                             :showloadingicon="hideloadingicon"
-                                            :viewportsize = "viewportsize"
                                             v-on:displaymsg="ondisplaymsg"
                                             v-on:setSelected="setSelected"
                                             @log="logger"
@@ -980,7 +950,6 @@ define([
                                             :isreading="isreading" 
                                             :isanswering="isanswering" 
                                             :iscreatingtopic="iscreatingtopic"
-                                            :viewportsize = "viewportsize"
                                             :hideloadingicon = "hideloadingiconRMB"
                                             :statesRMB = "statesRMB"
                                             v-on:answeredmsg="onansweredmsg"
