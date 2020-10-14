@@ -63,7 +63,6 @@ echo $OUTPUT->header();
 
 echo get_intro($cm->course);
 
-
 if(access_control()){
     echo '<usenet-container></usenet-container>';
     $PAGE->requires->js_call_amd('mod_usenet/usenet', 'init', array('course'=>$cm->course, 'msgnr'=>$msgnr, 'instanceName'=>$moduleinstance->name, 'instance_id'=>$cm->id));
@@ -85,7 +84,7 @@ echo $OUTPUT->footer();
 
 function access_control(){
     global $DB, $USER;
-    $version = 11;// local_niels: 11  aple: 3
+    $version = 3;// local_niels: 11  aple: 3
     $transaction = $DB->start_delegated_transaction();
     $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "status");
     $transaction->allow_commit();
