@@ -63,6 +63,7 @@ echo $OUTPUT->header();
 
 echo get_intro($cm->course);
 
+
 if(access_control()){
     echo '<usenet-container></usenet-container>';
     $PAGE->requires->js_call_amd('mod_usenet/usenet', 'init', array('course'=>$cm->course, 'msgnr'=>$msgnr, 'instanceName'=>$moduleinstance->name, 'instance_id'=>$cm->id));
