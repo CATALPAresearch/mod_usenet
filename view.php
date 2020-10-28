@@ -82,7 +82,6 @@ if(mod_usenet\blocking::tool_policy_accepted() == true){
 echo $OUTPUT->footer();
 
 
-
 function get_intro($courseid){
     global $DB, $USER, $CFG;
    $query = '
@@ -107,4 +106,3 @@ function get_intro($courseid){
     return '';
     
 }
-
