@@ -63,7 +63,7 @@ echo $OUTPUT->header();
 
 echo get_intro($cm->course);
 
-if(access_control()){
+if(mod_usenet\blocking::tool_policy_accepted() == true){
     echo '<usenet-container></usenet-container>';
     $PAGE->requires->js_call_amd('mod_usenet/usenet', 'init', array('course'=>$cm->course, 'msgnr'=>$msgnr, 'instanceName'=>$moduleinstance->name, 'instance_id'=>$cm->id));
 }else{
@@ -82,30 +82,18 @@ if(access_control()){
 echo $OUTPUT->footer();
 
 
-function access_control(){
-    global $DB, $USER;
-    $version = 11;// local_niels: 11  aple: 3
-    $transaction = $DB->start_delegated_transaction();
-    $res = $DB->get_record("tool_policy_acceptances", array("policyversionid" => $version, "userid" => (int)$USER->id ), "status");
-    $transaction->allow_commit();
-    if(isset($res->status) && (int)$res->status == 1){
-        return true;
-    }
-    return false;
-}
-
 
 function get_intro($courseid){
-    global $DB, $USER;
+    global $DB, $USER, $CFG;
    $query = '
         SELECT m.id AS module_id, mm.id AS instance_id, u.intro AS intro 
-        FROM {'.$CFG->prefix.'course_modules} AS mm 
-        JOIN {'.$CFG->prefix.'modules} AS m 
+        FROM {course_modules} AS mm 
+        JOIN {modules} AS m 
         ON
         m.name=\'usenet\' AND
         m.id = mm.module AND
         mm.course = '.$courseid.'
-        JOIN {'.$CFG->prefix.'usenet} AS u
+        JOIN {usenet} AS u
         ON u.id = mm.instance
         ;
         ';

@@ -1,0 +1,11 @@
+.vscode*
+.git*
+node_modules*
+.gitignore
+.git-ftp-ignore
+.jshint.rc
+Gruntfile*
+*.sh
+git-ftp.sh
+.git-ftp.log
+x.html
