@@ -581,7 +581,7 @@ function gettree($journal, $start, $end) {
 
     global $CFG;
     //require_once($CFG->dirroot . '/mod/newsmod/php/nntp/socketcon.php');
-    $enable_cache = true;
+    $enable_cache = false;
 
     $localconfig = get_config('usenet');
 
