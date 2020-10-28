@@ -90,8 +90,8 @@ define([
                 submitReplyMessage: function () {
                     // ==If user is answering a post
                     // this.textareacontent=this.postdata.messagebody;
-                    this.isreading = true;
-                    this.isanswering = false;
+                    // this.isreading = true;
+                    // this.isanswering = false;
 
                     // Why PARAMS: axios also converts js objects to json on POST
                     // which is incompatible with moodles "data_submitted()"
@@ -104,10 +104,10 @@ define([
                     }
                     params.append('subject', this.postdata.header.subject);
                     params.append('references', this.postdata.header.references);
-                    params.append('uid', this.postdata.header.id);
+                    params.append('uid', this.postdata.header.messageid);
 
                     axios
-                        .post(M.cfg.wwwroot + "/mod/usenet/php/posttest.php?id=" + this.courseid + "&msgnr=" + this.postdata.header.id,
+                        .post(M.cfg.wwwroot + "/mod/usenet/php/posttest.php?id=" + this.courseid + "&msgnr=" + this.postdata.header.messageid,
                             params)
                         .then(response => (this.value = response));
 

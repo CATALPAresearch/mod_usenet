@@ -180,7 +180,6 @@ define([
                     this.showMessageBody = true;
                     this.hideloadingiconRMB = false;
                     
-
                     axios
                         .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + this.instanceid + "&msgnr=" + messagenum)
                         .then(function (response) {
@@ -445,6 +444,7 @@ define([
                     this.threadlist.splice(0);
                     this.arraypos = 0;          //reset index counter of content
                     this.msgbodycontainerdisplay = 'none';  //hide msgbodycontainer
+                    this.showMessageBody = false;
                     this.isanswering = false;
                     this.iscreatingtopic = false;
                     this.isreading = false;
