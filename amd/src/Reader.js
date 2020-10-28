@@ -179,6 +179,7 @@ define([
                 ondisplaymsg: function (messagenum) {
                     this.showMessageBody = true;
                     this.hideloadingiconRMB = false;
+                    
 
                     axios
                         .get(M.cfg.wwwroot + "/mod/usenet/php/messageid.php?id=" + this.instanceid + "&msgnr=" + messagenum)
