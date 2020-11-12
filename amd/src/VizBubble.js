@@ -174,16 +174,16 @@ define([
                         .style("color", "black")
 
                     /**
-                * showTooltip Event
-                * @param {} d
-                * @todo
-                * - Anzahl involvierter Personen, anzahl an Betreuern
-                * 
-                * - mittlere Textlänge
-                * - Alter
-                * - letzter Beitrag
-                * -
-                */
+                    * showTooltip Event
+                    * @param {} d
+                    * @todo
+                    * - Anzahl involvierter Personen, anzahl an Betreuern
+                    * - Identicons der involvierten User
+                    * - mittlere Textlänge
+                    * - Alter
+                    * - letzter Beitrag
+                    * - ...
+                    */
                     function showTooltip(d) {
                         tooltip
                             .transition()
@@ -206,8 +206,8 @@ define([
                     }
                     function hideTooltip(d) {
                         tooltip
-                            .transition()
-                            .duration(200)
+                            //.transition()
+                            //.duration(200) // BUG
                             .style("opacity", 0)
 
                         d3.select("#circle-" + d.id)
