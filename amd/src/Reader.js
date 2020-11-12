@@ -126,6 +126,7 @@ define([
                                     app.errorMessages.push(response.data);
 
                                 } else {
+                                    console.log('xxxx', JSON.stringify(response.data))
                                     app.treedata_viz = response.data.children;
                                     app.info = response;
                                     app.tree_data = response.data;
@@ -870,12 +871,12 @@ define([
 
                     <!-- The tabs should shown if alternative visualization are available. -->
                     <ul class="nav nav-tabs mt-3">
-                        <li hidden class="nav-item pt-0">
+                        <li class="nav-item pt-0">
                             <a class="nav-link  pt-0 pb-0 active" v-on:click="logger('list_view_select',{})" data-toggle="pill" href="#viewlist">
                                 <i class="fa fa-list"></i>
                             </a>
                         </li>
-                        <li hidden class="nav-item  pt-0">
+                        <li class="nav-item  pt-0">
                             <a class="nav-link pt-0  pb-0"  v-on:click="logger('bubble_view_select',{})" data-toggle="pill" href="#viewbubbles">
                                 <i class="fa fa-spinner"></i>
                             </a>

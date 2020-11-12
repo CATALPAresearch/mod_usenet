@@ -2,7 +2,7 @@
  *
  *
  * @module     mod_usenet
- * @class      Visualize messages in abubble chart
+ * @class      Visualize messages in a bubble chart
  * @copyright  Niels Seidel <niels.seidel@fernuni-hagen.de>
  * @license    GNU GPLv3
  */
@@ -24,7 +24,7 @@ define([
             },
             watch: {
                 treedata: function () {
-                    //console.log('bubble ', this.treedata);
+                    // console.log('bubble ', this.treedata);
                     this.createBubbleChart();
                 }
             },
@@ -68,17 +68,19 @@ define([
                         if (this.treedata[i].time === null) {
                             console.log('warning: could not convert usenet date string into date object: ', this.treedata[i].date, this.treedata[i]);
                             continue;
-                        }else{
+                        } else {
                             this.treedata[i].id = i;
                             rawData.push(this.treedata[i]);
                         }
                     }
-                    
+
                     let forceSimulation;
 
                     let radiusScale;
                     let colorScale;
                     let heightScale;
+                    const fill_color = '#17a2b8';
+                    const fill_color_highlight = '#008fac';
 
 
                     radiusScale = d3.scaleLinear()
@@ -93,12 +95,26 @@ define([
                         .domain([0, 100])
                         .range([0, height]);
 
+
+                    function getNumberOfChildren(d) {
+                        if (d.children === undefined || d.children.length === 0) {
+                            return 0;
+                        }
+                        let sum = d.children.length;
+                        for (var i = 0; i < d.children.length; i++) {
+                            sum = sum + getNumberOfChildren(d.children[i]);
+                        }
+                        return sum;// + getNumberOfChildren(d.children); 
+                    }
+
                     nodes = rawData.map(d => {
+                        let threads = getNumberOfChildren(d);
                         return {
                             id: d.id,
                             name: d.name,
                             date: d.time,
-                            radius: radiusScale(d.count),
+                            threads: threads,
+                            radius: radiusScale(threads * 4),
                             fill: colorScale(d.count),
                             x: Math.random() * width,
                             y: heightScale(d.count)/*  Math.random() * height */
@@ -123,10 +139,12 @@ define([
                         .append('circle')
                         .attr('id', d => { return "circle-" + d.id })
                         .attr('r', d => { return d.radius })
-                        .attr('fill', d => 'salmon')
-                        .attr('stroke', d => { return d3.rgb('salmon').darker() })
-                        .on('mouseover', onMouseOver)
-                        .on('mouseout', onMouseOut)
+                        .attr('fill', d => fill_color)
+                        .attr('stroke', d => { return '#fff' }) // 
+                        .style("cursor", "pointer")
+                        .on("mouseover", showTooltip)
+                        .on("mousemove", moveTooltip)
+                        .on("mouseleave", hideTooltip)
                         //.call(d3.drag().on('start', dragStarted).on('drag', dragged).on('end', dragEnded))
                         ;
 
@@ -135,11 +153,70 @@ define([
                         .data(nodes)
                         .enter()
                         .append('text')
-                        .text(function (d) {
-                            return d.name
+                        .text(function (d) { 
+                            return d.threads
                         })
-                        .attr('color', 'black')
-                        .attr('font-size', 8);
+                        .attr('color', '#fff')
+                        .attr('fill', '#fff')
+                        .attr('font-size', 9)
+                        .attr('text-anchor', 'middle')
+                        ;
+
+
+
+                    var tooltip = d3.select("#chart")
+                        .append("div")
+                        .style("opacity", 0)
+                        .attr("class", "tooltip")
+                        .style("background-color", "white")
+                        .style("border-radius", "5px")
+                        .style("padding", "4px")
+                        .style("color", "black")
+
+                    /**
+                * showTooltip Event
+                * @param {} d
+                * @todo
+                * - Anzahl involvierter Personen, anzahl an Betreuern
+                * 
+                * - mittlere Textlänge
+                * - Alter
+                * - letzter Beitrag
+                * -
+                */
+                    function showTooltip(d) {
+                        tooltip
+                            .transition()
+                            .duration(200)
+                        tooltip
+                            .style("opacity", 1)
+                            .html('<strong>' + d.name + '</strong><br/>'+d.threads+' Beiträge<br/>')
+                            .style("left", (d3.mouse(this)[0] - 30) + "px")
+                            .style("top", (d3.mouse(this)[1] + 140) + "px")
+
+                        d3.select("#circle-" + d.id)
+                            .attr('fill', fill_color_highlight)
+                            //.attr('r', d.radius * 1.1)
+                            ;
+                    }
+                    function moveTooltip(d) {
+                        tooltip
+                            .style("left", (d3.mouse(this)[0] - 30) + "px")
+                            .style("top", (d3.mouse(this)[1] + 140) + "px")
+                    }
+                    function hideTooltip(d) {
+                        tooltip
+                            .transition()
+                            .duration(200)
+                            .style("opacity", 0)
+
+                        d3.select("#circle-" + d.id)
+                            .attr('fill', fill_color)
+                            .attr('r', d.radius)
+                            ;
+                    }
+
+
 
 
                     forceSimulation = d3.forceSimulation()
@@ -150,43 +227,9 @@ define([
                         .force('y', d3.forceY().strength(forceStrength).y(height / 2))
                         .force("charge", d3.forceManyBody().strength(charge))
 
-                    /**
-                     * onMouseOver Event
-                     * @param {} d 
-                     * @todo
-                     * - Anzahl involvierter Personen, anzahl an Betreuern
-                     * - Anzahl Beiträge
-                     * - mittlere Textlänge
-                     * - Alter
-                     * - letzter Beitrag
-                     * - 
-                     */
-                    function onMouseOver(d, i) {
-                        d3.select("#circle-" + d.id)
-                            .attr('fill', 'red')
-                            .attr('r', d.radius * 1.5)
-                            ;
-                        return;
-                        // Specify where to put label of text
-                        bubbles.append("text").attr({
-                            id: "t" + d.x + "-" + d.y + "-" + i,  // Create an id for text so we can select it later for removing on mouseout
-                            x: function () { return xScale(d.x) - 30; },
-                            y: function () { return yScale(d.y) - 15; }
-                        })
-                            .text(function () {
-                                return [d.x, d.y];  // Value of the text
-                            });
 
-                    }
 
-                    function onMouseOut(d, i) {
-                        d3.select("#circle-" + d.id)
-                            .attr('fill', 'salmon')
-                            .attr('r', d.radius)
-                            ;
-                        return;
-                    }
-                    
+
                     function dragStarted(d) {
                         console.log('start');
                         forceSimulation.alphaTarget(0.3).restart()
