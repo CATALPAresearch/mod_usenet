@@ -188,6 +188,8 @@ define([
                                 app.errorMessages.push(response.data);
 
                             } else {
+                                console.log("response: ", response.data);
+                                // FIXME check if data / data.header exists and if it is an object!!
                                 response.data.header = app.prepare_postdata(response.data.header);
                                 app.singlepostdata = response.data;
                                 if (app.singlepostdata.header === undefined){
