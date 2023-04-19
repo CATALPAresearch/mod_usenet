@@ -22,7 +22,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class blocking
 {
-    const policy_version = 3; // local_niels: 11  aple: 3 marc: 1
+    const policy_version = 6; // local_niels: 11  aple: 3 marc: 1
     const disable_blocking = false;
     const disable_whitelist = false;
     const whitelist = array(
