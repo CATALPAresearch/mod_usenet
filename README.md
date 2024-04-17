@@ -177,9 +177,10 @@ This software uses the following open source packages:
 
 ## Citation
 
-Seidel, N., Friedrich, K., & Patzer, R.. (2024). Usenet - A usenet client for Moodle. https://doi.org/10.17605/OSF.IO/AK5JS
+> Seidel, N., Friedrich, K., & Patzer, R.. (2024). Usenet - A usenet client for Moodle. https://doi.org/10.17605/OSF.IO/AK5JS
 
-> @misc{Seidel2024-MoodleUsenet,
+```
+@misc{Seidel2024-MoodleUsenet,
 author = {Seidel, Niels and Friedrich, Konstantin and Patzer, Rudolf},
 doi = {10.17605/OSF.IO/AK5JS},
 keywords = {P-APLE-II,open data,software},
@@ -187,6 +188,7 @@ title = {{Usenet - A usenet client for Moodle}},
 url = {https://github.com/CATALPAresearch/mod{\_}usenet},
 year = {2024}
 }
+```
 
 
 
