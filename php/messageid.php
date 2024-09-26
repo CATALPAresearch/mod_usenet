@@ -47,18 +47,18 @@ require_once($CFG->dirroot . '/mod/usenet/php/nntp/socketcon.php');
 $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
 
 
-if (is_array($nntp) && array_key_exists('is_error',$nntp)) {    //error detected, theres error_feedback data structure here!
+if (is_array($nntp) && property_exists($nntp, 'is_error')) {    //error detected, theres error_feedback data structure here!
     $returnmsg = $nntp;
 }
 else {
     $header = nntp_header($nntp, $journal->newsgroup, $msgnr);
-    if (array_key_exists('is_error', $header)) {
+    if (property_exists($header, 'is_error')) {
         $returnmsg = $header;
     }
     else {
         $messagebody = nntp_fetchbody($nntp, $journal->newsgroup, $msgnr);
-        if (is_array($messagebody) && array_key_exists('is_error', $messagebody)) {
-            $returnmsg = $body;
+        if (is_array($messagebody) && property_exists($messagebody, 'is_error')) {
+            $returnmsg = $messagebody;
         }
         else {
             require_once($CFG->dirroot . '/mod/usenet/php/nntp/libconn.php');

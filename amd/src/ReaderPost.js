@@ -59,6 +59,7 @@ define([
                 },
 
                 displayMessage: function (messagenumber, arraypos, event) {
+                    console.log('displayMEssage', messagenumber, arraypos);
                     this.$emit('getmsg', messagenumber, arraypos)
                     this.$emit('log', 'message_list_click', { message_id: messagenumber, message_pos: arraypos })
                     //event.preventDefault();

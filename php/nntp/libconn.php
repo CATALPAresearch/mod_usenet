@@ -71,7 +71,7 @@ require_once($CFG->dirroot . '/mod/usenet/php/nntp/socketcon.php');
         $localconfig = get_config('usenet');
         $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
         
-        if (is_array($nntp) && array_key_exists('is_error', $nntp)) {    //error detected, theres error_feedback data structure here!
+        if (is_array($nntp) && property_exists($nntp, 'is_error')) {    //error detected, theres error_feedback data structure here!
             return json_encode($nntp);
         }
 
@@ -80,7 +80,7 @@ require_once($CFG->dirroot . '/mod/usenet/php/nntp/socketcon.php');
         
         $threads = thread_load_newsserver($nntp, $journal->newsgroup);
         
-        if (is_array($threads) && array_key_exists('is_error', $threads)) {    //error detected, theres error_feedback data structure here!
+        if (is_array($threads) && property_exists($threads, 'is_error')) {    //error detected, theres error_feedback data structure here!
             return json_encode($threads);
         }
 

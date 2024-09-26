@@ -556,7 +556,7 @@ function getgroupinfo($journal)
     $nntp = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
 
 
-    if (is_array($nntp) && array_key_exists('is_error', $nntp)) {    //error detected, theres error_feedback data structure here!
+    if (is_array($nntp) && property_exists($nntp, 'is_error')) {    //error detected, theres error_feedback data structure here!
         return $nntp;
     }
 
@@ -590,7 +590,7 @@ function gettree($journal, $start, $end) {
     if ($enable_cache) {
         $cacheddata = loadCachedData($journal);
 
-        if (is_array($cacheddata) && array_key_exists('is_error', $cacheddata)) {    //error detected, theres error_feedback data structure here!
+        if (is_array($cacheddata) && property_exists($cacheddata, 'is_error')) {    //error detected, theres error_feedback data structure here!
             return $cacheddata;
         }
     }
@@ -604,7 +604,7 @@ function gettree($journal, $start, $end) {
 
         if ($CacheNumberListLast < $end) {
             $newadditons = buildCache_partial($journal, $CacheNumberListLast[0] + 1, $end);
-            if (is_array($newadditons) && array_key_exists('is_error', $newadditons)) {    //error detected, theres error_feedback data structure here!
+            if (is_array($newadditons) && property_exists($newadditons, 'is_error')) {    //error detected, theres error_feedback data structure here!
                 return $newadditons;
             }
             $cacheddata = array_merge($cacheddata, $newadditons);
@@ -625,7 +625,7 @@ function gettree($journal, $start, $end) {
     } else {        // cache failed, open up connection and download it all
         $socket = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
     
-        if (is_array($socket) && array_key_exists('is_error', $socket)) {    //error detected, theres error_feedback data structure here!
+        if (is_array($socket) && property_exists($socket, 'is_error')) {    //error detected, theres error_feedback data structure here!
             return $socket;
         }
 
@@ -1029,7 +1029,7 @@ function loadMessageStatus($msgnr)
         if (!$moduleinstan->readstatus) {
             $moduleinstan->readstatus=false;
         }
-        if (!$moduleinstan->marked) {
+        if (isset($moduleinsta) && !$moduleinstan->marked) {
             $moduleinsta->marked=false;
         }
     } else {
@@ -1066,13 +1066,13 @@ function buildCache_partial($journal, $start, $end)
     $localconfig = get_config('usenet');
 
     $socket = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
-    if (is_array($socket) && array_key_exists('is_error', $socket)) {    //error detected, theres error_feedback data structure here!
+    if (is_array($socket) && property_exists($socket, 'is_error')) {    //error detected, theres error_feedback data structure here!
         return $socket;
     }
 
     $result = nntp_headers($socket, $journal->newsgroup, $start, $end);
 
-    if (is_array($result) && array_key_exists('is_error', $result)) {    //error detected, theres error_feedback data structure here!
+    if (is_array($result) && property_exists($result, 'is_error')) {    //error detected, theres error_feedback data structure here!
         return $result;
     }
     $olddata = loadCachedData($journal);
@@ -1087,11 +1087,11 @@ function buildCache_complete($journal)
     global $CFG;
     $localconfig = get_config('usenet');
     $socket = nntp_open($localconfig->newsgroupserver, $localconfig->newsgroupusername, $localconfig->newsgrouppassword);
-    if (is_array($socket) && array_key_exists('is_error', $socket)) {    //error detected, theres error_feedback data structure here!
+    if (is_array($socket) && property_exists($socket, 'is_error')) {    //error detected, theres error_feedback data structure here!
         return $socket;
     }
     $result = nntp_headers_all($socket, $journal->newsgroup);
-    if (is_array($result) && array_key_exists('is_error', $result)) {    //error detected, theres error_feedback data structure here!
+    if (is_array($result) && property_exists($result, 'is_error')) {    //error detected, theres error_feedback data structure here!
         return $result;
     }
     file_put_contents($CFG->dataroot."/cache/".$journal->newsgroup.".txt", serialize($result));
