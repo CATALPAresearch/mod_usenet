@@ -31,6 +31,7 @@ $functions = array(
       'mod_usenet_log' => array(
         'classname'     => 'mod_usenet_external',
         'methodname'    => 'log',
+        'classpath' => 'mod/usenet/external.php',
         'description'   => 'Writes logdata to database',
         'type'          => 'write',
         'capabilities'  => 'mod/usenet:view',

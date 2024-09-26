@@ -30,6 +30,9 @@ require_once("$CFG->libdir/externallib.php");
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      Moodle 3.5
  */
+
+ require_once ($CFG->libdir . '/externallib.php');
+
 class mod_usenet_external extends external_api {
 
     
@@ -76,7 +79,7 @@ class mod_usenet_external extends external_api {
         $r->courseid=(int)$data['courseid'];
         //$r->relateduserid=NULL;
         $r->anonymous=0;
-        $r->other=$data[entry];	 
+        $r->other=$data['entry'];
         $r->timecreated=$data['utc'];
         $r->origin='web';	 
         $r->ip=$_SERVER['REMOTE_ADDR'];

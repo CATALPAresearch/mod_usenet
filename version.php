@@ -26,6 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_usenet';
 $plugin->release = '0.2.0';
-$plugin->version = 2019060586;
+$plugin->version = 2024092613;
 $plugin->requires = 2016120300;
 $plugin->maturity = MATURITY_ALPHA;
